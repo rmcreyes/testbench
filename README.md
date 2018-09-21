@@ -1,5 +1,6 @@
 CPEN 321 Group Project  
 ===  
+![logo](images/logo.png)  
   
 Team Members:  
 * Johnny Ma  
