@@ -1,5 +1,6 @@
 Testbench: CPEN 321 Project  
 ===  
+![logo](images/logo.png)  
   
 Team Members:  
 * Johnny Ma  
