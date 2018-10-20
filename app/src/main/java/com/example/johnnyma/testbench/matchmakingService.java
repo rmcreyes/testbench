@@ -24,6 +24,7 @@ public class matchmakingService extends Service {
     private final IBinder binder = new LocalBinder();
     //private final IBinder socketBinder = new SocketBinder();
     private String courseID;
+    private boolean match_found = false;
 
     public matchmakingService(){
     }
@@ -44,8 +45,8 @@ public class matchmakingService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         mSocket.disconnect();
+        super.onDestroy();
     }
 
     //binder shit
@@ -58,5 +59,13 @@ public class matchmakingService extends Service {
 
     public String getRandomNumber(){
         return this.courseID;
+    }
+
+    public boolean isMatch_found(){
+        return match_found;
+    }
+
+    public void set_found(){
+        this.match_found = true;
     }
 }

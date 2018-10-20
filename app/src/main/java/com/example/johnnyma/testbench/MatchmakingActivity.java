@@ -4,16 +4,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 import com.example.johnnyma.testbench.matchmakingService.LocalBinder;
 
 import java.net.URISyntaxException;
+
 
 
 public class MatchmakingActivity extends AppCompatActivity {
@@ -21,6 +21,24 @@ public class MatchmakingActivity extends AppCompatActivity {
     private String courseID;
     matchmakingService my_service;
     boolean is_bound = false;
+
+    private Handler handler = new Handler();
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if(my_service.isMatch_found()){
+                //TODO start the activity
+                Toast.makeText(getApplicationContext(), "Match Found", Toast.LENGTH_LONG).show();
+
+                //exit match making activity and stop service
+                stopService(new Intent(getApplicationContext(),matchmakingService.class));
+                finish();
+            }else {
+                handler.postDelayed(this, 100);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +57,23 @@ public class MatchmakingActivity extends AppCompatActivity {
         //String meme = Boolean.toString(bounded);
         //Toast.makeText(this, meme, Toast.LENGTH_LONG).show();
 
-
+        //make a handler to run and check if match has been found
+        handler.postDelayed(runnable, 1000);
     }
 
+    //cancel match TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public void cancelButton(View view){
-        String num =my_service.getRandomNumber();
-        Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
+
+        //String num = my_service.getRandomNumber();
+        //Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
+
+        my_service.set_found();
+        //stop the handler and stop the service
+        /*
+        handler.removeCallback(runnable)
+        stopService(new Intent(this, matchmakingService.class));
+        finish();
+        */
     }
 
     private ServiceConnection my_connection = new ServiceConnection() {
@@ -61,4 +90,5 @@ public class MatchmakingActivity extends AppCompatActivity {
         }
     };
     // TODO disable back button cuz fuck that
+
 }
