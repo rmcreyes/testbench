@@ -13,17 +13,17 @@ import java.time.LocalTime;
 import java.util.Random;
 
 public class matchmakingService extends Service {
-    /*
+
     private Socket mSocket;
     {
         try{
             mSocket = IO.socket("http://chat.socket.io");
         } catch (URISyntaxException e){}
-    }*/
+    }
 
-    //TODO BIND the service. IDK HOW
     private final IBinder binder = new LocalBinder();
     //private final IBinder socketBinder = new SocketBinder();
+    private String courseID;
 
     public matchmakingService(){
     }
@@ -34,11 +34,11 @@ public class matchmakingService extends Service {
         return binder;
     }
 
-    /*
     //start the socket
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mSocket.connect();
+        courseID = intent.getStringExtra(MatchmakingActivity.TAG);
         return START_STICKY;
     }
 
@@ -47,7 +47,6 @@ public class matchmakingService extends Service {
         super.onDestroy();
         mSocket.disconnect();
     }
-    */
 
     //binder shit
     public class LocalBinder extends Binder {
@@ -57,7 +56,7 @@ public class matchmakingService extends Service {
         }
     }
 
-    public int getRandomNumber(){
-        return 5;
+    public String getRandomNumber(){
+        return this.courseID;
     }
 }

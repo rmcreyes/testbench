@@ -28,12 +28,22 @@ public class MatchmakingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matchmaking);
         Intent starting_intent = getIntent();
         this.courseID = starting_intent.getStringExtra(CourseActivity.TAG).replaceAll("\\s+","").toUpperCase();
+
+        //start the service
         Intent service_intent = new Intent(this, matchmakingService.class);
-        bindService(service_intent, my_connection, Context.BIND_AUTO_CREATE);
+        service_intent.putExtra(TAG, this.courseID);
+        startService(service_intent);
+        boolean bounded = bindService(service_intent, my_connection, Context.BIND_AUTO_CREATE);
+
+        //check if service is bound
+        //String meme = Boolean.toString(bounded);
+        //Toast.makeText(this, meme, Toast.LENGTH_LONG).show();
+
+
     }
 
     public void cancelButton(View view){
-        String num = Integer.toString(my_service.getRandomNumber());
+        String num =my_service.getRandomNumber();
         Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
     }
 
