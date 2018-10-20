@@ -48,34 +48,43 @@ public class MainActivity extends AppCompatActivity {
         //create onclicklistners for the list of courses
         courseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //TODO: open up a fragment
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) { //open course activity on click
                 String course_val = (String)(((TextView)view).getText());
-                Toast.makeText(getApplicationContext(),course_val,Toast.LENGTH_SHORT).show();
+                openCourse(course_val);
             }
         });
     };
 
+    //function to go the selected course, used by onclicklistner of course
+    public void openCourse(String course_val){
+        Intent intent = new Intent(this, CourseActivity.class);
+        intent.putExtra(TAG, course_val);
+        startActivity(intent);
+    }
 
+    //function for login button
     public void login(View view){
         Intent intent = new Intent(this,LoginActivity.class);
         startActivity(intent);
     }
 
+    //fuction for add course button
     public void addCourse(View view){
         Intent intent = new Intent(this, AddCourseActivity.class);
+        //this is so we can get data from AddCourseActivity.java
         startActivityForResult(intent,ADD_COURSE_REQUEST);
     }
 
+    //for when when activity returns a result
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(requestCode == ADD_COURSE_REQUEST){
             if(resultCode == RESULT_OK){
                 //TODO: right now we only pass course so String is okay. We need to pass course id.
                 String course = data.getStringExtra(AddCourseActivity.TAG);
                 courses.add(course);
+                //tell the adapter to update the view since we changed courses
                 adapter.notifyDataSetChanged();
             }
         }
