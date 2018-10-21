@@ -2,6 +2,28 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+User =require('./models/user');
+
+// app.get('/api/user/:user_id', (req, res) => {
+// 	User.find({ user_id: 'john'}, function (err, docs) {}) => {
+// 		if(err){
+// 			throw err;
+// 		}
+// 		res.json(docs);
+// 	}
+// });
+
+
+app.get('/api/user/:_id', (req, res) => {
+	User.getUserById(req.params._id, (err, user) => {
+		if(err){
+			throw err;
+		}
+		res.json(user);
+	});
+});
+
+
 io.on('connection', function(socket) {
 	console.log("socket " + socket.id + " has connected");
 
