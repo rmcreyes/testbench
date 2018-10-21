@@ -109,9 +109,8 @@ public class matchmakingService extends Service {
             handler.post(new Runnable(){
                 @Override
                 public  void run(){
-                    JSONObject data  = (JSONObject) args[0];
-                    String name;
                     try {
+                        JSONObject data  = new JSONObject((String) args[0]);
                         name = data.getString("name");
                     } catch (JSONException e) {
                         return;
@@ -130,12 +129,12 @@ public class matchmakingService extends Service {
             handler.post(new Runnable(){
                 @Override
                 public void run(){
-                    JSONObject data = (JSONObject) args[0];
-                    String username;
-                    String course;
-                    String rank;
-                    String pic;
                     try {
+                        JSONObject data = new JSONObject((String) args[0]);
+                        String username;
+                        String course;
+                        String rank;
+                        String pic;
                         username = data.getString("username");
                         course = data.getString("course");
                         rank = data.getString("rank");
