@@ -105,19 +105,48 @@ public class matchmakingService extends Service {
         mSocket.emit("queue_for_game", info.toString());
     }
 
+    public void sendJSONOpponent() {
+        Random rand = new Random();
+        ArrayList<String> names = new ArrayList<String>();
+        names.add("Johnny");
+        names.add("LightningMcQueen69");
+        names.add("RobertoMartinCastroReyes");
+        names.add("Andrea");
+        names.add("PeenWeinerstein");
+        names.add("MysteriousMongoose");
+
+        String name = names.get(rand.nextInt(6));
+        JSONObject info = new JSONObject();
+        try {
+            info.put("username", name);
+            info.put("course", courseID);
+            info.put("rank", ((rand.nextInt(50) + 1)));
+            info.put("pic", "0");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("send_json_opponent", info.toString());
+    }
+
     public Emitter.Listener onGameMade = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
-                public  void run(){
+                public void run() {
+                    /*
+                    JSONObject player = new JSONObject();
                     try {
-                        JSONObject data  = new JSONObject((String) args[0]);
-                        name = data.getString("name");
-                    } catch (JSONException e) {
-                        return;
+                        player.put("username", name_edit.getText().toString());
+                        player.put("course", "SUB1");
+                        player.put("rank", 5);
+                    }catch(JSONException e) {
+                        e.printStackTrace();
                     }
+                    mSocket.emit("send_json_opponent", player.toString());
+                    */
+                    sendJSONOpponent();
                 }
             });
         }
@@ -132,12 +161,12 @@ public class matchmakingService extends Service {
             handler.post(new Runnable(){
                 @Override
                 public void run(){
+                    String username;
+                    String course;
+                    String rank;
+                    String pic;
                     try {
                         JSONObject data = new JSONObject((String) args[0]);
-                        String username;
-                        String course;
-                        String rank;
-                        String pic;
                         username = data.getString("username");
                         course = data.getString("course");
                         rank = data.getString("rank");
@@ -145,7 +174,7 @@ public class matchmakingService extends Service {
                     } catch (JSONException e) {
                         return;
                     }
-                    Toast.makeText(matchmakingService.this, "Opponent Username: " + username + "\n" + course + "\nRank: " + rank + "\npic: " + pic, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(matchmakingService.this, "Opponent Username: " + username + "\n" + course + "\nRank: " + rank + "\npic: " + pic, Toast.LENGTH_LONG).show();
                     match_found = true;
                 }
             });
