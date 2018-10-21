@@ -50,6 +50,9 @@ public class matchmakingService extends Service {
         mSocket.connect();
         courseID = intent.getStringExtra(MatchmakingActivity.TAG);
         queueForGame();
+
+        mSocket.on("game_made", onGameMade);
+        mSocket.on("get_json_opponent", getJSONOpponent);
         return START_STICKY;
     }
 
@@ -93,13 +96,13 @@ public class matchmakingService extends Service {
         JSONObject info = new JSONObject();
         try {
             info.put("username", name);
-            info.put("course", "CPEN 321");
+            info.put("course", courseID);
             info.put("rank", ((rand.nextInt(50) + 1)));
             info.put("pic", "0");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mSocket.emit("player info", info.toString());
+        mSocket.emit("queue_for_game", info.toString());
     }
 
     public Emitter.Listener onGameMade = new Emitter.Listener(){
