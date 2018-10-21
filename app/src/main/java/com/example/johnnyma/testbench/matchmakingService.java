@@ -26,7 +26,7 @@ public class matchmakingService extends Service {
     private Socket mSocket;
     {
         try{
-            mSocket = IO.socket("http://chat.socket.io");
+            mSocket = IO.socket("http://104.42.209.62:3300/");
         } catch (URISyntaxException e){}
     }
 
@@ -49,6 +49,7 @@ public class matchmakingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mSocket.connect();
         courseID = intent.getStringExtra(MatchmakingActivity.TAG);
+        queueForGame();
         return START_STICKY;
     }
 
@@ -78,7 +79,7 @@ public class matchmakingService extends Service {
         this.match_found = true;
     }
     // JSON stuff
-    private void queueForGame() {
+    public void queueForGame() {
         Random rand = new Random();
         ArrayList<String> names = new ArrayList<String>();
         names.add("Johnny");
@@ -101,7 +102,7 @@ public class matchmakingService extends Service {
         mSocket.emit("player info", info.toString());
     }
 
-    private Emitter.Listener onGameMade = new Emitter.Listener(){
+    public Emitter.Listener onGameMade = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
             Handler handler = new Handler(Looper.getMainLooper());
@@ -122,7 +123,7 @@ public class matchmakingService extends Service {
 
 
 
-    private Emitter.Listener getJSONOpponent = new Emitter.Listener(){
+    public Emitter.Listener getJSONOpponent = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
             Handler handler = new Handler(Looper.getMainLooper());
@@ -143,6 +144,7 @@ public class matchmakingService extends Service {
                         return;
                     }
                     Toast.makeText(matchmakingService.this, "Opponent Username: " + username + "\n" + course + "\nRank: " + rank + "\npic: " + pic, Toast.LENGTH_SHORT).show();
+                    match_found = true;
                 }
             });
         }
