@@ -21,6 +21,7 @@ public class MatchmakingActivity extends AppCompatActivity {
     private String courseID;
     matchmakingService my_service;
     boolean is_bound = false;
+    int timeout = 0; //timeout counter used in Runnable runnable
 
     private Handler handler = new Handler();
 
@@ -32,9 +33,17 @@ public class MatchmakingActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), "Match Found", Toast.LENGTH_LONG).show();
 
                 //exit match making activity and stop service
+                //TODO DONT JUST STOP IT. DESTROY IT
                 stopService(new Intent(getApplicationContext(),matchmakingService.class));
                 finish();
-            }else {
+            }
+            else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
+                stopService(new Intent(getApplicationContext(),matchmakingService.class));
+                Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            else {
+                timeout++;
                 handler.postDelayed(this, 100);
             }
         }
@@ -58,7 +67,7 @@ public class MatchmakingActivity extends AppCompatActivity {
         //Toast.makeText(this, meme, Toast.LENGTH_LONG).show();
 
         //make a handler to run and check if match has been found
-        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, 500);
     }
 
     //cancel match TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
