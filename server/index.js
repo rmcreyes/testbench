@@ -32,13 +32,14 @@ io.on('connection', function(socket) {
 			p1_socket.join(priv_room_name);
 			var p2_socket = io.nsps['/'].connected[p2];
 			p2_socket.join(priv_room_name);
-			io.in(priv_room_name).emit('game_made', p1_socket.username + ' ' + p2_socket.username);
 
 
 			console.log('game made by ' + p1_socket.username + ' and ' + p2_socket.username);
 
 			io.nsps['/'].connected[p1].leave(course_room_name);
 		    io.nsps['/'].connected[p2].leave(course_room_name);
+		    io.in(priv_room_name).emit('game_made', p1_socket.username + ' ' + p2_socket.username);
+
 		    console.log('sockets ' + p1 + ' and ' + p2 + 'have left ' + course_room_name);
 
 		}
@@ -49,7 +50,10 @@ io.on('connection', function(socket) {
 		});
 
 		socket.on('send_json_opponent',function(msg) {
-			socket.broadcast.emit('get_json_opponent',socket.player_json);
+
+			var in_rooms = Object.keys(socket.rooms);
+			//find the last room it has been in 
+			socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_json_opponent',socket.player_json);
 		});
 
 	});
