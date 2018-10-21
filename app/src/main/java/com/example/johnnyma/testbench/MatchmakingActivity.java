@@ -29,7 +29,7 @@ public class MatchmakingActivity extends AppCompatActivity {
         public void run() {
             if(my_service.isMatch_found()){
                 //TODO start the activity
-                Toast.makeText(getApplicationContext(), "Match Found", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Match Found", Toast.LENGTH_LONG).show();
 
                 //exit match making activity and stop service
                 stopService(new Intent(getApplicationContext(),matchmakingService.class));
