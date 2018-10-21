@@ -3,13 +3,22 @@ package com.example.johnnyma.testbench;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
+
+import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URISyntaxException;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class matchmakingService extends Service {
@@ -68,4 +77,74 @@ public class matchmakingService extends Service {
     public void set_found(){
         this.match_found = true;
     }
+    // JSON stuff
+    private void queueForGame() {
+        Random rand = new Random();
+        ArrayList<String> names = new ArrayList<String>();
+        names.add("Johnny");
+        names.add("LightningMcQueen69");
+        names.add("RobertoMartinCastroReyes");
+        names.add("Andrea");
+        names.add("PeenWeinerstein");
+        names.add("MysteriousMongoose");
+
+        String name = names.get(rand.nextInt(6));
+        JSONObject info = new JSONObject();
+        try {
+            info.put("username", name);
+            info.put("course", "CPEN 321");
+            info.put("rank", ((rand.nextInt(50) + 1)));
+            info.put("pic", "0");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("player info", info.toString());
+    }
+
+    private Emitter.Listener onGameMade = new Emitter.Listener(){
+        @Override
+        public void call(final Object... args){
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable(){
+                @Override
+                public  void run(){
+                    JSONObject data  = (JSONObject) args[0];
+                    String name;
+                    try {
+                        name = data.getString("name");
+                    } catch (JSONException e) {
+                        return;
+                    }
+                }
+            });
+        }
+    };
+
+
+
+    private Emitter.Listener getJSONOpponent = new Emitter.Listener(){
+        @Override
+        public void call(final Object... args){
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable(){
+                @Override
+                public void run(){
+                    JSONObject data = (JSONObject) args[0];
+                    String username;
+                    String course;
+                    String rank;
+                    String pic;
+                    try {
+                        username = data.getString("username");
+                        course = data.getString("course");
+                        rank = data.getString("rank");
+                        pic = data.getString("pic");
+                    } catch (JSONException e) {
+                        return;
+                    }
+                    Toast.makeText(matchmakingService.this, "Opponent Username: " + username + "\n" + course + "\nRank: " + rank + "\npic: " + pic, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    };
 }
