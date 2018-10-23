@@ -1,6 +1,21 @@
 {
     "logs": [
         {
+            "outputFile": "C:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-v13\\values-v13.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Johnny Ma\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\5d3f714cd0a39f50f5d05e417020c02e\\res\\values-v13\\values-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "58",
+                        "endOffsets": "109"
+                    }
+                }
+            ]
+        },
+        {
             "outputFile": "C:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\app\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-v13\\values-v13.xml",
             "map": [
                 {

@@ -1,51 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <instant-run
-    abi="x86"
-    api-level="28"
-    build-mode="COLD"
-    density="560dpi"
+    abi="arm64-v8a,armeabi-v7a,armeabi"
+    api-level="27"
+    build-mode="FULL"
+    density="xxhdpi"
     format="10"
-    ir-eligibility="COMPATIBLE"
     plugin-version="3.0.1"
-    timestamp="1540228828223"
+    timestamp="1540332441027"
     token="1882753775814763080"
-    verifier="COLD_SWAP_REQUESTED" >
+    verifier="FULL_BUILD_REQUESTED" >
 
     <task
         name="javac"
-        duration="4380" />
+        duration="5436" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="56" />
+        duration="2343" />
     <task
         name="verifier"
-        duration="37" />
+        duration="1387" />
 
     <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\dep\dependencies.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_0.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_1.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_2.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_3.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_4.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_6.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_7.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_8.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_9.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\outputs\apk\debug\app-debug.apk"
+        type="SPLIT_MAIN" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_2.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_7.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_9.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_4.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_6.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_0.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\dep\dependencies.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_8.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
+        type="SPLIT" />
+    <artifact
         location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_3.apk"
+        type="SPLIT" />
+    <artifact
+        location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_1.apk"
         type="SPLIT" />
 
     <build
         build-mode="FULL"
-        timestamp="1540228605350"
+        timestamp="1540332441027"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
-            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_3.apk"
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\dep\dependencies.apk"
             type="SPLIT" />
         <artifact
-            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\outputs\apk\debug\app-debug.apk"
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_0.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_1.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_2.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_3.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_4.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_6.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_7.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_8.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\intermediates\split-apk\debug\slices\slice_9.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\build\outputs\apk\debug\app-debug.apk"
             type="SPLIT_MAIN" />
         <artifact
             location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_2.apk"
-            type="SPLIT" />
-        <artifact
-            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\dep\dependencies.apk"
-            type="SPLIT" />
-        <artifact
-            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_8.apk"
             type="SPLIT" />
         <artifact
             location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_7.apk"
@@ -57,25 +146,25 @@
             location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_4.apk"
             type="SPLIT" />
         <artifact
-            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
-            type="SPLIT" />
-        <artifact
             location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_6.apk"
             type="SPLIT" />
         <artifact
             location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_0.apk"
             type="SPLIT" />
         <artifact
-            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_1.apk"
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\dep\dependencies.apk"
             type="SPLIT" />
-    </build>
-    <build
-        build-mode="COLD"
-        ir-eligibility="COMPATIBLE"
-        timestamp="1540228828223"
-        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_8.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
+            type="SPLIT" />
         <artifact
             location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_3.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\app\build\intermediates\split-apk\debug\slices\slice_1.apk"
             type="SPLIT" />
     </build>
 

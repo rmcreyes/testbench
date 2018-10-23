@@ -1,4 +1,19 @@
-#Tue Oct 23 14:53:31 PDT 2018
-base.0=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\304
+#Tue Oct 23 15:08:02 PDT 2018
+path.1=classes.dex
 path.0=classes.dex
+renamed.5=classes6.dex
+renamed.4=classes5.dex
+renamed.3=classes4.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
 renamed.0=classes.dex
+base.5=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\316
+base.4=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\319
+base.3=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\321
+base.2=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\318
+base.1=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\317
+base.0=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\320
+path.5=classes.dex
+path.4=classes.dex
+path.3=classes.dex
+path.2=classes.dex
