@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Tue Oct 23 14:53:32 PDT 2018
+0.baseType=DIRECTORY
+0.base=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\304
+0.path=classes.dex
+0.set=DEX
+count=1
