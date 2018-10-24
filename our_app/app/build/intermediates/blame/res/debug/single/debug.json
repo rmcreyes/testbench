@@ -8,12 +8,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-mdpi-v4\\abc_list_focused_holo.9.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\color-v23_abc_btn_colored_text_material.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\color-v23\\abc_btn_colored_text_material.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-mdpi-v4\\abc_ic_commit_search_api_mtrl_alpha.png"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\color-v23_abc_btn_colored_text_material.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\color-v23\\abc_btn_colored_text_material.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-mdpi_ic_launcher.png.flat",
@@ -24,12 +24,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xxxhdpi-v4\\abc_ic_star_black_36dp.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-v21_design_bottom_navigation_item_background.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\design-26.1.0.aar\\efb29b15b9376b7b68cc0c8b9b3589ae\\res\\drawable-v21\\design_bottom_navigation_item_background.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\color_abc_search_url_text.xml.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\color\\abc_search_url_text.xml"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-v21_design_bottom_navigation_item_background.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\design-26.1.0.aar\\efb29b15b9376b7b68cc0c8b9b3589ae\\res\\drawable-v21\\design_bottom_navigation_item_background.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21_notification_template_icon_group.xml.flat",
@@ -48,12 +48,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-ldrtl-hdpi-v17\\abc_ic_menu_cut_mtrl_alpha.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_popup_menu_item_layout.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\layout\\abc_popup_menu_item_layout.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_btn_check_to_on_mtrl_000.png.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-mdpi-v4\\abc_btn_check_to_on_mtrl_000.png"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_popup_menu_item_layout.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\layout\\abc_popup_menu_item_layout.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
@@ -104,24 +104,24 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\design-26.1.0.aar\\efb29b15b9376b7b68cc0c8b9b3589ae\\res\\layout\\design_layout_tab_text.xml"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable_tooltip_frame_light.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable\\tooltip_frame_light.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_design_navigation_item.xml.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\design-26.1.0.aar\\efb29b15b9376b7b68cc0c8b9b3589ae\\res\\layout\\design_navigation_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable_tooltip_frame_light.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable\\tooltip_frame_light.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_btn_radio_to_on_mtrl_015.png.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xxhdpi-v4\\abc_btn_radio_to_on_mtrl_015.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_design_bottom_navigation_item.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\design-26.1.0.aar\\efb29b15b9376b7b68cc0c8b9b3589ae\\res\\layout\\design_bottom_navigation_item.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-mdpi_ic_launcher_round.png.flat",
         "source": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_design_bottom_navigation_item.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\design-26.1.0.aar\\efb29b15b9376b7b68cc0c8b9b3589ae\\res\\layout\\design_bottom_navigation_item.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_abc_list_selector_disabled_holo_light.9.png.flat",
@@ -320,12 +320,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\layout\\abc_alert_dialog_title_material.xml"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_menu_hardkey_panel_mtrl_mult.9.png.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xhdpi-v4\\abc_menu_hardkey_panel_mtrl_mult.9.png"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_search_dropdown_item_icons_2line.xml.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\layout\\abc_search_dropdown_item_icons_2line.xml"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_menu_hardkey_panel_mtrl_mult.9.png.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xhdpi-v4\\abc_menu_hardkey_panel_mtrl_mult.9.png"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi-v4_abc_ic_star_black_48dp.png.flat",
@@ -420,28 +420,28 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-hdpi-v4\\abc_textfield_activated_mtrl_alpha.9.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xxhdpi-v4\\abc_ic_star_half_black_48dp.png"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_popup_menu_header_item_layout.xml.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\layout\\abc_popup_menu_header_item_layout.xml"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_template_big_media_custom.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-26.1.0.aar\\43bbe6476d2171304a9738dd779a8718\\res\\layout\\notification_template_big_media_custom.xml"
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xxhdpi-v4\\abc_ic_star_half_black_48dp.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_notification_bg_normal_pressed.9.png.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\bace2d60724ee38945e2053f40672ff0\\res\\drawable-mdpi-v4\\notification_bg_normal_pressed.9.png"
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\bace2d60724ee38945e2053f40672ff0\\res\\drawable-hdpi-v4\\notification_bg_normal.9.png"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xxhdpi-v4\\abc_list_selector_disabled_holo_dark.9.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_notification_bg_normal.9.png.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\bace2d60724ee38945e2053f40672ff0\\res\\drawable-hdpi-v4\\notification_bg_normal.9.png"
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\bace2d60724ee38945e2053f40672ff0\\res\\drawable-mdpi-v4\\notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_template_big_media_custom.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-26.1.0.aar\\43bbe6476d2171304a9738dd779a8718\\res\\layout\\notification_template_big_media_custom.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_textfield_default_mtrl_alpha.9.png.flat",
@@ -496,12 +496,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xhdpi-v4\\abc_btn_radio_to_on_mtrl_000.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\anim_tooltip_enter.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\anim\\tooltip_enter.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_list_longpressed_holo.9.png.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xhdpi-v4\\abc_list_longpressed_holo.9.png"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\anim_tooltip_enter.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\anim\\tooltip_enter.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable_abc_textfield_search_material.xml.flat",
@@ -532,12 +532,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\bace2d60724ee38945e2053f40672ff0\\res\\drawable-hdpi-v4\\notification_bg_low_normal.9.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_list_selector_disabled_holo_light.9.png.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xxhdpi-v4\\abc_list_selector_disabled_holo_light.9.png"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_abc_action_menu_item_layout.xml.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\layout\\abc_action_menu_item_layout.xml"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_list_selector_disabled_holo_light.9.png.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-xxhdpi-v4\\abc_list_selector_disabled_holo_light.9.png"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldrtl-xhdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
@@ -604,12 +604,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-ldrtl-xxxhdpi-v17\\abc_ic_menu_cut_mtrl_alpha.png"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable_notification_tile_bg.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\bace2d60724ee38945e2053f40672ff0\\res\\drawable\\notification_tile_bg.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_notification_template_big_media_narrow.xml.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-26.1.0.aar\\43bbe6476d2171304a9738dd779a8718\\res\\layout\\notification_template_big_media_narrow.xml"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable_notification_tile_bg.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-26.1.0.aar\\bace2d60724ee38945e2053f40672ff0\\res\\drawable\\notification_tile_bg.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-v21_design_password_eye.xml.flat",
@@ -664,12 +664,12 @@
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\design-26.1.0.aar\\efb29b15b9376b7b68cc0c8b9b3589ae\\res\\animator-v21\\design_appbar_state_list_animator.xml"
     },
     {
-        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\color_abc_primary_text_disable_only_material_light.xml.flat",
-        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\color\\abc_primary_text_disable_only_material_light.xml"
-    },
-    {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldrtl-xxhdpi-v17_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\drawable-ldrtl-xxhdpi-v17\\abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\color_abc_primary_text_disable_only_material_light.xml.flat",
+        "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\color\\abc_primary_text_disable_only_material_light.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable_abc_list_selector_background_transition_holo_light.xml.flat",
@@ -1422,6 +1422,10 @@
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout-v26_abc_screen_toolbar.xml.flat",
         "source": "C:\\Users\\robin\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.1.0.aar\\e51df90e8ddd0b38c8e8815bfef9f08e\\res\\layout-v26\\abc_screen_toolbar.xml"
+    },
+    {
+        "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\layout_dialog_selected_course.xml.flat",
+        "source": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\src\\main\\res\\layout\\dialog_selected_course.xml"
     },
     {
         "merged": "C:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_scrubber_track_mtrl_alpha.9.png.flat",

@@ -2,6 +2,8 @@ package com.example.johnnyma.testbench;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +25,13 @@ public class CourseAdapter extends BaseAdapter {
     Context c;
     LayoutInflater mInflater;
     Map<String, List<String>> Courses;
+    FragmentManager fm;
 
-    public CourseAdapter(Context c, Map<String, List<String>> courses) {
+    public CourseAdapter(Context c, Map<String, List<String>> courses, FragmentManager fm) {
         this.c = c;
         Courses = courses;
         mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.fm = fm;
     }
 
     @Override
@@ -55,16 +59,21 @@ public class CourseAdapter extends BaseAdapter {
 
         Set<String> courseSet = Courses.keySet();
         List<String> courseList = new ArrayList<String>(courseSet);
-        course_header.setText(courseList.get(i));
+        String s_course_header = courseList.get(i);
+        course_header.setText(s_course_header);
 
+        List<String> course_codes = Courses.get(courseList.get(i));
 
-        for(int index = 0; index < Courses.get(courseList.get(i)).size(); index++) {
+        for(int index = 0; index < course_codes.size(); index++) {
             Button btn = new Button(c);
-            btn.setText(Courses.get(courseList.get(i)).get(index));
+//            btn.setMaxHeight(150);
+//            btn.setMaxWidth(300);
+            btn.setMinWidth(0);
+            btn.setText(s_course_header + " " + course_codes.get(index));
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.setMargins(20, 10, 20, 30);
-            params.height = 100;
-            params.width = 200;
+            params.setMargins(20, 30, 20, 40);
+//            params.height = 150;
+//            params.width = 300;
             if(index % 3 == 0)
                 params.setGravity(Gravity.START);
             else if(index % 3 == 1)
@@ -74,8 +83,22 @@ public class CourseAdapter extends BaseAdapter {
             btn.setLayoutParams(params);
             btn.setBackgroundResource(R.drawable.capsule_btn);
             course_grid.addView(btn, index);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openDialog(((Button) view).getText().toString());
+                }
+            });
         }
 
         return v;
+    }
+
+    public void openDialog(String s_course){
+        SelectedCourseDialog selectedCourseDialog = new SelectedCourseDialog();
+        Bundle args = new Bundle();
+        args.putString("course", s_course);
+        selectedCourseDialog.setArguments(args);
+        selectedCourseDialog.show(fm, "selected course dialog");
     }
 }

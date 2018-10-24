@@ -54,7 +54,7 @@ public class MatchmakingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matchmaking);
         Intent starting_intent = getIntent();
-        this.courseID = starting_intent.getStringExtra(CourseActivity.TAG).replaceAll("\\s+","").toUpperCase();
+        this.courseID = starting_intent.getStringExtra(CourseSelectActivity.TAG).replaceAll("\\s+","").toUpperCase();
 
         //start the service
         Intent service_intent = new Intent(this, matchmakingService.class);
