@@ -28,4 +28,10 @@ public class CourseActivity extends AppCompatActivity {
         intent.putExtra(TAG,this.course);
         startActivity(intent);
     }
+
+    public void createQuestion(View view){
+        Intent intent = new Intent(this, makeQuestionActivity.class);
+        intent.putExtra(TAG,this.course);
+        startActivity(intent);
+    }
 }

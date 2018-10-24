@@ -31,6 +31,7 @@
         <activity android:name="com.example.johnnyma.testbench.LoginActivity" />
         <activity android:name="com.example.johnnyma.testbench.CourseActivity" />
         <activity android:name="com.example.johnnyma.testbench.MatchmakingActivity" />
+        <activity android:name="com.example.johnnyma.testbench.makeQuestionActivity" />
 
         <meta-data
             android:name="android.support.VERSION"

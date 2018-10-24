@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <service android:name=".matchmakingService" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +23,8 @@
         <activity android:name=".AddCourseActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".CourseActivity" />
-        <activity android:name=".MatchmakingActivity"></activity>
+        <activity android:name=".MatchmakingActivity" />
+        <activity android:name=".makeQuestionActivity"></activity>
     </application>
 
 </manifest>

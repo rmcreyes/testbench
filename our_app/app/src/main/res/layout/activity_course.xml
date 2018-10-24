@@ -166,6 +166,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:onClick="createQuestion"
         android:text="Create A Question"
         android:textSize="28sp"
         app:layout_constraintBottom_toTopOf="@+id/findMatchButton"
