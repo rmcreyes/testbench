@@ -30,7 +30,6 @@ public class matchmakingService extends Service {
     }
 
     private final IBinder binder = new LocalBinder();
-    //private final IBinder socketBinder = new SocketBinder();
     private String courseID;
     private boolean match_found = false;
 
@@ -126,17 +125,6 @@ public class matchmakingService extends Service {
             handler.post(new Runnable(){
                 @Override
                 public void run() {
-                    /*
-                    JSONObject player = new JSONObject();
-                    try {
-                        player.put("username", name_edit.getText().toString());
-                        player.put("course", "SUB1");
-                        player.put("rank", 5);
-                    }catch(JSONException e) {
-                        e.printStackTrace();
-                    }
-                    mSocket.emit("send_json_opponent", player.toString());
-                    */
                     sendJSONOpponent();
                 }
             });
