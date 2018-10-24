@@ -31,7 +31,7 @@ public class MatchmakingActivity extends AppCompatActivity {
             if(my_service.isMatch_found()){
                 //TODO start the activity
                 //Toast.makeText(getApplicationContext(), "Match Found", Toast.LENGTH_LONG).show();
-
+                
                 //exit match making activity and stop service
                 //TODO DONT JUST STOP IT. DESTROY IT
                 stopService(new Intent(getApplicationContext(),matchmakingService.class));
@@ -100,4 +100,9 @@ public class MatchmakingActivity extends AppCompatActivity {
     };
     // TODO disable back button cuz fuck that
 
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+    }
 }

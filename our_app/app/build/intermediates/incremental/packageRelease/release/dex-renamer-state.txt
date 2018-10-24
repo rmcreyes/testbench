@@ -1,4 +1,0 @@
-#Thu Oct 11 15:52:00 PDT 2018
-base.0=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\app\\build\\intermediates\\transforms\\dex\\release\\0
-path.0=classes.dex
-renamed.0=classes.dex

@@ -80,7 +80,7 @@ MERGED from [android.arch.lifecycle:runtime:1.0.0] C:\Users\Johnny Ma\.gradle\ca
 	android:allowBackup
 		ADDED from C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\src\main\AndroidManifest.xml:8:9-35
 	android:theme
-		ADDED from C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\src\main\AndroidManifest.xml:13:9-40
+		ADDED from C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\src\main\AndroidManifest.xml:13:9-59
 service#com.example.johnnyma.testbench.matchmakingService
 ADDED from C:\Users\Johnny Ma\Desktop\cpen 321 project\cpen321-project\our_app\app\src\main\AndroidManifest.xml:14:9-55
 	android:name
