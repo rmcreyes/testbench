@@ -10,9 +10,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/Theme.AppCompat">
         <service android:name=".matchmakingService" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".CourseSelectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

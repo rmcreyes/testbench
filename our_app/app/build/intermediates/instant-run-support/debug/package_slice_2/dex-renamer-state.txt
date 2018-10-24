@@ -1,4 +1,4 @@
-#Tue Oct 23 15:29:36 PDT 2018
-base.0=C\:\\Users\\Johnny Ma\\Desktop\\cpen 321 project\\cpen321-project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\22
+#Wed Oct 24 02:55:26 PDT 2018
+base.0=C\:\\Users\\robin\\_school\\cpen321\\project\\our_app\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\3
 path.0=classes.dex
 renamed.0=classes.dex

@@ -17,10 +17,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar" >
+        android:testOnly="true"
+        android:theme="@style/Theme.AppCompat" >
         <service android:name="com.example.johnnyma.testbench.matchmakingService" />
 
-        <activity android:name="com.example.johnnyma.testbench.MainActivity" >
+        <activity android:name="com.example.johnnyma.testbench.CourseSelectActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

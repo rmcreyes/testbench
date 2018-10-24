@@ -15,11 +15,11 @@ public class CourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course);
         //set course title
-        Intent intent = getIntent();
-        String course_title = intent.getStringExtra(MainActivity.TAG);
-        this.course = course_title.replaceAll("\\s+","").toUpperCase();
-        TextView courseTitle = findViewById(R.id.courseTitle);
-        courseTitle.setText(course_title);
+//        Intent intent = getIntent();
+//        String course_title = intent.getStringExtra(CourseSelectActivity.TAG);
+//        this.course = course_title.replaceAll("\\s+","").toUpperCase();
+//        TextView courseTitle = findViewById(R.id.courseTitle);
+//        courseTitle.setText(course_title);
     }
 
     //function for find match button
