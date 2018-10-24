@@ -25,7 +25,7 @@ public class HTTPService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        client = new OkHttpClient;
+        client = new OkHttpClient();
         return START_STICKY;
     }
 
@@ -35,7 +35,7 @@ public class HTTPService extends Service {
     }
 
     public class LocalBinder extends Binder {
-        HTTPSerivce getService() {
+        HTTPService getService() {
             // Return this instance of LocalService so clients can call public methods
             return HTTPService.this;
         }
