@@ -34,8 +34,6 @@ public class matchmakingService extends Service {
     private String courseID;
     private boolean match_found = false;
 
-    public matchmakingService(){
-    }
 
     @Nullable
     @Override
@@ -85,11 +83,11 @@ public class matchmakingService extends Service {
         return this.courseID;
     }
 
-    public boolean isMatch_found(){
+    public boolean isMatchFound(){
         return match_found;
     }
 
-    public void set_found(){
+    public void setFound(){
         this.match_found = true;
     }
     // JSON stuff

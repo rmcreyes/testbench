@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/our_app.iml" filepath="$PROJECT_DIR$/our_app.iml" />
+      <module fileurl="file://C:\Users\Johnny Ma\Desktop\cpen321-project\our_app\our_app.iml" filepath="C:\Users\Johnny Ma\Desktop\cpen321-project\our_app\our_app.iml" />
     </modules>
   </component>
 </project>

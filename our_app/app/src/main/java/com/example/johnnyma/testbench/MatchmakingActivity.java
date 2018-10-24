@@ -12,23 +12,20 @@ import android.view.View;
 import android.widget.Toast;
 import com.example.johnnyma.testbench.matchmakingService.LocalBinder;
 
-import java.net.URISyntaxException;
-
-
 
 public class MatchmakingActivity extends AppCompatActivity {
     public static final String TAG = "MatchmakingActivity"; //tag for sending info through intents
     private String courseID;
-    matchmakingService my_service;
-    boolean is_bound = false;
-    int timeout = 0; //timeout counter used in Runnable runnable
+    private matchmakingService my_service;
+    private boolean is_bound = false;
+    private int timeout = 0; //timeout counter used in Runnable runnable
 
     private Handler handler = new Handler();
 
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if(my_service.isMatch_found()){
+            if(my_service.isMatchFound()){
                 //TODO start the activity
                 //Toast.makeText(getApplicationContext(), "Match Found", Toast.LENGTH_LONG).show();
                 
@@ -76,7 +73,7 @@ public class MatchmakingActivity extends AppCompatActivity {
         //String num = my_service.getRandomNumber();
         //Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
 
-        my_service.set_found();
+        my_service.setFound();
         //stop the handler and stop the service
         /*
         handler.removeCallback(runnable)

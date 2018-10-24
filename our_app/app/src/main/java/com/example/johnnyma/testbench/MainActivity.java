@@ -1,21 +1,13 @@
 package com.example.johnnyma.testbench;
 
-import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.*;
 
@@ -28,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView courseList;
     //TODO: strings are okay for now but courses need coursesID
-    List<String> courses = new ArrayList<String>();
+    private List<String> courses = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
 
     @Override
