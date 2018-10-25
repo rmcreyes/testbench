@@ -72,8 +72,8 @@ public class CourseAdapter extends BaseAdapter {
             btn.setText(s_course_header + " " + course_codes.get(index));
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.setMargins(20, 30, 20, 40);
-//            params.height = 150;
-//            params.width = 300;
+            params.height = 150;
+            params.width = 300;
             if(index % 3 == 0)
                 params.setGravity(Gravity.START);
             else if(index % 3 == 1)

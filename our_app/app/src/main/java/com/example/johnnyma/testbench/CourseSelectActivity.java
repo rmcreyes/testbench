@@ -30,7 +30,13 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_select);
 
-        setTitle("");
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        if(extras.containsKey("name"))
+            setTitle(intent.getStringExtra("name"));
+        else
+            setTitle("");
 
         fillCourses();
 
