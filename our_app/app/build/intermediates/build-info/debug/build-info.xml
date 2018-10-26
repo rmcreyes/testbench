@@ -5,32 +5,31 @@
     build-mode="COLD"
     density="xxhdpi"
     format="10"
-    ir-eligibility="METHOD_DELETED"
     plugin-version="3.0.1"
-    timestamp="1540449490801"
+    timestamp="1540540897887"
     token="2082638092181687158"
     verifier="COLD_SWAP_REQUESTED" >
 
     <task
         name="javac"
-        duration="200" />
+        duration="0" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="33" />
+        duration="0" />
     <task
         name="verifier"
-        duration="10" />
+        duration="0" />
 
     <artifact
-        location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_3.apk"
-        type="SPLIT" />
+        location="C:\Users\robin\_school\cpen321\project\our_app\app\build\outputs\apk\debug\app-debug.apk"
+        type="SPLIT_MAIN" />
 
     <build
         build-mode="FULL"
-        timestamp="1540446563329"
+        timestamp="1540537465885"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\dep\dependencies.apk"
@@ -71,21 +70,50 @@
     </build>
     <build
         build-mode="COLD"
-        ir-eligibility="COMPATIBLE"
-        timestamp="1540446842664"
+        ir-eligibility="CLASS_ADDED"
+        timestamp="1540538309596"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
-            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\outputs\apk\debug\app-debug.apk"
-            type="SPLIT_MAIN" />
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_0.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_1.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_2.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_5.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_6.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_7.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_8.apk"
+            type="SPLIT" />
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_9.apk"
+            type="SPLIT" />
     </build>
     <build
         build-mode="COLD"
-        ir-eligibility="METHOD_DELETED"
-        timestamp="1540449490801"
+        ir-eligibility="COMPATIBLE"
+        timestamp="1540540445203"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
             location="C:\Users\robin\_school\cpen321\project\our_app\app\build\intermediates\split-apk\debug\slices\slice_3.apk"
             type="SPLIT" />
+    </build>
+    <build
+        build-mode="COLD"
+        timestamp="1540540897887"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="C:\Users\robin\_school\cpen321\project\our_app\app\build\outputs\apk\debug\app-debug.apk"
+            type="SPLIT_MAIN" />
     </build>
 
 </instant-run>

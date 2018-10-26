@@ -7,10 +7,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.squareup.picasso.Picasso;
+
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +26,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     public static final String TAG = "CourseSelectActivity"; //tag for sending info through intents
     private ListView CourseListView;
     private FloatingActionButton fab;
+    private TextView name;
+    private ImageView profile_pic;
 
 
     private Map<String, List<String>> Courses;
@@ -30,18 +37,25 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_select);
 
+        CourseListView = findViewById(R.id.list_view);
+        fab = findViewById(R.id.fab);
+        name = findViewById(R.id.name);
+        profile_pic = findViewById(R.id.profile_pic);
+
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
         if(extras.containsKey("name"))
-            setTitle(intent.getStringExtra("name"));
+            name.setText(intent.getStringExtra("name") + "      |      student");
         else
-            setTitle("");
+            name.setText("error");
+
+        if(extras.containsKey("profile_pic_url"))
+            Picasso.with(this).load(intent.getStringExtra("profile_pic_url")).transform(new ProfilePicTransformation(200, 0)).into(profile_pic);
 
         fillCourses();
 
-        CourseListView = findViewById(R.id.list_view);
-        fab = findViewById(R.id.fab);
+
 
         CourseAdapter courseAdapter = new CourseAdapter(this, Courses, getSupportFragmentManager());
         CourseListView.setAdapter(courseAdapter);

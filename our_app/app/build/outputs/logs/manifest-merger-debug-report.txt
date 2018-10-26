@@ -89,7 +89,7 @@ MERGED from [com.facebook.android:facebook-core:4.38.0] C:\Users\robin\.gradle\c
 	android:allowBackup
 		ADDED from C:\Users\robin\_school\cpen321\project\our_app\app\src\main\AndroidManifest.xml:8:9-35
 	android:theme
-		ADDED from C:\Users\robin\_school\cpen321\project\our_app\app\src\main\AndroidManifest.xml:13:9-47
+		ADDED from C:\Users\robin\_school\cpen321\project\our_app\app\src\main\AndroidManifest.xml:13:9-59
 meta-data#com.facebook.sdk.ApplicationId
 ADDED from C:\Users\robin\_school\cpen321\project\our_app\app\src\main\AndroidManifest.xml:14:9-15:55
 	android:value
