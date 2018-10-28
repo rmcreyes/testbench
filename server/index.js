@@ -20,7 +20,7 @@ io.on('connection', function(socket) {
 
 		// a match can happen if the number of people in the room is even and not 0
 		var room_population = io.nsps['/'].adapter.rooms[course_room_name].length;
-		if((room_population % 2 == 0) && (room_population != 0)) {
+		if((room_population % 2 === 0) && (room_population !== 0)) {
 			console.log('found a match in ' + course_room_name);
 
 			// connect the two players in the room by making them join a private room

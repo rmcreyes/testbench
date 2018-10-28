@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">testbench</string>
-    <string name="edit_message">Enter a message</string>
-    <string name="button_send">Send</string>
-
-    <string name="facebook_app_id">988080468031187</string>
-    <string name="fb_login_protocol_scheme">fb988080468031187</string>
-</resources>
