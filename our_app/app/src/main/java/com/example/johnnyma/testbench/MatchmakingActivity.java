@@ -51,10 +51,12 @@ public class MatchmakingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matchmaking);
         Intent starting_intent = getIntent();
         this.courseID = starting_intent.getStringExtra(CourseSelectActivity.TAG).replaceAll("\\s+","").toUpperCase();
+        String name = starting_intent.getStringExtra("name");
 
         //start the service
         Intent service_intent = new Intent(this, matchmakingService.class);
         service_intent.putExtra(TAG, this.courseID);
+        service_intent.putExtra("name", name);
         startService(service_intent);
         boolean bounded = bindService(service_intent, my_connection, Context.BIND_AUTO_CREATE);
 

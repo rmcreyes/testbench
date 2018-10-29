@@ -33,6 +33,9 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private TextView name;
     private ImageView profile_pic;
 
+    private String user_name;
+    private String profile_pic_url;
+
     // each course header(eg. CPEN) is a key to a list of course codes (eg. 311, 321, 331)
     private Map<String, List<String>> Courses;
 
@@ -50,15 +53,19 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         Bundle extras = intent.getExtras();
 
         // coming from the LoginActivity, the intent may come with information relating to the user
-        if(extras.containsKey("name"))
-            name.setText(intent.getStringExtra("name") + "      |      student");
+        if(extras.containsKey("name")) {
+            user_name = intent.getStringExtra("name");
+            name.setText(user_name + "      |      student");
+        }
         else
             name.setText("error");
 
-        if(extras.containsKey("profile_pic_url"))
-            Picasso.with(this).load(intent.getStringExtra("profile_pic_url"))
+        if(extras.containsKey("profile_pic_url")) {
+            profile_pic_url = intent.getStringExtra("profile_pic_url");
+            Picasso.with(this).load(profile_pic_url)
                     .transform(new ProfilePicTransformation(200, 0))
                     .into(profile_pic);
+        }
 
         fillCourses();
 
@@ -137,6 +144,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 //Toast.makeText(this, "BATTLE " + course, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MatchmakingActivity.class);
                 intent.putExtra(TAG, course);
+                intent.putExtra("name", user_name);
                 startActivity(intent);
                 break;
             case CourseActionDefs.ADD_QUESTION:
