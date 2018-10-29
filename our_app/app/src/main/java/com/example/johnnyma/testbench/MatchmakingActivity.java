@@ -12,28 +12,24 @@ import android.view.View;
 import android.widget.Toast;
 import com.example.johnnyma.testbench.matchmakingService.LocalBinder;
 
-import java.net.URISyntaxException;
-
-
-
 public class MatchmakingActivity extends AppCompatActivity {
     public static final String TAG = "MatchmakingActivity"; //tag for sending info through intents
     private String courseID;
-    matchmakingService my_service;
-    boolean is_bound = false;
-    int timeout = 0; //timeout counter used in Runnable runnable
+    private matchmakingService my_service;
+    private boolean is_bound = false;
+    private int timeout = 0; //timeout counter used in Runnable runnable
 
     private Handler handler = new Handler();
 
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if(my_service.isMatch_found()){
+            if(my_service.isMatchFound()){
                 //TODO start the activity
                 //Toast.makeText(getApplicationContext(), "Match Found", Toast.LENGTH_LONG).show();
                 
                 //exit match making activity and stop service
-                //TODO DONT JUST STOP IT. DESTROY IT
+                //TODO Dont just stop it, destroy it
                 stopService(new Intent(getApplicationContext(),matchmakingService.class));
                 finish();
             }
@@ -55,10 +51,12 @@ public class MatchmakingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matchmaking);
         Intent starting_intent = getIntent();
         this.courseID = starting_intent.getStringExtra(CourseSelectActivity.TAG).replaceAll("\\s+","").toUpperCase();
+        String name = starting_intent.getStringExtra("name");
 
         //start the service
         Intent service_intent = new Intent(this, matchmakingService.class);
         service_intent.putExtra(TAG, this.courseID);
+        service_intent.putExtra("name", name);
         startService(service_intent);
         boolean bounded = bindService(service_intent, my_connection, Context.BIND_AUTO_CREATE);
 
@@ -70,13 +68,12 @@ public class MatchmakingActivity extends AppCompatActivity {
         handler.postDelayed(runnable, 500);
     }
 
-    //cancel match TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //cancel match TODO
     public void cancelButton(View view){
-
         //String num = my_service.getRandomNumber();
         //Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
 
-        my_service.set_found();
+        my_service.setFound();
         //stop the handler and stop the service
         /*
         handler.removeCallback(runnable)
@@ -98,8 +95,6 @@ public class MatchmakingActivity extends AppCompatActivity {
             is_bound = false;
         }
     };
-    // TODO disable back button cuz fuck that
-
 
     @Override
     public void onBackPressed() {

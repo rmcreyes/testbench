@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * Dialog used to allow user to choose an action with the course
+ * they selected in the CourseSelectActivity.
+ */
 public class SelectedCourseDialog extends AppCompatDialogFragment {
 
     private TextView course_text;
@@ -34,6 +38,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+        // course is passed in as an argument from the button click
         String course = getArguments().getString("course");
         s_course = course;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -46,6 +51,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         course_text = v.findViewById(R.id.course_text);
         course_text.setText(course);
 
+        // have each button signal a different action in CourseSelectActivity
         battle_btn = v.findViewById(R.id.battle_btn);
         battle_btn.setOnClickListener(new View.OnClickListener() {
             @Override

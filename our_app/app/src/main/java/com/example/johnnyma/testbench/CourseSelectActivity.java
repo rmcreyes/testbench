@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Activity from where the user picks a course to battle with,
+ * add a question to, or view their stats in
+ */
 public class CourseSelectActivity extends AppCompatActivity implements SelectedCourseDialog.SelectedCourseDialogListener {
 
     public static final String TAG = "CourseSelectActivity"; //tag for sending info through intents
@@ -29,7 +33,10 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private TextView name;
     private ImageView profile_pic;
 
+    private String user_name;
+    private String profile_pic_url;
 
+    // each course header(eg. CPEN) is a key to a list of course codes (eg. 311, 321, 331)
     private Map<String, List<String>> Courses;
 
     @Override
@@ -45,13 +52,20 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if(extras.containsKey("name"))
-            name.setText(intent.getStringExtra("name") + "      |      student");
+        // coming from the LoginActivity, the intent may come with information relating to the user
+        if(extras.containsKey("name")) {
+            user_name = intent.getStringExtra("name");
+            name.setText(user_name + "      |      student");
+        }
         else
             name.setText("error");
 
-        if(extras.containsKey("profile_pic_url"))
-            Picasso.with(this).load(intent.getStringExtra("profile_pic_url")).transform(new ProfilePicTransformation(200, 0)).into(profile_pic);
+        if(extras.containsKey("profile_pic_url")) {
+            profile_pic_url = intent.getStringExtra("profile_pic_url");
+            Picasso.with(this).load(profile_pic_url)
+                    .transform(new ProfilePicTransformation(200, 0))
+                    .into(profile_pic);
+        }
 
         fillCourses();
 
@@ -69,7 +83,12 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
     }
 
+    /**
+     * Initializes and loads the map `Courses` with the courses tied to
+     * the user's account.
+     */
     private void fillCourses() {
+        // TODO: remove mock implemetation and use REST API
         Courses = new HashMap<String, List<String>>();
 
         List<String> elec_courses = new ArrayList<>();
@@ -112,7 +131,12 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
     }
 
-
+    /**
+     * Abstract method implementation that allows SelectCourseActivity to
+     * determine the action decided on in the SelectedCourseDialog
+     * @param action - action to be taken with the course
+     * @param course - course whose action is to be enacted
+     */
     @Override
     public void chooseCourseView(int action, String course) {
         switch (action) {
@@ -120,6 +144,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 //Toast.makeText(this, "BATTLE " + course, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MatchmakingActivity.class);
                 intent.putExtra(TAG, course);
+                intent.putExtra("name", user_name);
                 startActivity(intent);
                 break;
             case CourseActionDefs.ADD_QUESTION:

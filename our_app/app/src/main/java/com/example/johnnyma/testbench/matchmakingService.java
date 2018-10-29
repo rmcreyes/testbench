@@ -34,9 +34,6 @@ public class matchmakingService extends Service {
     private String courseID;
     private boolean match_found = false;
 
-    public matchmakingService(){
-    }
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent){
@@ -48,17 +45,11 @@ public class matchmakingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mSocket.connect();
         courseID = intent.getStringExtra(MatchmakingActivity.TAG);
+        name = intent.getStringExtra("name");
         Random rand = new Random();
-        ArrayList<String> names = new ArrayList<String>();
-        names.add("Johnny");
-        names.add("LightningMcQueen69");
-        names.add("RobertoMartinCastroReyes");
-        names.add("Andrea");
-        names.add("PeenWeinerstein");
-        names.add("MysteriousMongoose");
 
-        name = names.get(rand.nextInt(6));
         rank = rand.nextInt(100) + 1;
+
         Toast.makeText(matchmakingService.this, "name: " + name + "\n rank: " + rank, Toast.LENGTH_LONG).show();
         queueForGame();
 
@@ -73,7 +64,7 @@ public class matchmakingService extends Service {
         super.onDestroy();
     }
 
-    //binder shit
+    //binder
     public class LocalBinder extends Binder {
         matchmakingService getService() {
             // Return this instance of LocalService so clients can call public methods
@@ -85,11 +76,11 @@ public class matchmakingService extends Service {
         return this.courseID;
     }
 
-    public boolean isMatch_found(){
+    public boolean isMatchFound(){
         return match_found;
     }
 
-    public void set_found(){
+    public void setFound(){
         this.match_found = true;
     }
     // JSON stuff

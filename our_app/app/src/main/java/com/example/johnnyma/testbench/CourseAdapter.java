@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Adapter used to set up the list view in CourseSelectActivity.
+ */
 public class CourseAdapter extends BaseAdapter {
 
     Context c;
@@ -57,35 +61,45 @@ public class CourseAdapter extends BaseAdapter {
 
         GridLayout course_grid = (GridLayout) v.findViewById(R.id.course_grid);
 
+        // transform the keyset of the hashmap into a list of strings,
+        // allowing for access to each individual course header
         Set<String> courseSet = Courses.keySet();
         List<String> courseList = new ArrayList<String>(courseSet);
+
+        // for list view element i, set the course header to be the ith string
+        // in the keyset
         String s_course_header = courseList.get(i);
         course_header.setText(s_course_header);
+        // retrieve the list of course codes pertaining to the course header
+        List<String> course_codes = Courses.get(s_course_header);
 
-        List<String> course_codes = Courses.get(courseList.get(i));
-
+        // create a button for each course code of each course header
         for(int index = 0; index < course_codes.size(); index++) {
             Button btn = new Button(c);
-//            btn.setMaxHeight(150);
-//            btn.setMaxWidth(300);
-            btn.setMinWidth(0);
+
             btn.setText(s_course_header + " " + course_codes.get(index));
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.setMargins(20, 30, 20, 40);
-            params.height = 150;
-            params.width = 300;
+            DisplayMetrics dm = c.getResources().getDisplayMetrics();
+            params.width = dm.widthPixels / 4;
+
             if(index % 3 == 0)
                 params.setGravity(Gravity.START);
             else if(index % 3 == 1)
                 params.setGravity(Gravity.CENTER);
             else
                 params.setGravity(Gravity.CENTER_VERTICAL);
+
             btn.setLayoutParams(params);
+
             btn.setBackgroundResource(R.drawable.capsule_btn);
+
             course_grid.addView(btn, index);
+
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // opens a dialog associated with the text of the button
                     openDialog(((Button) view).getText().toString());
                 }
             });
@@ -94,6 +108,11 @@ public class CourseAdapter extends BaseAdapter {
         return v;
     }
 
+    /**
+     * Opens a dialog that allows users to take action with the course
+     * associated with the button used to open the dialog
+     * @param s_course - course name of the dialog's course
+     */
     public void openDialog(String s_course){
         SelectedCourseDialog selectedCourseDialog = new SelectedCourseDialog();
         Bundle args = new Bundle();

@@ -10,6 +10,9 @@ import android.graphics.Shader;
 
 import com.squareup.picasso.Transformation;
 
+/**
+ * Used to transform Facebook profile picture into a circle with a white border.
+ */
 public class ProfilePicTransformation implements Transformation {
 
     private final int radius, margin;
@@ -21,6 +24,7 @@ public class ProfilePicTransformation implements Transformation {
 
     @Override
     public Bitmap transform(Bitmap source) {
+        // create round icon
         final Paint p_round = new Paint();
         p_round.setAntiAlias(true);
         p_round.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
@@ -30,6 +34,7 @@ public class ProfilePicTransformation implements Transformation {
         c.drawRoundRect(new RectF(margin, margin, source.getWidth() - margin, source.getHeight() - margin),
                 radius, radius, p_round);
 
+        // create white border
         Paint p_border = new Paint();
         p_border.setColor(Color.WHITE);
         p_border.setStyle(Paint.Style.STROKE);

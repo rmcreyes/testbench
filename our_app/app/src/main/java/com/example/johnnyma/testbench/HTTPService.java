@@ -14,6 +14,8 @@ public class HTTPService extends Service {
     OkHttpClient client;
     private final IBinder binder = new LocalBinder();
     private String name;
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
     public HTTPService(){
     }
 
@@ -42,8 +44,9 @@ public class HTTPService extends Service {
     }
     // GET: should return JSON Object with name, rank, profile pic, id, courselist
     public JSONObject getUserDetails() throws IOException {
-        Request request = new Request.Builder().url(" //TODO ").build();
-        Response response = client.newCall(request).execute();
+        OkHttpClient ok = new OkHttpClient();
+        Request request = new Request.Builder().url("http://104.42.209.62:3300/api/user/email/yeeter@yeet.net").build();
+        Response response = ok.newCall(request).execute();
         if (!response.isSuccessful()) {
             throw new IOException("Unexpected code " + response);
         }

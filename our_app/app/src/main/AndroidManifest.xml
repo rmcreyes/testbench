@@ -28,6 +28,7 @@
         </activity>
         <activity android:name=".CourseActivity" />
         <activity android:name=".MatchmakingActivity"></activity>
+        <service android:name=".HTTPService" />
     </application>
 
 </manifest>
