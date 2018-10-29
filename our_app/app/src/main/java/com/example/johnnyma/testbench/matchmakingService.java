@@ -34,9 +34,6 @@ public class matchmakingService extends Service {
     private String courseID;
     private boolean match_found = false;
 
-    public matchmakingService(){
-    }
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent){
@@ -73,7 +70,7 @@ public class matchmakingService extends Service {
         super.onDestroy();
     }
 
-    //binder shit
+    //binder
     public class LocalBinder extends Binder {
         matchmakingService getService() {
             // Return this instance of LocalService so clients can call public methods
@@ -85,11 +82,11 @@ public class matchmakingService extends Service {
         return this.courseID;
     }
 
-    public boolean isMatch_found(){
+    public boolean isMatchFound(){
         return match_found;
     }
 
-    public void set_found(){
+    public void setFound(){
         this.match_found = true;
     }
     // JSON stuff

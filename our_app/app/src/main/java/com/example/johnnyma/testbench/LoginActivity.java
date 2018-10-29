@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -19,21 +18,22 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
-
+/**
+ * Activity from where the user logs in with Facebook.
+ */
 public class LoginActivity extends AppCompatActivity {
 
-    CallbackManager callbackManager;
-    ProgressDialog progressDialog;
+    private CallbackManager callbackManager;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -45,27 +45,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-    /*    printKeyHash();
-    }
+        printKeyHash();
 
-    private void printKeyHash() {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo("com.example.johnnyma.testbench", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (PackageManager.NameNotFoundException e){
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e){
-            e.printStackTrace();
-        }
-    }
-*/
+
         callbackManager = CallbackManager.Factory.create();
 
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        // declare the permission we want from the user
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -75,23 +61,33 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.setMessage("Retrieving data...");
                 progressDialog.show();
 
-                //String accessToken = loginResult.getAccessToken().getToken();
-
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         progressDialog.dismiss();
                         try {
+                            // retrieve relevant Facebook account information for use in the main activity,
+                            // and send it in the intent
                             URL profile_pic = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
                             String profile_pic_url = profile_pic.toString();
                             String email = object.getString("email");
                             String name = object.getString("first_name");
-                            Toast.makeText(LoginActivity.this, name, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(LoginActivity.this, email, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, CourseSelectActivity.class);
                             intent.putExtra("profile_pic_url", profile_pic_url);
                             intent.putExtra("email", email);
                             intent.putExtra("name", name);
+
+                            // testing use of HTTP requests with OkHttpTask
+                            String toToast;
+                            try {
+                                toToast = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, "yeeter@yeet.net").get();
+                            } catch (InterruptedException e) {
+                                toToast = null;
+                            } catch (ExecutionException e) {
+                                toToast = null;
+                            }
+                            if(toToast != null)
+                                Toast.makeText(LoginActivity.this, toToast, Toast.LENGTH_SHORT).show();
                             startActivity(intent);
                         } catch(MalformedURLException e) {
                             e.printStackTrace();
@@ -102,6 +98,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
 
+                // declare the keys to be present in the json string coming from
+                // the login
                 Bundle parameters = new Bundle();
                 parameters.putString("fields", "id, email, first_name");
                 request.setParameters(parameters);
@@ -120,8 +118,27 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         if(AccessToken.getCurrentAccessToken() != null) {
-            // do something?
+            // TODO: come up with protocol for missing access token
         }
 
+    }
+
+    /**
+     * Used to find the machine specific KeyHash necessary for allowing that machine to develop
+     * and test this app while allowing Facebook login
+     */
+    private void printKeyHash() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.example.johnnyma.testbench", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e){
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+        }
     }
 }
