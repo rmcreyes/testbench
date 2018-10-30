@@ -4,11 +4,17 @@ var io = require('socket.io')(http);
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 
+const jwt = require('express-jwt');
+const jwtAuthz = require('express-jwt-authz');
+const jwksRsa = require('jwks-rsa');
+
+
 var dbHost = 'mongodb://localhost:27017/TestBenchDB';
 mongoose.connect(dbHost, { useNewUrlParser: true });
 var User = require('./models/user.js');
 var Question = require('./models/question.js');
 var Course = require('./models/course.js');
+
 mongoose.set('useCreateIndex', true);
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
@@ -17,6 +23,24 @@ app.use(bodyParser.json());
 var db = mongoose.connection;
 
 var ObjectId = require('mongodb').ObjectID;
+
+const checkJwt = jwt({
+  // Dynamically provide a signing key
+  // based on the kid in the header and 
+  // the signing keys provided by the JWKS endpoint.
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://test-bench.auth0.com/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: 'iuucDr9fKeqptDK_r2AApYEy9vksGlUF',
+  issuer: `https://test-bench.auth0.com`,
+  algorithms: ['RS256']
+});
+
 // app.get('/api/user/', function(req, res) {
 // 	//var name = req.query.name;
 // 	res.json(req);
