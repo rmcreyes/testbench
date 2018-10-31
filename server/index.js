@@ -90,6 +90,44 @@ app.post('/api/user', function(req, res) {
       });
     });
 });
+
+//create new question
+app.post('/api/question', function(req, res) {
+
+	console.log('create a new question');
+    var question = new Question( {
+		question_text: req.body.question_text,
+		correct_answer: req.body.correct_answer,
+		incorrect_answer_1: req.body.incorrect_answer_1,
+		incorrect_answer_2: req.body.incorrect_answer_2,
+		incorrect_answer_3: req.body.incorrect_answer_3,
+		courseID: req.body.courseID,
+		difficulty: null,
+		creator_uID: req.body.userID,
+		verified: req.body.verified,
+		reported: false
+    });
+    question.save(function(err, result) {
+      if ( err ) throw err;
+      res.json( {
+        message:"Successfully added question",
+        user:result
+      });
+    });
+});
+
+//test question randomizer
+app.get('/api/getgame/', function(req, res) {
+    var courseID = req.query.courseID;
+    console.log(courseID);
+	Question.getGameQuestions(courseID, function(err, game) {
+		if(err){
+			throw err;
+		}
+		res.json(game);
+	});
+});
+
 /////////////////////////////////////////////////////////
 //delete user by email
 app.delete('/api/user/email/:email', function(req, res) {
@@ -425,12 +463,12 @@ app.put('/api/increaserank/:email', function(req, res) {
  });
 
 //,{'stats_list.$.avg_response_time': new_response_time}]
- // app.get('/user', function(req, res) {
- //    User.find({}, function(err, result) {
- //      if ( err ) throw err;
- //      res.json(result);
- //    });
- //  });
+ app.get('/user', function(req, res) {
+    User.find({}, function(err, result) {
+      if ( err ) throw err;
+      res.json(result);
+    });
+  });
 
 app.get('/question', function(req, res) {
 	Question.find({}, function(err, result) {
@@ -521,8 +559,22 @@ io.on('connection', function(socket) {
 			var in_rooms = Object.keys(socket.rooms);
 			//find the last room it has been in 
 			socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_json_opponent',socket.player_json);
-		});
 
+		});
+		socket.on('get_questions',function(courseID) {
+			Question.getGameQuestions(courseID, function(err, doc) {
+				if(err){
+					throw err;
+				} else {
+					var in_rooms = Object.keys(socket.rooms);
+					//find the last room it has been in 
+					socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_json_opponent',JSON.stringify(doc));
+				}
+			});
+
+
+			
+		});
 	});
 });
 

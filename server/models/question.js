@@ -14,5 +14,13 @@ var questionSchema = mongoose.Schema({
 	reported: Boolean
 });
 
+var ObjectId = require('mongodb').ObjectID;
 var Question = mongoose.model('Question', questionSchema);
 module.exports = Question;
+
+module.exports.getGameQuestions = (courseID, callback) => {
+	//User.find({courseID : courseID}, callback);
+	Question.aggregate([
+		//{ $match: { "courseID": ObjectId(courseID) }},
+		{$sample: {size: 7}}]).exec(callback);
+}
