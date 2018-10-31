@@ -38,6 +38,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
         switch(request_type) {
             case GET_USER_DETAILS :
                 builder.url("http://104.42.209.62:3300/api/user/email/" + strings[1]);
+                break;
         }
 
         return builder.build();
