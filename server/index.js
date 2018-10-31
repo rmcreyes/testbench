@@ -51,8 +51,8 @@ const checkJwt = jwt({
 //  });
 /////////////////////////////////////////////////////////////////////////
 //get user by id
-app.get('/api/user/:_id', function(req, res) {
-	User.getUserById(req.params._id, function(err, doc) {
+app.get('/api/user/', function(req, res) {
+	User.getUserById(req.query._id, function(err, doc) {
 		if(err){
 			throw err;
 		}
@@ -61,9 +61,9 @@ app.get('/api/user/:_id', function(req, res) {
 });
 
 //get user by email
-app.get('/api/user/email/:email', function(req, res) {
+app.get('/api/user/email/', function(req, res) {
 	console.log('getting user by email');
-	User.getUserByEmail(req.params.email, function(err, doc) {
+	User.getUserByEmail(req.query.email, function(err, doc) {
 		if(err){
 			throw err;
 		}
@@ -147,8 +147,8 @@ app.put('/api/user/email/:email', function(req, res) {
     // var name = ;
     // var profile_photo_id = ;
 	User.updateUserByEmail(email, {
-		name: req.query.name,
-		profile_photo_id: req.query.profile_photo_id
+		name: req.body.name,
+		profile_photo_id: req.body.profile_photo_id
 	}, {}, function(err, user) {
 		if(err){
 			throw err;
@@ -175,8 +175,8 @@ app.put('/api/user/:_id', function(req, res) {
     // var name = ;
     // var profile_photo_id = ;
 	User.updateUser(id, {
-		name: req.query.name,
-		profile_photo_id: req.query.profile_photo_id
+		name: req.body.name,
+		profile_photo_id: req.body.profile_photo_id
 	}, {}, function(err, user) {
 		if(err){
 			throw err;
@@ -185,8 +185,8 @@ app.put('/api/user/:_id', function(req, res) {
 	});
 });
 
-app.get('/api/course/:course_subject/:course_number', function(req, res) {
-	Course.getCourse({course_number:req.params.course_number,course_subject:req.params.course_subject}, function(err, doc) {
+app.get('/api/course/:course_subject/', function(req, res) {
+	Course.getCourse({course_number:req.query.course_number,course_subject:req.params.course_subject}, function(err, doc) {
 	if(err){
 		throw err;
 	} 
@@ -195,8 +195,8 @@ app.get('/api/course/:course_subject/:course_number', function(req, res) {
 	});
 });
 
-app.get('/api/course/:course_subject', function(req, res) {
-	Course.getCourse({course_subject:req.params.course_subject}, function(err, doc) {
+app.get('/api/course/', function(req, res) {
+	Course.getCourse({course_subject:req.query.course_subject}, function(err, doc) {
 	if(err){
 		throw err;
 	} 
@@ -205,11 +205,11 @@ app.get('/api/course/:course_subject', function(req, res) {
 	});
 });
 
-app.post('/api/course/:course_subject/:course_number', function(req, res) {
+app.post('/api/course/', function(req, res) {
 
     var course = new Course( {
-    course_number:req.params.course_number,
-    course_subject:req.params.course_subject
+    course_number:req.body.course_number,
+    course_subject:req.body.course_subject
     });
     course.save(function(err, result) {
       if ( err ) throw err;
@@ -220,20 +220,6 @@ app.post('/api/course/:course_subject/:course_number', function(req, res) {
     });
 });
 
-app.post('/api/question/:course_subject/:course_number', function(req, res) {
-
-    var course = new Course( {
-    course_number:req.params.course_number,
-    course_subject:req.params.course_subject
-    });
-    course.save(function(err, result) {
-      if ( err ) throw err;
-      res.json( {
-        message:"Successfully added course",
-        user:result
-      });
-    });
-});
 
 
 
@@ -272,9 +258,9 @@ app.post('/api/question/:course_subject/:course_number', function(req, res) {
 //add a course using courseID using user email
 app.put('/api/addcourse/email/:email', function(req, res) {
 	var email = req.params.email;
-    var courseID = req.query.courseID;
+    var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUserByEmail(email, { $push: { course_list: req.query.courseID } }, {}, function(err, user) {
+	User.updateUserByEmail(email, { $push: { course_list: req.body.courseID } }, {}, function(err, user) {
 		if(err){
 			throw err;
 		}
@@ -285,9 +271,9 @@ app.put('/api/addcourse/email/:email', function(req, res) {
 //add a course using courseID using user id
 app.put('/api/addcourse/:_id', function(req, res) {
 	var id = req.params._id;
-    var courseID = req.query.courseID;
+    var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUser(id, { $push: { course_list: req.query.courseID } }, {}, function(err, user) {
+	User.updateUser(id, { $push: { course_list: req.body.courseID } }, {}, function(err, user) {
 		if(err){
 			throw err;
 		}
@@ -296,11 +282,11 @@ app.put('/api/addcourse/:_id', function(req, res) {
 });
 
 //add a stats object by email
-app.put('/api/addnewstat/email/:email', function(req, res) {
+app.put('/api/addnewstat/email/:email/:courseID', function(req, res) {
 	var email = req.params.email;
-    var courseID = req.query.courseID;
+    var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUserByEmail(email, { $push: {stats_list: {course_code: req.query.courseID,rank: 1, 
+	User.updateUserByEmail(email, { $push: {stats_list: {course_code: courseID,rank: 1, 
 		avg_response_time: null, correctness_rate:null,num_stat_contributions:0}}}, {}, function(err, user) {
 		if(err){
 			throw err;
@@ -314,9 +300,9 @@ app.put('/api/addnewstat/email/:email', function(req, res) {
 
 app.put('/api/addnewstatID/:_id', function(req, res) {
 	var id = req.params._id;
-    var courseID = req.query.courseID;
+    var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUser(id, { $push: {stats_list: {course_code: req.query.courseID,rank: 1, 
+	User.updateUser(id, { $push: {stats_list: {course_code: courseID,rank: 1, 
 		avg_response_time: null, correctness_rate:null,num_stat_contributions:0}}}, {}, function(err, user) {
 		if(err){
 			throw err;
@@ -330,7 +316,6 @@ app.put('/api/addnewstatID/:_id', function(req, res) {
 //delete all stats for a user
 app.put('/api/deleteallstats/:_id', function(req, res) {
 	var id = req.params._id;
-    var courseID = req.query.courseID;
     console.log(courseID);
 	User.updateUser(id, { $pull : { stats_list : {correctness_rate : {$in : [null]}} } }, {}, function(err, user) {
 		if(err){
@@ -342,11 +327,11 @@ app.put('/api/deleteallstats/:_id', function(req, res) {
 
 //delete a course from a user
 //also for emergencies I guess
-app.put('/api/deletecourse/:_id', function(req, res) {
+app.put('/api/deletecourse/:_id/:courseID', function(req, res) {
 	var id = req.params._id;
-    var courseID = req.query.courseID;
+    var courseID = req.params.courseID;
     console.log(courseID);
-	User.updateUser(id, { $pull : { course_list : {$in:[null]} }}, {}, function(err, user) {
+	User.updateUser(id, { $pull : { course_list : {$in:[ObjectId(courseID)]} }}, {}, function(err, user) {
 		if(err){
 			throw err;
 		}
@@ -398,11 +383,11 @@ app.put('/api/deletecourse/:_id', function(req, res) {
 //return upgraded json
 //if level_progress >= level_max, send request to set level_progress to 0 and level_max *=1.2
 //increase rank by 1
-app.get('/api/getstats/:email', function(req, res) {
+app.get('/api/getstats/', function(req, res) {
 	//var id = req.params._id;
 
     var courseID = req.query.courseID;
-    var email = req.params.email;
+    var email = req.query.email;
 
     console.log(courseID);
 	User.getUser({email:email,stats_list: {$elemMatch: {course_code: courseID}}}, { "stats_list.$": courseID }, function(err, user) {
@@ -417,14 +402,14 @@ app.get('/api/getstats/:email', function(req, res) {
 //
 
 //update the stats by email
-app.put('/api/updatestats/:email', function(req, res) {
+app.put('/api/updatestats/:email/:courseID', function(req, res) {
 	//var id = req.params._id;
 
-    var courseID = req.query.courseID;
+    var courseID = req.params.courseID;
     var email = req.params.email;
-    var new_correctness_rate = req.query.new_correctness_rate;
-    var new_response_time = req.query.new_response_time;
-    var level_progress = req.query.level_progress;
+    var new_correctness_rate = req.body.new_correctness_rate;
+    var new_response_time = req.body.new_response_time;
+    var level_progress = req.body.level_progress;
 
     console.log(courseID);
 	User.updateUser0({email:email,stats_list: {$elemMatch: {course_code: courseID}}},
@@ -441,10 +426,10 @@ app.put('/api/updatestats/:email', function(req, res) {
  });
 
 
-app.put('/api/increaserank/:email', function(req, res) {
+app.put('/api/increaserank/:email/:courseID', function(req, res) {
 	//var id = req.params._id;
 
-    var courseID = req.query.courseID;
+    var courseID = req.params.courseID;
     var email = req.params.email;
 
     console.log(courseID);
@@ -489,10 +474,10 @@ app.get('/course', function(req, res) {
       res.send('id: ' + req.query.id);
   });
 
-app.get('/api/getcourses/email/:email', function(req, res) {
+app.get('/api/getcourses/email/', function(req, res) {
 	//var id = req.params._id;
 
-    var email = req.params.email;
+    var email = req.query.email;
 
     // var new_total_rate = req.query.new_total_rate;
     // var new_total_time = req.query.new_total_time;
@@ -561,14 +546,14 @@ io.on('connection', function(socket) {
 			socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_json_opponent',socket.player_json);
 
 		});
-		socket.on('get_questions',function(courseID) {
+		socket.on('send_questions',function(courseID) {
 			Question.getGameQuestions(courseID, function(err, doc) {
 				if(err){
 					throw err;
 				} else {
 					var in_rooms = Object.keys(socket.rooms);
 					//find the last room it has been in 
-					socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_json_opponent',JSON.stringify(doc));
+					socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_questions',JSON.stringify(doc));
 				}
 			});
 
