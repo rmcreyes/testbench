@@ -24,37 +24,11 @@ var db = mongoose.connection;
 
 var ObjectId = require('mongodb').ObjectID;
 
-const checkJwt = jwt({
-  // Dynamically provide a signing key
-  // based on the kid in the header and 
-  // the signing keys provided by the JWKS endpoint.
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://test-bench.auth0.com/.well-known/jwks.json`
-  }),
-
-  // Validate the audience and the issuer.
-  audience: 'iuucDr9fKeqptDK_r2AApYEy9vksGlUF',
-  issuer: `https://test-bench.auth0.com`,
-  algorithms: ['RS256']
-});
-
-// app.get('/api/user/', function(req, res) {
-// 	//var name = req.query.name;
-// 	res.json(req);
-// 	// User.find({ name: name}, function (err, docs) {
-// 	// 	if(err) throw err;
-// 	// 	res.json(docs);
-//  //    });
-//  });
-/////////////////////////////////////////////////////////////////////////
 //get user by id
 app.get('/api/user/', function(req, res) {
 	User.getUserById(req.query._id, function(err, doc) {
 		if(err){
-			throw err;
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 		}
 		res.json(doc);
 	});
@@ -65,7 +39,7 @@ app.get('/api/user/email/', function(req, res) {
 	console.log('getting user by email');
 	User.getUserByEmail(req.query.email, function(err, doc) {
 		if(err){
-			throw err;
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 		}
 		res.json(doc);
 	});
@@ -83,7 +57,10 @@ app.post('/api/user', function(req, res) {
     reported: false
     });
     user.save(function(err, result) {
-      if ( err ) throw err;
+      if ( err ) {
+		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      }
+      else 
       res.json( {
         message:"Successfully added user",
         user:result
@@ -108,7 +85,14 @@ app.post('/api/question', function(req, res) {
 		reported: false
     });
     question.save(function(err, result) {
-      if ( err ) throw err;
+      if ( err ) {
+      	if (err.name === 'MongoError' && err.code === 11000) {
+        	res.status(500).send({ success: false, message: 'Question already exist!' });
+      	} else {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	}
+      } else 
+
       res.json( {
         message:"Successfully added question",
         user:result
@@ -122,8 +106,8 @@ app.get('/api/getgame/', function(req, res) {
     console.log(courseID);
 	Question.getGameQuestions(courseID, function(err, game) {
 		if(err){
-			throw err;
-		}
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 		res.json(game);
 	});
 });
@@ -134,8 +118,8 @@ app.delete('/api/user/email/:email', function(req, res) {
 	var email = req.params.email;
 	User.removeUserByEmail(email, function(err, book) {
 		if(err){
-			throw err;
-		}
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 		res.json(book);
 	});
 });
@@ -151,8 +135,8 @@ app.put('/api/user/email/:email', function(req, res) {
 		profile_photo_id: req.body.profile_photo_id
 	}, {}, function(err, user) {
 		if(err){
-			throw err;
-		}
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 		res.json(user);
 	});
 });
@@ -162,8 +146,8 @@ app.delete('/api/user/:_id', function(req, res) {
 	var id = req.params._id;
 	User.removeUser(id, function(err, book) {
 		if(err){
-			throw err;
-		}
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 		res.json(book);
 	});
 });
@@ -179,8 +163,8 @@ app.put('/api/user/:_id', function(req, res) {
 		profile_photo_id: req.body.profile_photo_id
 	}, {}, function(err, user) {
 		if(err){
-			throw err;
-		}
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 		res.json(user);
 	});
 });
@@ -188,8 +172,8 @@ app.put('/api/user/:_id', function(req, res) {
 app.get('/api/course/:course_subject/', function(req, res) {
 	Course.getCourse({course_number:req.query.course_number,course_subject:req.params.course_subject}, function(err, doc) {
 	if(err){
-		throw err;
-	} 
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 	res.json(doc);
 	console.log(doc);
 	});
@@ -198,8 +182,8 @@ app.get('/api/course/:course_subject/', function(req, res) {
 app.get('/api/course/', function(req, res) {
 	Course.getCourse({course_subject:req.query.course_subject}, function(err, doc) {
 	if(err){
-		throw err;
-	} 
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 	res.json(doc);
 	console.log(doc);
 	});
@@ -212,7 +196,13 @@ app.post('/api/course/', function(req, res) {
     course_subject:req.body.course_subject
     });
     course.save(function(err, result) {
-      if ( err ) throw err;
+      if ( err ) {
+      	if (err.name === 'MongoError' && err.code === 11000) {
+        	res.status(500).send({ success: false, message: 'User already exist!' });
+      	} else {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: { success: false, message: err.message } });
+      	}
+      } else 
       res.json( {
         message:"Successfully added course",
         user:result
@@ -260,10 +250,10 @@ app.put('/api/addcourse/email/:email', function(req, res) {
 	var email = req.params.email;
     var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUserByEmail(email, { $push: { course_list: req.body.courseID } }, {}, function(err, user) {
+	User.updateUserByEmail(email, { $addToSet: { course_list: req.body.courseID } }, {}, function(err, user) {
 		if(err){
-			throw err;
-		}
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 		res.json(user);
 	});
 });
@@ -273,10 +263,10 @@ app.put('/api/addcourse/:_id', function(req, res) {
 	var id = req.params._id;
     var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUser(id, { $push: { course_list: req.body.courseID } }, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+	User.updateUser(id, { $addToSet: { course_list: req.body.courseID } }, {}, function(err, user) {
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else 
 		res.json(user);
 	});
 });
@@ -286,11 +276,11 @@ app.put('/api/addnewstat/email/:email/:courseID', function(req, res) {
 	var email = req.params.email;
     var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUserByEmail(email, { $push: {stats_list: {course_code: courseID,rank: 1, 
+	User.updateUserByEmail(email, { $addToSet: {stats_list: {course_code: courseID,rank: 1, 
 		avg_response_time: null, correctness_rate:null,num_stat_contributions:0}}}, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      }
 		res.json(user);
 	});
 });
@@ -302,11 +292,11 @@ app.put('/api/addnewstatID/:_id', function(req, res) {
 	var id = req.params._id;
     var courseID = req.body.courseID;
     console.log(courseID);
-	User.updateUser(id, { $push: {stats_list: {course_code: courseID,rank: 1, 
+	User.updateUser(id, { $addToSet: {stats_list: {course_code: courseID,rank: 1, 
 		avg_response_time: null, correctness_rate:null,num_stat_contributions:0}}}, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      }
 		res.json(user);
 	});
 });
@@ -314,27 +304,27 @@ app.put('/api/addnewstatID/:_id', function(req, res) {
 
 //LOL this is here for emergency
 //delete all stats for a user
-app.put('/api/deleteallstats/:_id', function(req, res) {
+app.put('/api/deletestat/:_id', function(req, res) {
 	var id = req.params._id;
-    console.log(courseID);
-	User.updateUser(id, { $pull : { stats_list : {correctness_rate : {$in : [null]}} } }, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+	var courseID = req.body.courseID;
+	User.updateUser(id, { $pull : { stats_list : {course_code : {$in : [ObjectId(courseID)]}} } }, {}, function(err, user) {
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      }
 		res.json(user);
 	});
 });
 
 //delete a course from a user
 //also for emergencies I guess
-app.put('/api/deletecourse/:_id/:courseID', function(req, res) {
+app.put('/api/deletecourse/:_id', function(req, res) {
 	var id = req.params._id;
-    var courseID = req.params.courseID;
+    var courseID = req.body.courseID;
     console.log(courseID);
 	User.updateUser(id, { $pull : { course_list : {$in:[ObjectId(courseID)]} }}, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      }
 		res.json(user);
 	});
 });
@@ -391,9 +381,9 @@ app.get('/api/getstats/', function(req, res) {
 
     console.log(courseID);
 	User.getUser({email:email,stats_list: {$elemMatch: {course_code: courseID}}}, { "stats_list.$": courseID }, function(err, user) {
-		if(err){
-			throw err;
-		} else {
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } else {
 			res.json(user);
 		}
 	});
@@ -416,9 +406,9 @@ app.put('/api/updatestats/:email/:courseID', function(req, res) {
 	 {	$set: {'stats_list.$.correctness_rate': new_correctness_rate,'stats_list.$.avg_response_time': new_response_time,'stats_list.$.level_max': 8}, 
 		$inc: {'stats_list.$.level_progress': level_progress,'stats_list.$.num_stat_contributions': 1}
 	}, { "stats_list.$": courseID }, function(err, user) {
-		if(err){
-			throw err;
-		} else {
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else {
 		res.json(user);
 		}
 	});
@@ -439,8 +429,8 @@ app.put('/api/increaserank/:email/:courseID', function(req, res) {
 		$mul: {'stats_list.$.level_max': 1.2}
 	}, { "stats_list.$": courseID }, function(err, user) {
 		if(err){
-			throw err;
-		} else {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else {
 		res.json(user);
 		}
 	});
@@ -450,21 +440,28 @@ app.put('/api/increaserank/:email/:courseID', function(req, res) {
 //,{'stats_list.$.avg_response_time': new_response_time}]
  app.get('/user', function(req, res) {
     User.find({}, function(err, result) {
-      if ( err ) throw err;
+      if ( err ) {
+	      	res.status(err.code).send({ success: false, message: err.message });
+	      } else {
       res.json(result);
+  	}
     });
   });
 
 app.get('/question', function(req, res) {
 	Question.find({}, function(err, result) {
-	  if ( err ) throw err;
+	  if ( err ) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else 
 	  res.json(result);
 	});
 });
 
 app.get('/course', function(req, res) {
 	Course.find({}, function(err, result) {
-	  if ( err ) throw err;
+	  if ( err ) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else 
 	  res.json(result);
 	});
 });
@@ -484,8 +481,8 @@ app.get('/api/getcourses/email/', function(req, res) {
 
 	User.getUser({email:email}, 'course_list', function(err, user) {
 		if(err){
-			throw err;
-		} else {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else {
 			res.json(user);
 		}
 	});
@@ -510,7 +507,7 @@ io.on('connection', function(socket) {
 
 		// a match can happen if the number of people in the room is even and not 0
 		var room_population = io.nsps['/'].adapter.rooms[course_room_name].length;
-		if((room_population % 2 == 0) && (room_population != 0)) {
+		if((room_population % 2 === 0) && (room_population !== 0)) {
 			console.log('found a match in ' + course_room_name);
 
 			// connect the two players in the room by making them join a private room

@@ -6,11 +6,11 @@ var userSchema = mongoose.Schema;
 var userSchema = mongoose.Schema({
 	name: {type: String, required: true},
 	email: {type: String, required: true, unique: true},
-	course_list: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', unique:true }],
+	course_list: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', unique: true} ],
 	profile_photo_id: {type: Number, required: true},
 	is_professor: Boolean,
 	reported: Boolean,
-	stats_list:[ { course_code: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', unique:true},
+	stats_list:[ { course_code: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', unique: true },
 	rank: Number,
 	avg_response_time: Number,
 	correctness_rate: Number, 

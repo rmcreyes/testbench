@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var userSchema = mongoose.Schema;
 
 var questionSchema = mongoose.Schema({
-	question_text: {type: String, required: true},
+	question_text: {type: String, required: true, unique: true},
 	correct_answer: {type: String, required: true},
 	incorrect_answer_1: {type: String, required: true},
 	incorrect_answer_2: {type: String, required: true},
