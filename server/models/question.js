@@ -19,8 +19,7 @@ var Question = mongoose.model('Question', questionSchema);
 module.exports = Question;
 
 module.exports.getGameQuestions = (courseID, callback) => {
-	//User.find({courseID : courseID}, callback);
-	Question.aggregate([
-		//{ $match: { "courseID": ObjectId(courseID) }},
-		{$sample: {size: 7}}]).exec(callback);
+	Question.aggregate(
+		[ {$sample: {size: 7}} ]
+	).exec(callback);
 }

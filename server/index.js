@@ -1,98 +1,53 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const passportJWT = passport.authenticate('jwt', { session: false });
 
-const jwt = require('express-jwt');
-const jwtAuthz = require('express-jwt-authz');
-const jwksRsa = require('jwks-rsa');
-
-
-var dbHost = 'mongodb://localhost:27017/TestBenchDB';
-mongoose.connect(dbHost, { useNewUrlParser: true });
 var User = require('./models/user.js');
 var Question = require('./models/question.js');
 var Course = require('./models/course.js');
 
+var dbHost = 'mongodb://localhost:27017/TestBenchDB';
+var ObjectId = require('mongodb').ObjectID;
+mongoose.connect(dbHost, { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
-
 var db = mongoose.connection;
 
-var ObjectId = require('mongodb').ObjectID;
+//for auth
+app.use('/users', require('./routes/users'));
 
-const checkJwt = jwt({
-  // Dynamically provide a signing key
-  // based on the kid in the header and 
-  // the signing keys provided by the JWKS endpoint.
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://test-bench.auth0.com/.well-known/jwks.json`
-  }),
 
-  // Validate the audience and the issuer.
-  audience: 'iuucDr9fKeqptDK_r2AApYEy9vksGlUF',
-  issuer: `https://test-bench.auth0.com`,
-  algorithms: ['RS256']
-});
+// //create new user
+// app.post('/api/user', function(req, res) {
 
-// app.get('/api/user/', function(req, res) {
-// 	//var name = req.query.name;
-// 	res.json(req);
-// 	// User.find({ name: name}, function (err, docs) {
-// 	// 	if(err) throw err;
-// 	// 	res.json(docs);
-//  //    });
-//  });
-/////////////////////////////////////////////////////////////////////////
-//get user by id
-app.get('/api/user/', function(req, res) {
-	User.getUserById(req.query._id, function(err, doc) {
-		if(err){
-			throw err;
-		}
-		res.json(doc);
-	});
-});
-
-//get user by email
-app.get('/api/user/email/', function(req, res) {
-	console.log('getting user by email');
-	User.getUserByEmail(req.query.email, function(err, doc) {
-		if(err){
-			throw err;
-		}
-		res.json(doc);
-	});
-});
-
-//create new user
-app.post('/api/user', function(req, res) {
-
-	console.log('create a new user');
-    var user = new User( {
-    name : req.body.name,
-    email : req.body.email,
-    profile_photo_id : req.body.profile_photo_id,
-    is_professor: false,
-    reported: false
-    });
-    user.save(function(err, result) {
-      if ( err ) throw err;
-      res.json( {
-        message:"Successfully added user",
-        user:result
-      });
-    });
-});
+// 	console.log('create a new user');
+//     var user = new User( {
+//     name : req.body.name,
+//     email : req.body.email,
+//     profile_photo_id : req.body.profile_photo_id,
+//     is_professor: false,
+//     reported: false
+//     });
+//     user.save(function(err, result) {
+//       if ( err ) {
+// 		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+//       }
+//       else 
+//       res.json( {
+//         message:"Successfully added user",
+//         user:result
+//       });
+//     });
+// });
 
 //create new question
-app.post('/api/question', function(req, res) {
+app.post('/api/question', passportJWT, function(req, res) {
 
 	console.log('create a new question');
     var question = new Question( {
@@ -108,274 +63,259 @@ app.post('/api/question', function(req, res) {
 		reported: false
     });
     question.save(function(err, result) {
-      if ( err ) throw err;
-      res.json( {
-        message:"Successfully added question",
-        user:result
-      });
+      	if ( err ) {
+	      	if (err.name === 'MongoError' && err.code === 11000) {
+	        	res.status(500).send({ success: false, message: 'Question already exist!' });
+	      	} else {
+	      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      	}
+      	} else {
+	      	res.json( {
+		        message:"Successfully added question",
+		        question:result
+      		});
+	    }
+    });
+});
+
+//make new course
+app.post('/api/course/', function(req, res) {
+    var course = new Course( {
+		course_number:req.body.course_number,
+		course_subject:req.body.course_subject
+    });
+	course.save(function(err, result) {
+    	if ( err ) {
+	      	if (err.name === 'MongoError' && err.code === 11000) {
+				res.status(500).send({ success: false, message: 'User already exist!' });
+	      	} else {
+	      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: { success: false, message: err.message } });
+	      	}
+		} else 
+      	res.json( {
+      		message:"Successfully added course",
+      		user:result
+      	});
     });
 });
 
 //test question randomizer
 app.get('/api/getgame/', function(req, res) {
     var courseID = req.query.courseID;
-    console.log(courseID);
+    //console.log(courseID);
 	Question.getGameQuestions(courseID, function(err, game) {
 		if(err){
-			throw err;
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	} else {
+			res.json(game);
 		}
-		res.json(game);
 	});
 });
 
-/////////////////////////////////////////////////////////
-//delete user by email
-app.delete('/api/user/email/:email', function(req, res) {
-	var email = req.params.email;
-	User.removeUserByEmail(email, function(err, book) {
+//get user by id
+app.get('/api/user/', passportJWT, function(req, res) {
+    var id= req.query.id;
+
+	User.getUserById(id, function(err, doc) {
 		if(err){
-			throw err;
-		}
-		res.json(book);
+			res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+		} 
+		res.json(doc);
 	});
 });
 
-//edit user profile by email
-app.put('/api/user/email/:email', function(req, res) {
-	var email = req.params.email;
+//get user by email
+app.get('/api/user/email/', passportJWT, function(req, res) {
+	var email = req.query.email;
 
-    // var name = ;
-    // var profile_photo_id = ;
-	User.updateUserByEmail(email, {
-		name: req.body.name,
-		profile_photo_id: req.body.profile_photo_id
-	}, {}, function(err, user) {
+	User.getUserByEmail(email, {}, function(err, doc) {
 		if(err){
-			throw err;
+			res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 		}
+		res.json(doc);
+	});
+});
+
+//get a user's courses
+app.get('/api/getcourses/', function(req, res) {
+    var id = req.query.id;
+
+	User.getUserById(id, 'course_list', function(err, user) {
+		if(err){
+			res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	    } 
 		res.json(user);
 	});
 });
 
-//delete user by id
-app.delete('/api/user/:_id', function(req, res) {
-	var id = req.params._id;
-	User.removeUser(id, function(err, book) {
+
+//get course by subject and number
+app.get('/api/course/', function(req, res) {
+	Course.getCourse(req.query, function(err, doc) {
 		if(err){
-			throw err;
-		}
-		res.json(book);
+	  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+		} 
+		res.json(doc);
+		
+	});
+});
+
+//get course by subject
+app.get('/api/course/subject', passportJWT, function(req, res) {
+	Course.getCourseBySubject(req.query, function(err, doc) {
+		if(err){
+	      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+		} 
+		res.json(doc);
+	});
+});
+
+// //delete user by email
+// app.delete('/api/user/email/:email', function(req, res) {
+// 	var email = req.params.email;
+// 	User.removeUserByEmail(email, function(err, book) {
+// 		if(err){
+//       	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+//       } else 
+// 		res.json(book);
+// 	});
+// });
+
+// //edit user profile by email
+// app.put('/api/user/email/:email', function(req, res) {
+// 	var email = req.params.email;
+
+//     // var name = ;
+//     // var profile_photo_id = ;
+// 	User.updateUserByEmail(email, {
+// 		name: req.body.name,
+// 		profile_photo_id: req.body.profile_photo_id
+// 	}, {}, function(err, user) {
+// 		if(err){
+//       	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+//       } else 
+// 		res.json(user);
+// 	});
+// });
+
+//delete user by id
+app.delete('/api/user/:_id', passportJWT, function(req, res) {
+	var id = req.params._id;
+	User.removeUser(id, function(err, doc) {
+		if(err){
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	} 
+		res.json(doc);
+		
 	});
 });
 
 //edit user profile by id
-app.put('/api/user/:_id', function(req, res) {
+app.put('/api/user/:_id', passportJWT, function(req, res) {
 	var id = req.params._id;
-
-    // var name = ;
-    // var profile_photo_id = ;
-	User.updateUser(id, {
-		name: req.body.name,
-		profile_photo_id: req.body.profile_photo_id
-	}, {}, function(err, user) {
+	User.updateUser(id, req.body, {}, function(err, doc) {
 		if(err){
-			throw err;
-		}
-		res.json(user);
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	} 
+		res.json(doc);
+		
 	});
 });
 
-app.get('/api/course/:course_subject/', function(req, res) {
-	Course.getCourse({course_number:req.query.course_number,course_subject:req.params.course_subject}, function(err, doc) {
-	if(err){
-		throw err;
-	} 
-	res.json(doc);
-	console.log(doc);
-	});
-});
-
-app.get('/api/course/', function(req, res) {
-	Course.getCourse({course_subject:req.query.course_subject}, function(err, doc) {
-	if(err){
-		throw err;
-	} 
-	res.json(doc);
-	console.log(doc);
-	});
-});
-
-app.post('/api/course/', function(req, res) {
-
-    var course = new Course( {
-    course_number:req.body.course_number,
-    course_subject:req.body.course_subject
-    });
-    course.save(function(err, result) {
-      if ( err ) throw err;
-      res.json( {
-        message:"Successfully added course",
-        user:result
-      });
-    });
-});
 
 
-
-
-//get a course
-//add a course using courseID
-// app.put('/api/addcourse/:email', function(req, res) {
-// 	//var id = req.params._id;
-
-//     //var courseID = req.query.courseID;
-//     //console.log(courseID);
-    
-// 	console.log(req.query.course_number);
-// 	Course.getCourse({course_number:req.query.course_number,course_subject:req.query.course_subject}, function(err, doc) {
-// 	if(err){
-// 		throw err;
-// 	} else {
-// 	var idd= JSON.parse(doc) ;
-// 	// callback = function() {
-//  //    // Do something with arguments:
-//  //    idd = argugments[0];
-//  //    console.log('bleh' + idd);
-// 	// };
-// 	console.log(doc);
-// 	User.updateUserByEmail(req.params.email, { $push: { course_list: idd['_id']} }, {}, function(err, user) {
+// //add a course using courseID using user email
+// app.put('/api/addcourse/email/:email', function(req, res) {
+// 	var email = req.params.email;
+//     var courseID = req.body.courseID;
+//     console.log(courseID);
+// 	User.updateUserByEmail(email, { $addToSet: { course_list: req.body.courseID } }, {}, function(err, user) {
 // 		if(err){
-// 			throw err;
-// 		}
+//       	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+//       } else 
 // 		res.json(user);
-// 	});
-// 	};
-// 	//res.json(doc);
-// 	console.log(doc);
 // 	});
 // });
 
-//add a course using courseID using user email
-app.put('/api/addcourse/email/:email', function(req, res) {
-	var email = req.params.email;
-    var courseID = req.body.courseID;
-    console.log(courseID);
-	User.updateUserByEmail(email, { $push: { course_list: req.body.courseID } }, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
-		res.json(user);
-	});
-});
-
 //add a course using courseID using user id
-app.put('/api/addcourse/:_id', function(req, res) {
+app.put('/api/addcourse/:_id', passportJWT, function(req, res) {
 	var id = req.params._id;
-    var courseID = req.body.courseID;
-    console.log(courseID);
-	User.updateUser(id, { $push: { course_list: req.body.courseID } }, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+
+	User.addCourseToUser(id, req.body, {}, function(err, user) {
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      } 
 		res.json(user);
 	});
 });
 
-//add a stats object by email
-app.put('/api/addnewstat/email/:email/:courseID', function(req, res) {
-	var email = req.params.email;
-    var courseID = req.body.courseID;
-    console.log(courseID);
-	User.updateUserByEmail(email, { $push: {stats_list: {course_code: courseID,rank: 1, 
-		avg_response_time: null, correctness_rate:null,num_stat_contributions:0}}}, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
-		res.json(user);
-	});
-});
+//add a stats object by id
+app.put('/api/addnewstat/:id/', passportJWT, function(req, res) {
+	var id = req.params.id;
 
-
-
-
-app.put('/api/addnewstatID/:_id', function(req, res) {
-	var id = req.params._id;
-    var courseID = req.body.courseID;
-    console.log(courseID);
-	User.updateUser(id, { $push: {stats_list: {course_code: courseID,rank: 1, 
-		avg_response_time: null, correctness_rate:null,num_stat_contributions:0}}}, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+	User.addStatToUser(id, req.body, {}, function(err, user) {
+		if(err) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      }
 		res.json(user);
 	});
 });
 
 
-//LOL this is here for emergency
-//delete all stats for a user
-app.put('/api/deleteallstats/:_id', function(req, res) {
+// app.put('/api/addnewstatID/:_id', function(req, res) {
+// 	var id = req.params._id;
+//     var courseID = req.body.courseID;
+//     console.log(courseID);
+// 	User.updateUser(id, { $addToSet: {stats_list: {course_code: courseID,rank: 1, 
+// 		avg_response_time: null, correctness_rate:null,num_stat_contributions:0}}}, {}, function(err, user) {
+// 		if(err) {
+//       	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+//       }
+// 		res.json(user);
+// 	});
+// });
+
+
+
+//delete stat for a specific course for a user
+app.put('/api/deletestat/:_id', passportJWT, function(req, res) {
 	var id = req.params._id;
-    console.log(courseID);
-	User.updateUser(id, { $pull : { stats_list : {correctness_rate : {$in : [null]}} } }, {}, function(err, user) {
-		if(err){
-			throw err;
+
+	User.deleteStatFromUser(id, req.body, {}, function(err, user) {
+		if(err) {
+	    	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 		}
 		res.json(user);
 	});
 });
 
 //delete a course from a user
-//also for emergencies I guess
-app.put('/api/deletecourse/:_id/:courseID', function(req, res) {
+app.put('/api/deletecourse/:_id', passportJWT, function(req, res) {
 	var id = req.params._id;
-    var courseID = req.params.courseID;
-    console.log(courseID);
-	User.updateUser(id, { $pull : { course_list : {$in:[ObjectId(courseID)]} }}, {}, function(err, user) {
-		if(err){
-			throw err;
-		}
+
+	User.deleteCourseFromUser(id, req.body, {}, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+    	}
 		res.json(user);
 	});
 });
 
-//sequence of updating a stat object
 
+//get a stat given courseID
+app.get('/api/getstats/', passportJWT, function(req, res) {
 
+	User.getUserStatByCourse(req.params, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+     	}
+		res.json(user);
+		
+	});
 
+ });
 
-
-////////////////////////////////////////////////////////////////////////////
-// app.get('/api/getstats/:email', function(req, res) {
-// 	//var id = req.params._id;
-
-//     var courseID = req.query.courseID;
-//     var email = req.params.email;
-
-//     // var new_total_rate = req.query.new_total_rate;
-//     // var new_total_time = req.query.new_total_time;
-
-//     console.log(courseID);
-// 	User.getUserByEmail({email:email,stats_list: {$elemMatch: {course_code: courseID}}}, function(err, user) {
-// 		if(err){
-// 			throw err;
-// 		} else {
-// 			res.json(user);
-// 		}
-// 		//else {
-// 			// User.updateUser(email, { $inc: {stats_list.num_stat_contributions:1}}, {}, function(err, user) {
-// 			// 	if(err){
-// 			// 		throw err;
-// 			// 	}
-// 			// 	res.json(user);
-// 			// });
-// 		//}
-// 	});
-
-
-
-//  });
-
+//update stats progression:
 //get the information from the specific stat object.
 //client: use the information to calculate new values
 //write new values while adding 1 to num entries
@@ -383,115 +323,148 @@ app.put('/api/deletecourse/:_id/:courseID', function(req, res) {
 //return upgraded json
 //if level_progress >= level_max, send request to set level_progress to 0 and level_max *=1.2
 //increase rank by 1
-app.get('/api/getstats/', function(req, res) {
-	//var id = req.params._id;
 
-    var courseID = req.query.courseID;
-    var email = req.query.email;
+//put together the middleware
+app.put('/api/updatestat/:id/:courseID', passportJWT, retrieveOldResults, newResultCalc, setVals, checkRank, function(req, res) {
 
-    console.log(courseID);
-	User.getUser({email:email,stats_list: {$elemMatch: {course_code: courseID}}}, { "stats_list.$": courseID }, function(err, user) {
-		if(err){
-			throw err;
-		} else {
-			res.json(user);
+	//update rank if applicable
+	User.UpdateRankData(req.params, function(err, user) {
+		if(err) {
+	      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 		}
+
+		//mark the return value to indicate rank increase
+		var userForm = user.toObject();
+		userForm.ranked_up = true;
+		res.json(userForm);
+	});
+});
+
+function retrieveOldResults(req, res, next) {
+	
+	User.getUserStatByCourse(req.params, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+     	} 
+ 		var old_user = user[0].toObject().stats_list[0];
+      	req.body.old_correctness_rate = old_user.correctness_rate;
+      	req.body.old_response_time = old_user.avg_response_time;
+      	req.body.num_stat_contributions = old_user.num_stat_contributions;
+      	next();
+		
 	});
 
- });
-//
+}
 
-//update the stats by email
-app.put('/api/updatestats/:email/:courseID', function(req, res) {
-	//var id = req.params._id;
+function newResultCalc(req, res, next) {
+	var old_correctness_rate = req.body.old_correctness_rate;
+    var old_response_time = req.body.old_response_time;
 
-    var courseID = req.params.courseID;
-    var email = req.params.email;
-    var new_correctness_rate = req.body.new_correctness_rate;
-    var new_response_time = req.body.new_response_time;
-    var level_progress = req.body.level_progress;
+	var add_correctness_rate = req.body.add_correctness_rate;
+    var add_response_time = req.body.add_response_time;
 
-    console.log(courseID);
-	User.updateUser0({email:email,stats_list: {$elemMatch: {course_code: courseID}}},
-	 {	$set: {'stats_list.$.correctness_rate': new_correctness_rate,'stats_list.$.avg_response_time': new_response_time,'stats_list.$.level_max': 8}, 
-		$inc: {'stats_list.$.level_progress': level_progress,'stats_list.$.num_stat_contributions': 1}
-	}, { "stats_list.$": courseID }, function(err, user) {
-		if(err){
-			throw err;
-		} else {
-		res.json(user);
-		}
+    var num_stat_contributions = req.body.num_stat_contributions;
+
+    //calculate new values for average response time and correctness rate
+    var resp_total = ((old_response_time * num_stat_contributions) + add_response_time) / (num_stat_contributions + 1);
+    var corr_total = ((old_correctness_rate * num_stat_contributions) + add_correctness_rate) / (num_stat_contributions + 1);
+
+    req.body.new_correctness_rate = corr_total;
+    req.body.new_response_time = resp_total;
+
+    next();
+}
+
+function setVals(req, res, next) {
+
+	User.UpdateStatData(req, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	    } 
+	    next();
 	});
 
- });
+}
 
 
-app.put('/api/increaserank/:email/:courseID', function(req, res) {
-	//var id = req.params._id;
+function checkRank(req, res, next) {
+ 	User.getUserStatByCourse(req.params, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+     	}
 
-    var courseID = req.params.courseID;
-    var email = req.params.email;
-
-    console.log(courseID);
-	User.updateUser0({email:email,stats_list: {$elemMatch: {course_code: courseID}}},
-	 {	$set: {'stats_list.$.level_progress': 0}, 
-		$inc: {'stats_list.$.rank': 1},
-		$mul: {'stats_list.$.level_max': 1.2}
-	}, { "stats_list.$": courseID }, function(err, user) {
-		if(err){
-			throw err;
-		} else {
-		res.json(user);
-		}
+		req.body.level_progress = user[0].toObject().stats_list[0].level_progress;
+		req.body.level_max = user[0].toObject().stats_list[0].level_max;
+		if(req.body.level_progress >= req.body.level_max) {
+			next();
+  		} else {
+			//mark the return value to indicate no rank increase
+	  		var userForm = user[0].toObject();
+			userForm.ranked_up = false;
+	  		return res.json(userForm);
+  		}
 	});
+}
 
- });
+// //update the stats by email
+// app.put('/api/updatestats/:email/:courseID', getget, matho, function(req, res) {
+// 	//var id = req.params._id;
 
-//,{'stats_list.$.avg_response_time': new_response_time}]
- app.get('/user', function(req, res) {
+//     var courseID = req.params.courseID;
+//     var email = req.params.email;
+//     var new_correctness_rate = req.new_correctness_rate;
+//     var new_response_time = req.new_response_time;
+//     var level_progress = req.body.level_progress;
+
+// 	User.updateUser0({email:email,stats_list: {$elemMatch: {course_code: courseID}}},
+// 	 {	$set: {'stats_list.$.correctness_rate': new_correctness_rate,'stats_list.$.avg_response_time': new_response_time,'stats_list.$.level_max': 8}, 
+// 		$inc: {'stats_list.$.level_progress': level_progress,'stats_list.$.num_stat_contributions': 1}
+// 	}, { "stats_list.$": courseID }, function(err, user) {
+
+//     console.log('bleh');
+// 		if(err) {
+//       	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+// 	      } else {
+// 		res.json(user);
+// 		}
+// 	});
+
+//  });
+
+
+
+//basic functions to get database contents (for debugging)
+ app.get('/user',passportJWT, function(req, res) {
     User.find({}, function(err, result) {
-      if ( err ) throw err;
+      if ( err ) {
+	      	res.status(err.code).send({ success: false, message: err.message });
+	      } else {
       res.json(result);
+  	}
     });
   });
 
-app.get('/question', function(req, res) {
+app.get('/question', passportJWT, function(req, res) {
 	Question.find({}, function(err, result) {
-	  if ( err ) throw err;
+	  if ( err ) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else 
 	  res.json(result);
 	});
 });
 
-app.get('/course', function(req, res) {
+app.get('/course',passportJWT, function(req, res) {
 	Course.find({}, function(err, result) {
-	  if ( err ) throw err;
+	  if ( err ) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else 
 	  res.json(result);
 	});
 });
 
-    app.get('/', function(req, res) {
 
-      res.send('id: ' + req.query.id);
-  });
 
-app.get('/api/getcourses/email/', function(req, res) {
-	//var id = req.params._id;
-
-    var email = req.query.email;
-
-    // var new_total_rate = req.query.new_total_rate;
-    // var new_total_time = req.query.new_total_time;
-
-	User.getUser({email:email}, 'course_list', function(err, user) {
-		if(err){
-			throw err;
-		} else {
-			res.json(user);
-		}
-	});
-
- });
-
+//socket connections
 io.on('connection', function(socket) {
 	console.log("socket " + socket.id + " has connected");
 
