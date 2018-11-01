@@ -61,5 +61,13 @@ describe('User', function() {
         sinon.assert.calledWith(User.find, query);
     }));
 
+    it('should be able to find a user by their email again', test(function () {
+        var expected_email = 'segfault@testbench.com';
+        User.getUser0(expected_email, function () { });
+        sinon.assert.calledWith(User.find, {
+            email: expected_email
+        });
+    }));
+
     
 });
