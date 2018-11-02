@@ -4,7 +4,7 @@
   "description": "Server to handle matchmaking, battle gameplay, and database interaction of the Testbench quiz app.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "nyc mocha"
   },
   "author": "Andrea Mah and Robin Reyes",
   "license": "ISC",
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0"
   }
 }
