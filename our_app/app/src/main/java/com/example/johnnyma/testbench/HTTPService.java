@@ -180,11 +180,13 @@ public class HTTPService extends Service {
     // be added to database,
     // returns string representing generated question id
     public void addQuestion(JSONObject question) throws IOException {
-        Request request = new Request.Builder().url(" //TODO ").build();
+        RequestBody body = RequestBody.create(JSON, question.toString());
+        Request request = new Request.Builder().url("POST 104.42.209.62:3300/question").post(body).build();
         Response response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
             throw new IOException("Unexpected code " + response);
         }
+        return;
     }
     // PUT: should set a question's report flag to true,
     // based on question id

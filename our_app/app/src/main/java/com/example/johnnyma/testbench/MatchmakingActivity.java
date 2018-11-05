@@ -73,13 +73,10 @@ public class MatchmakingActivity extends AppCompatActivity {
         //String num = my_service.getRandomNumber();
         //Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
 
-        my_service.setFound();
         //stop the handler and stop the service
-        /*
-        handler.removeCallback(runnable)
+        handler.removeCallbacks(runnable);
         stopService(new Intent(this, matchmakingService.class));
         finish();
-        */
     }
 
     private ServiceConnection my_connection = new ServiceConnection() {

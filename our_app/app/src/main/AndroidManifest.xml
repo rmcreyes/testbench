@@ -11,14 +11,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-        <service android:name=".matchmakingService" />
-        <activity android:name=".CourseSelectActivity">
 
-        </activity>
+        <service android:name=".matchmakingService" />
+
+        <activity android:name=".CourseSelectActivity"></activity>
         <activity android:name=".AddCourseActivity" />
-        <activity android:name=".LoginActivity"
+        <activity
+            android:name=".LoginActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,8 +29,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".CourseActivity" />
-        <activity android:name=".MatchmakingActivity"></activity>
+        <activity android:name=".MatchmakingActivity" />
+
         <service android:name=".HTTPService" />
+
+        <activity android:name=".CreateQuestionActivity"></activity>
     </application>
 
 </manifest>
