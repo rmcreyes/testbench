@@ -117,10 +117,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        if(AccessToken.getCurrentAccessToken() != null) {
-            // TODO: come up with protocol for missing access token
-        }
-
     }
 
     /**
