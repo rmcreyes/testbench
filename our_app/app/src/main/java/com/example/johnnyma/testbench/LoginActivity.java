@@ -54,13 +54,6 @@ public class LoginActivity extends AppCompatActivity {
         // declare the permission we want from the user
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
 
-//        if(AccessToken.getCurrentAccessToken() != null) {
-//            // TODO: come up with protocol for missing access token
-//            Toast.makeText(this, "logged in", Toast.LENGTH_SHORT).show();
-//        }
-//        else
-//            Toast.makeText(this, "not logged in", Toast.LENGTH_SHORT).show();
-
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {

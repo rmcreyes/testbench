@@ -16,6 +16,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Activity that routes to the appropriates first view.
+ */
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -25,6 +28,7 @@ public class SplashActivity extends AppCompatActivity {
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
 
+        // user is logged in if access token is valid
         if(accessToken != null) {
             Toast.makeText(this, "FUCK YEAH", Toast.LENGTH_SHORT).show();
             GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
@@ -63,12 +67,15 @@ public class SplashActivity extends AppCompatActivity {
                 }
             });
 
+            // declare the keys to be present in the json string coming from
+            // the login
             Bundle parameters = new Bundle();
             parameters.putString("fields", "id, email, first_name");
             request.setParameters(parameters);
             request.executeAsync();
         }
 
+        // send user to login activity if they are not logged in
         else {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);

@@ -18,7 +18,6 @@
         <service android:name=".matchmakingService" />
 
         <activity android:name=".CourseSelectActivity">
-
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
 
