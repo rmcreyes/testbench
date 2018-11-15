@@ -15,11 +15,12 @@ import com.squareup.picasso.Transformation;
  */
 public class ProfilePicTransformation implements Transformation {
 
-    private final int radius, margin;
+    private final int radius, margin,color;
 
-    public ProfilePicTransformation(final int radius, final int margin) {
+    public ProfilePicTransformation(final int radius, final int margin, final int color) {
         this.radius = radius;
         this.margin = margin;
+        this.color = color;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class ProfilePicTransformation implements Transformation {
 
         // create white border
         Paint p_border = new Paint();
-        p_border.setColor(Color.WHITE);
+        p_border.setColor(color);
         p_border.setStyle(Paint.Style.STROKE);
         p_border.setAntiAlias(true);
         p_border.setStrokeWidth(10);

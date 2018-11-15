@@ -83,7 +83,7 @@ private String user_json;
         if(extras.containsKey("profile_pic_url")) {
             profile_pic_url = intent.getStringExtra("profile_pic_url");
             Picasso.with(this).load(profile_pic_url)
-                    .transform(new ProfilePicTransformation(200, 0))
+                    .transform(new ProfilePicTransformation(200, 0,Color.WHITE))
                     .into(profile_pic);
         }
 
@@ -101,10 +101,29 @@ private String user_json;
                 e.printStackTrace();
             }
 
+            if(extras.containsKey("email")) {
+                email = intent.getStringExtra("email");
+            }
+
             try {
                 username = u_json.getString("username");
             } catch (JSONException e) {
-                promptUsername();
+                username = promptUsername();
+
+//                try {
+//                    user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
+//                    u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
+//                    username = u_json.getString("username");
+//                } catch (InterruptedException ed) {
+//                    user_json = null;
+//                    Log.d("BELHTDFG","InterruptedException");
+//                } catch (ExecutionException ed) {
+//                    user_json = null;
+//                    Log.d("BELHTDFG","ExecutionException");
+//                } catch (JSONException e1) {
+//                    e1.printStackTrace();
+//                }
+
             }
 
 
@@ -150,9 +169,6 @@ private String user_json;
                     isProf = u_json.getBoolean("is_professor");
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-                if(extras.containsKey("email")) {
-                    email = intent.getStringExtra("email");
                 }
                 Intent userprofile = new Intent(CourseSelectActivity.this, UserProfileActivity.class);
                 userprofile.putExtra("alias", alias);
@@ -263,7 +279,7 @@ private String user_json;
 
     }
 
-    private void promptUsername()
+    private String promptUsername()
     {
         AlertDialog.Builder alert = new AlertDialog.Builder(CourseSelectActivity.this);
 
@@ -301,7 +317,7 @@ private String user_json;
                         if(un_resp != null) {
                             if(un_resp.equals("409"))
                             {
-                                Toast.makeText(CourseSelectActivity.this, "username already taken. Please choose another", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(CourseSelectActivity.this, "username already taken. Please choose another", Toast.LENGTH_SHORT).show();
                                 error_text.setVisibility(View.VISIBLE);
                                 ColorStateList colorStateList = ColorStateList.valueOf(Color.RED);
                                 ViewCompat.setBackgroundTintList(usernameInput, colorStateList);
@@ -316,7 +332,9 @@ private String user_json;
             }
         });
         dialog.show();
+        return usernameInput.getText().toString();
     }
+
 }
 
 

@@ -1,6 +1,7 @@
 package com.example.johnnyma.testbench;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -76,7 +77,7 @@ public class UserProfileActivity extends AppCompatActivity {
         if(extras.containsKey("profile_pic_url")) {
             profile_pic_url = intent.getStringExtra("profile_pic_url");
             Picasso.with(this).load(profile_pic_url)
-                    .transform(new ProfilePicTransformation(200, 0))
+                    .transform(new ProfilePicTransformation(200, 0,Color.BLACK))
                     .into(profile_pic);
         }
         logout_btn.setOnClickListener(new View.OnClickListener() {
