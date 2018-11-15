@@ -22,14 +22,17 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
@@ -44,7 +47,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private FloatingActionButton fab;
     private TextView name;
     private ImageView profile_pic;
-private String user_json;
+    private String user_json;
     private String user_name;
     private String profile_pic_url;
     private String email;
@@ -187,46 +190,50 @@ private String user_json;
      * the user's account.
      */
     private void fillCourses() {
-        // TODO: remove mock implemetation and use REST API
-        Courses = new HashMap<String, List<String>>();
+        Courses = new TreeMap<String, List<String>>();
 
-        List<String> elec_courses = new ArrayList<>();
-        elec_courses.add("201");
-        elec_courses.add("221");
-        elec_courses.add("301");
-        Courses.put("ELEC", elec_courses);
+        String s_courses = null;
+        try {
+            s_courses = new OkHttpTask().execute(OkHttpTask.GET_USER_COURSES).get();
+        } catch(InterruptedException e) {
+            Toast.makeText(this, "error connecting to server", Toast.LENGTH_SHORT).show();
+            return;
+        } catch(ExecutionException e) {
+            Toast.makeText(this, "error connecting to server", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        List<String> cpen_courses = new ArrayList<>();
-        cpen_courses.add("311");
-        cpen_courses.add("321");
-        cpen_courses.add("331");
-        cpen_courses.add("341");
-        cpen_courses.add("351");
-        Courses.put("CPEN", cpen_courses);
+        if(s_courses == null) {
+            Toast.makeText(this, "error connecting to server", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        List<String> math_courses = new ArrayList<>();
-        math_courses.add("311");
-        math_courses.add("321");
-        math_courses.add("331");
-        math_courses.add("341");
-        math_courses.add("351");
-        Courses.put("MATH", math_courses);
+        try {
+            JSONArray jsonArray = new JSONArray(s_courses);
 
-        List<String> cpsc_courses = new ArrayList<>();
-        cpsc_courses.add("311");
-        cpsc_courses.add("321");
-        cpsc_courses.add("331");
-        cpsc_courses.add("341");
-        cpsc_courses.add("351");
-        Courses.put("CPSC", cpsc_courses);
+            for(int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-        List<String> cons_courses = new ArrayList<>();
-        cons_courses.add("311");
-        cons_courses.add("321");
-        cons_courses.add("331");
-        cons_courses.add("341");
-        cons_courses.add("351");
-        Courses.put("CONS", cons_courses);
+                String course_subject = jsonObject.getString("course_subject");
+                int course_number = jsonObject.getInt("course_number");
+
+                if(Courses.keySet().contains(course_subject)) {
+                    Courses.get(course_subject).add(Integer.toString(course_number));
+                }
+                else {
+                    List<String> subject_codes = new ArrayList<String>();
+                    subject_codes.add(Integer.toString(course_number));
+                    Courses.put(course_subject, subject_codes);
+                }
+            }
+
+            for(String subj : Courses.keySet())
+                Collections.sort(Courses.get(subj));
+
+        } catch (JSONException e) {
+            Toast.makeText(this, "illegal response", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
     }
 
@@ -274,9 +281,16 @@ private String user_json;
         }
 
     }
-    @Override
-    public void onButtonClicked(String text) {
 
+    /**
+     * Updates the view when a user adds a course to their account
+     */
+    @Override
+    public void onCourseAdded() {
+        fillCourses();
+
+        CourseAdapter courseAdapter = new CourseAdapter(this, Courses, getSupportFragmentManager());
+        CourseListView.setAdapter(courseAdapter);
     }
 
     private String promptUsername()

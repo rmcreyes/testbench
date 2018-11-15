@@ -46,7 +46,7 @@ public class CourseAddDialog extends BottomSheetDialogFragment {
                     course_resp = null;
                 }
 
-                Pattern p = Pattern.compile("(?:(?<!err)\\s+?)(\\d{3})\\b");
+                //Pattern p = Pattern.compile("(?:(?<!err)\\s+?)(\\d{3})\\b");
                 if(course_resp.equals("400")) {
 //                    Snackbar.make(findViewById(R.id.placeSnackBar), "That's not a course", Snackbar.LENGTH_SHORT)
 //                            .show();
@@ -66,6 +66,7 @@ public class CourseAddDialog extends BottomSheetDialogFragment {
 //                    Snackbar.make(v.findViewById(R.id.placeSnackBar), "Course added!", Snackbar.LENGTH_SHORT)
 //                            .show();
                     Toast.makeText(getActivity(), "Course added!", Toast.LENGTH_SHORT).show();
+                    mListener.onCourseAdded();
                     dismiss();
                 }
 
@@ -76,7 +77,7 @@ public class CourseAddDialog extends BottomSheetDialogFragment {
     }
 
     public interface BottomSheetListener {
-        void onButtonClicked(String text);
+        void onCourseAdded();
     }
 
     @Override
