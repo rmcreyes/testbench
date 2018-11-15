@@ -47,6 +47,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".EmailActivity" />
+        <activity android:name=".UserProfileActivity" />
+        <activity android:name=".SettingsActivity" />
     </application>
 
 </manifest>

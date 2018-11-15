@@ -1,8 +1,12 @@
 package com.example.johnnyma.testbench;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -27,37 +31,72 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-
         // user is logged in if access token is valid
         if(accessToken != null) {
+            GlobalTokens.FACEBOOK_KEY = accessToken.getToken();
             Toast.makeText(this, "FUCK YEAH", Toast.LENGTH_SHORT).show();
             GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
                 @Override
                 public void onCompleted(JSONObject object, GraphResponse response) {
                     try {
-                        // retrieve relevant Facebook account information for use in the main activity,
-                        // and send it in the intent
-                        URL profile_pic = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
-                        String profile_pic_url = profile_pic.toString();
-                        String email = object.getString("email");
-                        String name = object.getString("first_name");
-                        Intent intent = new Intent(SplashActivity.this, CourseSelectActivity.class);
-                        intent.putExtra("profile_pic_url", profile_pic_url);
-                        intent.putExtra("email", email);
-                        intent.putExtra("name", name);
-
-                        // testing use of HTTP requests with OkHttpTask
-                        String toToast;
+                        String JWT_Json;
                         try {
-                            toToast = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, "yeeter@yeet.net").get();
+                            JWT_Json = new OkHttpTask().execute(OkHttpTask.POST_USER_JWT, GlobalTokens.FACEBOOK_KEY).get();
                         } catch (InterruptedException e) {
-                            toToast = null;
+                            JWT_Json = null;
                         } catch (ExecutionException e) {
-                            toToast = null;
+                            JWT_Json = null;
                         }
-                        if(toToast != null)
-                            Toast.makeText(SplashActivity.this, toToast, Toast.LENGTH_SHORT).show();
-                        startActivity(intent);
+                        if(JWT_Json != null) {
+                            JSONObject jwt_raw = new JSONObject(JWT_Json);
+                            GlobalTokens.JWT_KEY = jwt_raw.getString("token");
+                            Toast.makeText(SplashActivity.this, "JWT KEY: " + GlobalTokens.JWT_KEY, Toast.LENGTH_SHORT).show();
+                            Log.d("BELHTDFG","JWT KEY: " + GlobalTokens.JWT_KEY);
+                            // retrieve relevant Facebook account information for use in the main activity,
+                            // and send it in the intent
+                            URL profile_pic = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
+                            String profile_pic_url = profile_pic.toString();
+                            String email = object.getString("email");
+                            String name = object.getString("first_name");
+                            Toast.makeText(SplashActivity.this, email, Toast.LENGTH_SHORT).show();
+
+                            // testing use of HTTP requests with OkHttpTask
+                            String toToast;
+                            try {
+                                toToast = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
+                            } catch (InterruptedException e) {
+                                toToast = null;
+                            } catch (ExecutionException e) {
+                                toToast = null;
+                            }
+                            if(toToast != null)
+                                Toast.makeText(SplashActivity.this, toToast, Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(SplashActivity.this, CourseSelectActivity.class);
+                            intent.putExtra("profile_pic_url", profile_pic_url);
+                            intent.putExtra("email", email);
+                            intent.putExtra("name", name);
+                            intent.putExtra("user_json", toToast);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+                            startActivity(intent);
+                        } else {
+                            //couldn't make first request to server
+                            AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
+                            builder.setMessage("No server connection. Press OK to exit.")
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            finish();
+                                        }
+                                    });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+
+                        }
+
                     } catch(MalformedURLException e) {
                         e.printStackTrace();
                     } catch(JSONException e) {
@@ -78,6 +117,9 @@ public class SplashActivity extends AppCompatActivity {
         // send user to login activity if they are not logged in
         else {
             Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
         }
 
