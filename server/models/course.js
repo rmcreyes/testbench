@@ -9,6 +9,7 @@ var courseSchema = mongoose.Schema({
 var Course = mongoose.model('Course', courseSchema);
 module.exports = Course;
 
+var ObjectId = require('mongodb').ObjectID;
 module.exports.getCourseBySubject = (course, callback) => {
 	var query = {
 		course_subject:course.course_subject
@@ -16,10 +17,14 @@ module.exports.getCourseBySubject = (course, callback) => {
 	Course.find(query, callback);
 }
 
-module.exports.getCourse = (query, callback) => {
+module.exports.getCourse = (course, callback) => {
 	var query = {
 		course_subject:course.course_subject,
 		course_number:course.course_number
 	}
 	Course.find(query, callback);
+}
+
+module.exports.getUserCoursesById = (idArr, callback) => {
+	 Course.find({ '_id': { $in: idArr.map(ObjectId) }},callback);
 }

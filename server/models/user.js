@@ -3,14 +3,16 @@ var userSchema = mongoose.Schema;
 
 var ObjectId = require('mongodb').ObjectID;
 
-//var User = require('./course_stat');
+var Course = require('./course');
 // create a schema
 var userSchema = mongoose.Schema({
 	name: {type: String, required: true},
 	alias: String,
+	username: {type: String, unique: true, sparse: true},
 	email: {type: String, required: true, unique: true},
 	facebook_id: String,
 	course_list: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course'} ],
+	teaching_course_list: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course'} ],
 	profile_photo_id: {type: Number, required: true},
 	is_professor: Boolean,
 	reported: Boolean,
@@ -29,10 +31,52 @@ var User = mongoose.model('User', userSchema);
 module.exports = User;
 
 // Get Book
-module.exports.getUserById = (id, callback) => {
-	User.findById(id, callback);
+module.exports.getUserById = (id,select, callback) => {
+	User.findById(id, select,callback);
 }
 
+// module.exports.getUserById1 = (id,select, callback) => {
+// 	 {
+//         $lookup:{
+//             from: "userinfo",       // other table name
+//             localField: "userId",   // name of users table field
+//             foreignField: "userId", // name of userinfo table field
+//             as: "user_info"         // alias for userinfo table
+//         }
+//     },
+//     {   $unwind:"$user_info" },     // $unwind used for getting data in object or for one record only
+
+//     // Join with user_role table
+//     {
+//         $lookup:{
+//             from: "userrole", 
+//             localField: "userId", 
+//             foreignField: "userId",
+//             as: "user_role"
+//         }
+//     },
+//     {   $unwind:"$user_role" },
+
+//     // define some conditions here 
+//     {
+//         $match:{
+//             $and:[{"userName" : "admin"}]
+//         }
+//     },
+
+//     // define which fields are you want to fetch
+//     {   
+//         $project:{
+//             _id : 1,
+//             email : 1,
+//             userName : 1,
+//             userPhone : "$user_info.phone",
+//             role : "$user_role.role",
+//         } 
+//     }
+// ]);
+// 	User.findById(id, select,callback);
+// }
 //blank get user
 // module.exports.getUser = (query, select, callback) => {
 
@@ -91,8 +135,24 @@ module.exports.removeUser = (id, callback) => {
 module.exports.updateUserProfile = (id, user, options, callback) => {
 	var query = {_id: id};
 	var update = {
-		name: user.name,
-		profile_photo_id: user.profile_photo_id
+		alias: user.alias,
+		username: user.username
+	}
+	User.findOneAndUpdate(query, update, options, callback);
+}
+
+module.exports.updateUsername = (id, user, options, callback) => {
+	var query = {_id: id};
+	var update = {
+		username: user.username,
+	}
+	User.findOneAndUpdate(query, update, options, callback);
+}
+
+module.exports.updateEmail = (id, user, options, callback) => {
+	var query = {_id: id};
+	var update = {
+		email: user.email,
 	}
 	User.findOneAndUpdate(query, update, options, callback);
 }
@@ -151,7 +211,6 @@ module.exports.deleteStatFromUser = (id, user, options, callback) => {
 	User.findOneAndUpdate(query, update, options, callback);
 }
 
-//blank get user
 module.exports.getUserStatByCourse = (user, callback) => {
 	var query = {
 		_id: user.id,
@@ -165,41 +224,39 @@ module.exports.getUserStatByCourse = (user, callback) => {
 	User.find(query,select,callback);
 }
 
-module.exports.getUserStatByCourse = (user, callback) => {
+
+module.exports.getUserCourse = (user, callback) => {
 	var query = {
-		_id: user.id,
-		stats_list: {
-			$elemMatch: {course_code: user.courseID}
-		}
+		_id: user.params._id,
+			course_list : {
+				$in: [ObjectId(user.body.courseID)]
+			}  
 	}
-	var select = { 
-		"stats_list.$": user.courseID 
-	}
-	User.find(query,select,callback);
+	User.find(query,{},callback);
 }
 
 module.exports.UpdateStatData = (user, callback) => {
-	var user_params = user.params;
-	var user_body = user.body;
+	// var user_params = user.params;
+	// var user_body = user.body;
 	var query = {
-		_id: user_params.id,
+		_id: user.id,
 		stats_list: {
 			$elemMatch: {
-				course_code: user_params.courseID
+				course_code: user.courseID
 			}
 		}
 	}
 	var update = {	
 		$set: {
-			'stats_list.$.correctness_rate': user_body.new_correctness_rate,
-			'stats_list.$.avg_response_time': user_body.new_response_time
+			'stats_list.$.correctness_rate': user.new_correctness_rate,
+			'stats_list.$.avg_response_time': user.new_response_time
 		}, 
 		$inc: {
-			'stats_list.$.level_progress': user_body.level_progress,
+			'stats_list.$.level_progress': user.level_progress,
 			'stats_list.$.num_stat_contributions': 1
 		}
 	}
-	var options = { "stats_list.$": user_params.courseID }
+	var options = { "stats_list.$": user.courseID }
 	
 	User.findOneAndUpdate(query, update, options, callback);
 }

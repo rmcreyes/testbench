@@ -46,7 +46,7 @@ passport.use('facebookToken', new FacebookTokenStrategy({
     //create new user if user does not exist
     const newUser = new User({
       name : profile.displayName,
-      alias: null,
+      alias: profile.name.givenName,
       email : profile.emails[0].value,
       profile_photo_id : 0,
       is_professor: false,

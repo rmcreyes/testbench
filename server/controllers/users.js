@@ -8,7 +8,7 @@ signToken = user => {
     iss: 'CodeWorkr',
     sub: user.id,
     iat: new Date().getTime(), // current time
-    exp: new Date().setDate(new Date().getDate() + 1) // current time + 1 day ahead
+    exp: new Date().setDate(new Date().getDate() + 30) // current time + 30 days ahead
   }, JWT_SECRET);
 }
 
