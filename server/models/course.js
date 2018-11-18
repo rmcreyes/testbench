@@ -9,7 +9,27 @@ var courseSchema = mongoose.Schema({
 var Course = mongoose.model('Course', courseSchema);
 module.exports = Course;
 
-module.exports.getCourse = (query, callback) => {
+var ObjectId = require('mongodb').ObjectID;
+module.exports.getCourseBySubject = (course, callback) => {
+	var query = {
+		course_subject:course.course_subject
+	}
 	Course.find(query, callback);
-	// Course.findOne({course_number : course_number,course_subject: course_subject}).select('_id').exec(callback);
+}
+
+module.exports.getCourse = (course, callback) => {
+	var query = {
+		course_subject:course.course_subject,
+		course_number:course.course_number
+	}
+	Course.find(query, callback);
+}
+
+module.exports.getUserCoursesById = (idArr, callback) => {
+	 Course.find({ '_id': { $in: idArr.map(ObjectId) }},callback);
+}
+
+module.exports.removeCourse = (id, callback) => {
+	var query = {_id: id};
+	Course.remove(query, callback);
 }
