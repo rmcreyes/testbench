@@ -19,7 +19,14 @@ var Question = mongoose.model('Question', questionSchema);
 module.exports = Question;
 
 module.exports.getGameQuestions = (courseID, callback) => {
-	Question.aggregate(
-		[ {$sample: {size: 7}} ]
+	Question.aggregate([   
+		{ $match: {'courseID': ObjectId(courseID)} },
+		{ $sample: {size: 7} } 
+	]
 	).exec(callback);
+}
+
+module.exports.removeQuestion = (id, callback) => {
+	var query = {_id: id};
+	Question.remove(query, callback);
 }

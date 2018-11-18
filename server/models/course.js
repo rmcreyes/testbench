@@ -28,3 +28,8 @@ module.exports.getCourse = (course, callback) => {
 module.exports.getUserCoursesById = (idArr, callback) => {
 	 Course.find({ '_id': { $in: idArr.map(ObjectId) }},callback);
 }
+
+module.exports.removeCourse = (id, callback) => {
+	var query = {_id: id};
+	Course.remove(query, callback);
+}

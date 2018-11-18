@@ -51,10 +51,5 @@ module.exports = {
 console.log('got here');
     const token = signToken(req.user);
     res.status(200).json({ token });
-  },
-
-  secret: async (req, res, next) => {
-    console.log('I managed to get here!');
-    res.json({ secret: "resource" });
   }
 }

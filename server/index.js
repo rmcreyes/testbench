@@ -73,7 +73,18 @@ app.put('/api/user/username/:_id', passportJWT, function(req, res) {
 
 //create new question
 app.post('/api/question', passportJWT, getCourseByName,function(req, res) {
-
+	var ans = [req.body.correct_answer,req.body.incorrect_answer_1,req.body.incorrect_answer_2,req.body.incorrect_answer_3];
+	var i;
+	var j;
+	for (i = 0;i<ans.length;i++)
+	{
+		for (j = 0;j<ans.length;j++)
+		{
+			if ( ans[i] ===  ans[j] && i !== j) {
+				res.status(400).send({ success: false, message: 'Identical Answers' });
+			}
+		}
+	}
 	console.log('create a new question');
     var question = new Question( {
 		question_text: req.body.question_text,
@@ -125,9 +136,9 @@ app.post('/api/course/', function(req, res) {
 });
 
 //test question randomizer
-app.get('/api/getgame/', function(req, res) {
+app.get('/api/getgame/', passportJWT, getCourseByNameQuery, function(req, res) {
     var courseID = req.query.courseID;
-    //console.log(courseID);
+    console.log(courseID);
 	Question.getGameQuestions(courseID, function(err, game) {
 		if(err){
       		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
@@ -136,6 +147,79 @@ app.get('/api/getgame/', function(req, res) {
 		}
 	});
 });
+
+//get sorted array
+app.get('/api/sortedusers/', passportJWT, getCourseByNameQuery, function(req, res) {
+
+    var courseID = req.query.courseID;
+    console.log(courseID);
+	User.returnHighestRank(courseID, function(err, game) {
+		if(err){
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	} else {
+			res.json(game);
+		}
+	});
+});
+
+//add a course to a user using course name
+function getCourseByNameQuery(req, res, next) {
+	if(req.query.courseID == null) {
+		Course.getCourse(req.query, function(err, courses) {
+			if(err){
+		  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+			} 
+			//res.json(doc);
+			if(courses[0] == null)
+			{
+				res.status(400).send({ success: false, message: "course does not exist" });
+			} else {
+			var course_entry = courses[0].toObject();
+			//console.log(course_entry);
+	      	req.query.courseID = course_entry._id;
+			//console.log(req.body.courseID);
+			next();
+			}
+		});
+	} else {
+		next();
+	}
+
+}
+
+function retrieveUserStat(req, res, next) {
+	User.getUserStatByCourse(req.query, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+     	} 
+
+		if(user[0] == null)
+		{
+			res.status(400).send({ success: false, message: "stat not availible for this course" });
+		}  else {
+	 		var rec_user = user[0].toObject().stats_list[0];
+	      	req.query.rank = rec_user.rank;
+	      	req.query.level_progress = rec_user.level_progress;
+	      	console.log(req.query.rank);
+	      	console.log(req.query.level_progress);
+	      	next();
+		}
+	});
+
+}
+
+app.get('/api/rank/', passportJWT, getCourseByNameQuery,retrieveUserStat,function(req, res) {
+
+	User.returnRank(req.query, function(err, game) {
+		if(err){
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	} else {
+			res.json(game);
+		}
+	});
+});
+
+
 
 //get user by email
 app.get('/api/user/email/', passportJWT, function(req, res) {
@@ -173,7 +257,7 @@ function findCourseEntries(req, res, next) {
 	    } 
 		//res.json(user);
 		req.body.courses = user.toObject().course_list;
-		console.log(req.body.courses);
+		console.log("\n" + req.body.courses + "\n");
 		next();
 	});
 }
@@ -189,18 +273,18 @@ app.get('/api/getcourses/', passportJWT,findCourseEntries, function(req, res) {
 });
 
 
-//get a user's courseID's by user id
-app.get('/api/getcourses/id/', passportJWT, function(req, res) {
-    var id = req.query.id;
+// //get a user's courseID's by user id
+// app.get('/api/getcourses/id/', passportJWT, function(req, res) {
+//     var id = req.query.id;
 
-	User.getUserById(id, 'course_list', function(err, user) {
-		if(err){
-			res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-	    } 
-		res.json(user);
-	});
+// 	User.getUserById(id, 'course_list', function(err, user) {
+// 		if(err){
+// 			res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+// 	    } 
+// 		res.json(user);
+// 	});
 
-});
+// });
 
 // //get a user's statss by user id
 // app.get('/api/getallstats/id/', function(req, res) {
@@ -278,12 +362,37 @@ app.delete('/api/user/:_id', passportJWT, function(req, res) {
 	});
 });
 
+//delete question by id
+app.delete('/api/question/:_id', passportJWT, function(req, res) {
+	var id = req.params._id;
+	Question.removeQuestion(id, function(err, doc) {
+		if(err){
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	} 
+		res.json(doc);
+		
+	});
+});
+
+//delete course by id
+app.delete('/api/course/:_id', passportJWT, function(req, res) {
+	var id = req.params._id;
+	Course.removeCourse(id, function(err, doc) {
+		if(err){
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+      	} 
+		res.json(doc);
+		
+	});
+});
+
+
 //edit user profile by id
 app.put('/api/user/:_id', passportJWT, function(req, res) {
 	var id = req.params._id;
 	User.updateUserProfile(id, req.body, {}, function(err, doc) {
 		if(err){
-      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+			res.status(err.code == 11000 ? 409 : (err.code >= 100 && err.code < 600 ? err.code : 500)).send({ success: false, message: err.message });
       	} 
 		res.json(doc);
 		
@@ -316,7 +425,7 @@ function getCourseByName(req, res, next) {
 
 function checkUserCourse(req, res, next) {
 
-	User.getUserCourse(req, function(err, doc) {
+	User.getUserCourse(req.params._id,req.body, function(err, doc) {
 		if(err){
 	  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 		} 
@@ -327,10 +436,6 @@ function checkUserCourse(req, res, next) {
 		} else {
 		next();
 		}
-		//var course_entry = doc[0].toObject();
-		//console.log(course_entry);
-      	//req.body.courseID = course_entry._id;
-		//console.log(req.body.courseID);
 	});
 
 }
@@ -348,29 +453,26 @@ app.put('/api/addcourse/:_id', passportJWT,getCourseByName,checkUserCourse, func
 	});
 });
 
-// app.put('/api/addcourse1/:_id', function(req, res) {
-// 	var id = req.params._id;
-// 	User.getUserCourse(req, function(err, doc) {
-// 		if(err){
-// 	  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-// 		} 
-// 		//res.json(doc);
-// 		if(doc[0] != null)
-// 		{
-// 			res.status(409).send({ success: false, message: "you already have this course" });
-// 		} else {
-// 			//console.log(doc[0].toObject());
-// 		res.json(doc);
-// 		}
-// 		//var course_entry = doc[0].toObject();
-// 		//console.log(course_entry);
-//       	//req.body.courseID = course_entry._id;
-// 		//console.log(req.body.courseID);
-// 	});
-// });
+
+//helper to show if course already exists
+function ensureStatNotPresent(req, res, next) {
+	req.body.id = req.params.id;
+	User.getUserStatByCourse(req.body, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+     	} 
+
+		if(user[0] != null)
+		{
+			res.status(409).send({ success: false, message: "user already has stat for this course" });
+		}  else {
+	      	next();
+		}
+	});
+}
 
 //add a stats object by id
-app.put('/api/addnewstat/:id/', passportJWT, function(req, res) {
+app.put('/api/addnewstat/:id/', passportJWT, getCourseByName,ensureStatNotPresent, function(req, res) {
 	var id = req.params.id;
 
 	User.addStatToUser(id, req.body, {}, function(err, user) {
@@ -397,9 +499,25 @@ app.put('/api/addnewstat/:id/', passportJWT, function(req, res) {
 
 
 
+//small function to check if user stat exists
+function retrieveUserStatBody(req, res, next) {
+	req.body.id = req.params.id;
+	User.getUserStatByCourse(req.body, function(err, user) {
+		if(err) {
+      		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+     	} 
+
+		if(user[0] == null)
+		{
+			res.status(400).send({ success: false, message: "stat not availible for this course" });
+		}  else {
+	      	next();
+		}
+	});
+}
 //delete stat for a specific course for a user
-app.put('/api/deletestat/:_id', passportJWT, function(req, res) {
-	var id = req.params._id;
+app.put('/api/deletestat/:id', passportJWT,getCourseByName, retrieveUserStatBody, function(req, res) {
+	var id = req.params.id;
 
 	User.deleteStatFromUser(id, req.body, {}, function(err, user) {
 		if(err) {
@@ -410,7 +528,24 @@ app.put('/api/deletestat/:_id', passportJWT, function(req, res) {
 });
 
 //delete a course from a user
-app.put('/api/deletecourse/:_id', passportJWT,getCourseByName, function(req, res) {
+
+function checkCourseNotPresent(req, res, next) {
+
+	User.getUserCourse(req.params._id,req.body, function(err, doc) {
+		if(err){
+	  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+		} 
+		//res.json(doc);
+		if(doc[0] == null)
+		{
+			res.status(409).send({ success: false, message: "course not found with user" });
+		} else {
+		next();
+		}
+	});
+
+}
+app.put('/api/deletecourse/:_id', passportJWT,getCourseByName,checkCourseNotPresent, function(req, res) {
 	var id = req.params._id;
 
 	User.deleteCourseFromUser(id, req.body, {}, function(err, user) {
@@ -418,13 +553,13 @@ app.put('/api/deletecourse/:_id', passportJWT,getCourseByName, function(req, res
       		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
     	}
 		res.json(user);
-	});
+	});     
 });
 
 
 //get a stat given courseID
-app.get('/api/getstats/', passportJWT,getCourseByName, function(req, res) {
-
+app.get('/api/getstats/', passportJWT,getCourseByNameQuery, function(req, res) {
+	
 	User.getUserStatByCourse(req.query, function(err, user) {
 		if(err) {
       		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
@@ -434,6 +569,9 @@ app.get('/api/getstats/', passportJWT,getCourseByName, function(req, res) {
 	});
 
  });
+
+// }
+ 
 
 //update stats progression:
 //get the information from the specific stat object.
@@ -466,13 +604,16 @@ function retrieveOldResults(req, res, next) {
 	User.getUserStatByCourse(req.body, function(err, user) {
 		if(err) {
       		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-     	} 
- 		var old_user = user[0].toObject().stats_list[0];
-      	req.body.old_correctness_rate = old_user.correctness_rate;
-      	req.body.old_response_time = old_user.avg_response_time;
-      	req.body.num_stat_contributions = old_user.num_stat_contributions;
-      	next();
-		
+		} 
+		if (user[0] == null) {
+			res.status(400).send({ success: false, message: "stat not availible for this course" });
+		} else {
+			var old_user = user[0].toObject().stats_list[0];
+			req.body.old_correctness_rate = old_user.correctness_rate;
+			req.body.old_response_time = old_user.avg_response_time;
+			req.body.num_stat_contributions = old_user.num_stat_contributions;
+			next();
+		}
 	});
 
 }
@@ -563,7 +704,7 @@ app.get('/course',passportJWT, function(req, res) {
 
 //socket connections
 io.on('connection', function(socket) {
-	console.log("socket " + socket.id + " has connected");
+	// console.log("socket " + socket.id + " has connected");
 
 	// event `queue_for_game` occurs when player has selected the course they want
 	// to be quizzed on, emitted with the corresponding `course_code`
@@ -576,12 +717,12 @@ io.on('connection', function(socket) {
 		// all players who want to play in the same course are put in the same room
 		var course_room_name = 'RM' + queue_info.course;
 		socket.join(course_room_name);
-		console.log(queue_info.username + ' has joined ' + course_room_name);
+		// console.log(queue_info.username + ' has joined ' + course_room_name);
 
 		// a match can happen if the number of people in the room is even and not 0
 		var room_population = io.nsps['/'].adapter.rooms[course_room_name].length;
 		if((room_population % 2 === 0) && (room_population !== 0)) {
-			console.log('found a match in ' + course_room_name);
+			// console.log('found a match in ' + course_room_name);
 
 			// connect the two players in the room by making them join a private room
 			// also make them leave the current waiting room
@@ -594,13 +735,13 @@ io.on('connection', function(socket) {
 			p2_socket.join(priv_room_name);
 
 
-			console.log('game made by ' + p1_socket.username + ' and ' + p2_socket.username);
+			// console.log('game made by ' + p1_socket.username + ' and ' + p2_socket.username);
 
 			io.nsps['/'].connected[p1].leave(course_room_name);
 		    io.nsps['/'].connected[p2].leave(course_room_name);
 		    io.in(priv_room_name).emit('game_made', p1_socket.username + ' ' + p2_socket.username);
 
-		    console.log('sockets ' + p1 + ' and ' + p2 + 'have left ' + course_room_name);
+		    // console.log('sockets ' + p1 + ' and ' + p2 + 'have left ' + course_room_name);
 
 		}
 

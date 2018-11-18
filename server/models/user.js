@@ -30,92 +30,13 @@ var userSchema = mongoose.Schema({
 var User = mongoose.model('User', userSchema);
 module.exports = User;
 
-// Get Book
 module.exports.getUserById = (id,select, callback) => {
 	User.findById(id, select,callback);
 }
 
-// module.exports.getUserById1 = (id,select, callback) => {
-// 	 {
-//         $lookup:{
-//             from: "userinfo",       // other table name
-//             localField: "userId",   // name of users table field
-//             foreignField: "userId", // name of userinfo table field
-//             as: "user_info"         // alias for userinfo table
-//         }
-//     },
-//     {   $unwind:"$user_info" },     // $unwind used for getting data in object or for one record only
-
-//     // Join with user_role table
-//     {
-//         $lookup:{
-//             from: "userrole", 
-//             localField: "userId", 
-//             foreignField: "userId",
-//             as: "user_role"
-//         }
-//     },
-//     {   $unwind:"$user_role" },
-
-//     // define some conditions here 
-//     {
-//         $match:{
-//             $and:[{"userName" : "admin"}]
-//         }
-//     },
-
-//     // define which fields are you want to fetch
-//     {   
-//         $project:{
-//             _id : 1,
-//             email : 1,
-//             userName : 1,
-//             userPhone : "$user_info.phone",
-//             role : "$user_role.role",
-//         } 
-//     }
-// ]);
-// 	User.findById(id, select,callback);
-// }
-//blank get user
-// module.exports.getUser = (query, select, callback) => {
-
-// 	User.find(query,select,callback);
-// }
-
-//blank get user
-// module.exports.aggregateUser = (query, callback) => {
-// 	User.find(query, callback);
-// }
-
 module.exports.getUserByEmail = (email, callback) => {
 	User.find({email : email}, callback);
 }
-
-// module.exports.getUser0 = (email_a, callback) => {
-// 	User.find({email : email_a}, callback);
-// }
-
-
-// module.exports.addUser = (user, callback) => {
-// 	User.create(user, callback);
-// }
-
-// module.exports.updateUser = (id, update, options, callback) => {
-// 	var query = {_id: id};
-// 	User.findOneAndUpdate(query, update, options, callback);
-// }
-
-// module.exports.updateUser0 = (query, update, options, callback) => {
-// 	User.findOneAndUpdate(query, update, options, callback);
-// }
-
-
-// module.exports.updateUserByEmail = (email, update, options, callback) => {
-// 	var query = {email: email};
-// 	User.findOneAndUpdate(query, update, options, callback);
-// }
-
 
 module.exports.addCourse = (id, user, options, callback) => {
 	var query = {_id: id};
@@ -215,7 +136,7 @@ module.exports.getUserStatByCourse = (user, callback) => {
 	var query = {
 		_id: user.id,
 		stats_list: {
-			$elemMatch: {course_code: user.courseID}
+			$elemMatch: {course_code: ObjectId(user.courseID)}
 		}
 	}
 	var select = { 
@@ -225,19 +146,17 @@ module.exports.getUserStatByCourse = (user, callback) => {
 }
 
 
-module.exports.getUserCourse = (user, callback) => {
+module.exports.getUserCourse = (id, user, callback) => {
 	var query = {
-		_id: user.params._id,
+		_id: id,
 			course_list : {
-				$in: [ObjectId(user.body.courseID)]
+				$in: [ObjectId(user.courseID)]
 			}  
 	}
 	User.find(query,{},callback);
 }
 
 module.exports.UpdateStatData = (user, callback) => {
-	// var user_params = user.params;
-	// var user_body = user.body;
 	var query = {
 		_id: user.id,
 		stats_list: {
@@ -286,36 +205,32 @@ module.exports.UpdateRankData = (user, callback) => {
 	User.findOneAndUpdate(query, update, options, callback);
 }
 
+module.exports.returnHighestRank = (courseID, callback) => {
+	User.aggregate([
+		{ $match: { "stats_list.course_code": ObjectId(courseID) }},
+    	{ $unwind: '$stats_list'},
+    	{ $match: {'stats_list.course_code': {$eq: ObjectId(courseID)}}},
+  		{ $sort: { "stats_list.rank": -1,"stats_list.level_progress":-1}},
+  		{ $limit : 3}
+	]).exec(callback);
+}
 
-// module.exports.removeUserByEmail = (email, callback) => {
-// 	var query = {email: email};
-// 	User.remove(query, callback);
-// }
-
-// userSchema.pre('save', async function(next) {
-//   try {
-//     console.log('entered');
-//     if (this.method !== 'local') {
-//       next();
-//     }
-
-//     // Generate a salt
-//     const salt = await bcrypt.genSalt(10);
-//     // Generate a password hash (salt + hash)
-//     const passwordHash = await bcrypt.hash(this.local.password, salt);
-//     // Re-assign hashed version over original, plain text password
-//     this.local.password = passwordHash;
-//     console.log('exited');
-//     next();
-//   } catch(error) {
-//     next(error);
-//   }
-// });
-
-// userSchema.methods.isValidPassword = async function(newPassword) {
-//   try {
-//     return await bcrypt.compare(newPassword, this.local.password);
-//   } catch(error) {
-//     throw new Error(error);
-//   }
-// }
+module.exports.returnRank = (user, callback) => {
+	User.aggregate([
+		{ $match: { "stats_list.course_code": ObjectId(user.courseID) }},
+    	{ $unwind: '$stats_list'},
+    	{ $match: {'stats_list.course_code': {$eq: ObjectId(user.courseID)}}},
+		{ $match: {
+			$or: [
+				{"stats_list.rank":{$gt:user.rank}}, 
+				{ $and: [
+					{"stats_list.rank":{$eq:user.rank}},
+					{"stats_list.level_progress":{$gt:user.level_progress}}
+				]}
+			]
+		}},
+    	{
+      		$count: "current_rank"
+    	}
+	]).exec(callback);
+}
