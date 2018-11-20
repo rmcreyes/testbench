@@ -14,13 +14,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.johnnyma.testbench.matchmakingService.LocalBinder;
+import com.example.johnnyma.testbench.MatchmakingService.LocalBinder;
 import com.github.nkzawa.socketio.client.Socket;
 
 public class MatchmakingActivity extends AppCompatActivity {
     public static final String TAG = "MatchmakingActivity"; //tag for sending info through intents
     private String courseID;
-    private matchmakingService my_service;
+    private MatchmakingService my_service;
     private boolean is_bound = false;
     private int timeout = 0; //timeout counter used in Runnable runnable
     private Button startButton;
@@ -43,11 +43,11 @@ public class MatchmakingActivity extends AppCompatActivity {
 
                 //exit match making activity and stop service
                 //TODO Dont just stop it, destroy it
-                stopService(new Intent(getApplicationContext(),matchmakingService.class));
+                stopService(new Intent(getApplicationContext(),MatchmakingService.class));
                 finish();
             }
             else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
-                stopService(new Intent(getApplicationContext(),matchmakingService.class));
+                stopService(new Intent(getApplicationContext(),MatchmakingService.class));
                 Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -67,7 +67,7 @@ public class MatchmakingActivity extends AppCompatActivity {
         userName_player = starting_intent.getStringExtra("name");
 
         //start the service
-        Intent service_intent = new Intent(this, matchmakingService.class);
+        Intent service_intent = new Intent(this, MatchmakingService.class);
         service_intent.putExtra(TAG, this.courseID);
         service_intent.putExtra("name", userName_player);
         startService(service_intent);
@@ -90,7 +90,7 @@ public class MatchmakingActivity extends AppCompatActivity {
         //stop the handler and stop the service
         /*
         handler.removeCallback(runnable)
-        stopService(new Intent(this, matchmakingService.class));
+        stopService(new Intent(this, MatchmakingService.class));
         finish();
         */
     }
@@ -139,6 +139,7 @@ public class MatchmakingActivity extends AppCompatActivity {
                 intent.putExtra("opponent_name", opponentUserName);
                 intent.putExtra("opponent_avatar", opponentProfile);
                 intent.putExtra("opponent_rank", opponentRank);
+                intent.putExtra("questions", my_service.questions.toString());
                 // add intent extras necessary for game
                 startActivity(intent);
             }

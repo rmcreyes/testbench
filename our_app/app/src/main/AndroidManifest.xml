@@ -15,7 +15,7 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <service android:name=".matchmakingService" />
+        <service android:name=".MatchmakingService" />
 
         <activity android:name=".CourseSelectActivity">
             <!-- <intent-filter> -->
