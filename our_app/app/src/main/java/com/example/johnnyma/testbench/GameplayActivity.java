@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /*
- * TODO: add Timer for questions/score calculations and updates
  * TODO: add loading question dialog
  * TODO: add emoji-sending code
  */
 
 
 public class GameplayActivity extends AppCompatActivity  {
-    Socket socket;
+    Socket socket; // socket handle
+    // handles for all layout elements
     Button incorrect1;
     Button incorrect2;
     Button incorrect3;
@@ -42,6 +42,7 @@ public class GameplayActivity extends AppCompatActivity  {
     TextView questionHeader;
     ImageView playerAvatar;
     ImageView opponentAvatar;
+    // all questions
     ArrayList<Question> questions;
     String course;
     int player_score;
@@ -99,7 +100,6 @@ public class GameplayActivity extends AppCompatActivity  {
         socket = SocketHandler.getSocket();
         socket.on("get_questions", getQuestions);
         waitForQuestion();
-
     }
     protected void setPlayerAvatar(){
         switch(player_avatar) {
@@ -117,8 +117,9 @@ public class GameplayActivity extends AppCompatActivity  {
                 playerAvatar.setImageResource(R.drawable.cupcake_avatar);
         }
     }
+
     protected void setOpponentAvatar(){
-        switch(player_avatar) {
+        switch(opponent_avatar) {
             case 0:
                 opponentAvatar.setImageResource(R.drawable.penguin_avatar);
             case 1:
@@ -293,8 +294,6 @@ public class GameplayActivity extends AppCompatActivity  {
         socket.emit("answer_wrong");
         endTurn();
         // update score based on contents attached to event
-
-
     }
 
     protected void endGame(){
