@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,6 +46,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     public static final String TAG = "CourseSelectActivity"; //tag for sending info through intents
     private ListView CourseListView;
     private FloatingActionButton fab;
+    private ImageButton profile_btn;
     private TextView name;
     private ImageView profile_pic;
     private String user_json;
@@ -68,6 +70,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         setContentView(R.layout.activity_course_select);
 
         CourseListView = findViewById(R.id.list_view);
+        profile_btn = findViewById(R.id.profile_btn);
         fab = findViewById(R.id.fab);
         name = findViewById(R.id.name);
         profile_pic = findViewById(R.id.profile_pic);
@@ -78,7 +81,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         // coming from the LoginActivity, the intent may come with information relating to the user
         if(extras.containsKey("name")) {
             user_name = intent.getStringExtra("name");
-            name.setText(user_name + "      |      student");
+            name.setText(user_name);
         }
         else
             name.setText("error");
@@ -180,6 +183,13 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 userprofile.putExtra("email", email);
                 userprofile.putExtra("profile_pic_url", profile_pic_url);
                 startActivity(userprofile);
+            }
+        });
+
+        profile_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(CourseSelectActivity.this, "profile button", Toast.LENGTH_SHORT).show();
             }
         });
 
