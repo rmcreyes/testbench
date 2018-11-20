@@ -38,8 +38,6 @@
         <activity android:name=".CourseActivity" />
         <activity android:name=".MatchmakingActivity" />
 
-        <service android:name=".HTTPService" />
-
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
