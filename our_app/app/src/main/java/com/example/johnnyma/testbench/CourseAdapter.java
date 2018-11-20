@@ -1,6 +1,7 @@
 package com.example.johnnyma.testbench;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -77,14 +79,19 @@ public class CourseAdapter extends BaseAdapter {
         for(int index = 0; index < course_codes.size(); index++) {
             Button btn = new Button(c);
 
-            btn.setText(s_course_header + " " + course_codes.get(index));
-            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.setMargins(20, 30, 20, 40);
-            DisplayMetrics dm = c.getResources().getDisplayMetrics();
-            params.width = dm.widthPixels / 4;
+            btn.setText(course_codes.get(index));
+            btn.setTextSize(btn.getTextSize() * 0.225f);
+            btn.setTypeface(null, Typeface.BOLD);
+            //btn.setPadding(0, 10, 0, 10);
 
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+            params.setMargins(0, 30, 0, 40);
+            DisplayMetrics dm = c.getResources().getDisplayMetrics();
+            params.width = dm.widthPixels / 5;
+            //params.height = 150;
             if(index % 3 == 0)
-                params.setGravity(Gravity.START);
+//                params.setGravity(Gravity.START);
+                params.setGravity(Gravity.CENTER);
             else if(index % 3 == 1)
                 params.setGravity(Gravity.CENTER);
             else
@@ -92,7 +99,10 @@ public class CourseAdapter extends BaseAdapter {
 
             btn.setLayoutParams(params);
 
-            btn.setBackgroundResource(R.drawable.capsule_btn);
+            btn.setMaxHeight(0);
+            //btn.setBackgroundTint(R.color.colorAccent);
+            btn.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorAccent, null));
+                    //getColorStateList(R.color.colorAccent));
 
             course_grid.addView(btn, index);
 
@@ -104,6 +114,9 @@ public class CourseAdapter extends BaseAdapter {
                 }
             });
         }
+
+        ImageView accent = v.findViewById(R.id.accent);
+        accent.getLayoutParams().height = course_grid.getHeight();
 
         return v;
     }
