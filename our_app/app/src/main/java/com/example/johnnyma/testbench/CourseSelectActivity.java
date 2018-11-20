@@ -44,6 +44,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_select);
 
+
         CourseListView = findViewById(R.id.list_view);
         fab = findViewById(R.id.fab);
         name = findViewById(R.id.name);

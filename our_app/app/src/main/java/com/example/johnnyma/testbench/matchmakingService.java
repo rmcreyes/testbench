@@ -16,16 +16,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class matchmakingService extends Service {
     private String name;
     private int rank;
-    private Socket mSocket;
+    private int pic;
+    public String opponentUsername;
+    public int opponentRank;
+    public int opponentPic;
+    public Socket mSocket;
     {
         try{
             mSocket = IO.socket("http://104.42.209.62:3300/");
+            SocketHandler.setSocket(mSocket);
         } catch (URISyntaxException e){}
     }
 
@@ -72,9 +76,6 @@ public class matchmakingService extends Service {
         }
     }
 
-    public String getRandomNumber(){
-        return this.courseID;
-    }
 
     public boolean isMatchFound(){
         return match_found;
@@ -117,17 +118,6 @@ public class matchmakingService extends Service {
             handler.post(new Runnable(){
                 @Override
                 public void run() {
-                    /*
-                    JSONObject player = new JSONObject();
-                    try {
-                        player.put("username", name_edit.getText().toString());
-                        player.put("course", "SUB1");
-                        player.put("rank", 5);
-                    }catch(JSONException e) {
-                        e.printStackTrace();
-                    }
-                    mSocket.emit("send_json_opponent", player.toString());
-                    */
                     sendJSONOpponent();
                 }
             });
@@ -144,22 +134,20 @@ public class matchmakingService extends Service {
                 @Override
                 public void run(){
                     String username;
-                    String course;
                     String rank;
                     String pic;
                     try {
                         JSONObject data = new JSONObject((String) args[0]);
-                        username = data.getString("username");
-                        course = data.getString("course");
-                        rank = data.getString("rank");
-                        pic = data.getString("pic");
+                        opponentUsername = data.getString("username");
+                        opponentRank = Integer.parseInt(data.getString("rank"));
+                        opponentPic = Integer.parseInt(data.getString("pic"));
                     } catch (JSONException e) {
                         return;
                     }
-                    Toast.makeText(matchmakingService.this, "Opponent Username: " + username + "\n" + course + "\nRank: " + rank + "\npic: " + pic, Toast.LENGTH_SHORT).show();
                     match_found = true;
                 }
             });
         }
     };
+
 }

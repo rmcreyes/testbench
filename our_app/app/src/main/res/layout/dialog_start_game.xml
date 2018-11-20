@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rank"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteY="25dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="356dp"
+        android:layout_height="472dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:elevation="3dp"
+        app:cardCornerRadius="15dp"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.513"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="514dp">
+
+            <Button
+                android:id="@+id/cancel_btn"
+                android:layout_width="112dp"
+                android:layout_height="51dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/start_btn"
+                android:layout_marginStart="62dp"
+                android:backgroundTint="@color/crimson"
+                android:fontFamily="comic-serif-condensed"
+                android:text="CANCEL"
+                android:textSize="22dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rank_field" />
+
+            <Button
+                android:id="@+id/start_btn"
+                android:layout_width="109dp"
+                android:layout_height="51dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="80dp"
+                android:layout_marginEnd="62dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:fontFamily="comic-serif-condensed"
+                android:text="START"
+                android:textSize="22dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rank_field" />
+
+            <TextView
+                android:id="@+id/match_found"
+                android:layout_width="348dp"
+                android:layout_height="49dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="45dp"
+                android:gravity="center"
+                android:textStyle="bold|italic"
+                android:text="Match Found!"
+                android:textSize="40dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.511"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/avatar"
+                android:layout_width="156dp"
+                android:layout_height="154dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="120dp"
+                android:background="@drawable/profile_border"
+                android:src="@drawable/cupcake_avatar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/match_found" />
+
+            <TextView
+                android:id="@+id/rank_field"
+                android:layout_width="313dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="147dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="Rank 7"
+                android:textSize="23dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.507"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/user_name" />
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="312dp"
+                android:layout_height="31dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="191dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="JohnnyMa1952"
+                android:textSize="26dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.507"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/avatar" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</android.support.constraint.ConstraintLayout>
