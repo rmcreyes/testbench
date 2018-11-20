@@ -264,7 +264,9 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 startActivity(intent);
                 break;
             case CourseActionDefs.ADD_QUESTION:
-                Toast.makeText(this, "ADD QUESTION " + course, Toast.LENGTH_SHORT).show();
+                Intent q_intent = new Intent(this, AddQuestionActivity.class);
+                q_intent.putExtra("course",course);
+                startActivity(q_intent);
                 break;
             case CourseActionDefs.GET_STATS:
                 Toast.makeText(this, "GET STATS " + course, Toast.LENGTH_SHORT).show();

@@ -2,6 +2,7 @@ package com.example.johnnyma.testbench;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +22,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
 
     // set of constants used for arguments to .execute() to identify
     // the intended HTTP request to use
+    public static final String ADD_QUESTION = "ADD_QUESTION";
     public static final String GET_USER_DETAILS = "GET_USER_DETAILS";
     public static final String POST_USER_JWT = "POST_USER_JWT";
     public static final String GET_USER_COURSES = "GET_USER_COURSES";
@@ -107,8 +109,12 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 builder.url(IP + "/users/oauth/facebook")
                         .post(body);
                 break;
+            case ADD_QUESTION:
+                body = RequestBody.create(JSON, strings[1]);
+                //Toast.makeText(AddQuestionActivity.this, "HEHEHEH", Toast.LENGTH_SHORT).show();
+                builder.url(IP + "/api/question").post(body);
+                break;
         }
-
         return builder.build();
     }
 }
