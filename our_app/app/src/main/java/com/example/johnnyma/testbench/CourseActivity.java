@@ -26,6 +26,7 @@ public class CourseActivity extends AppCompatActivity {
     public void findMatch(View view){
         Intent intent = new Intent(this, MatchmakingActivity.class);
         intent.putExtra(TAG,this.course);
+        // add player name/rank/profile fields
         startActivity(intent);
     }
 }
