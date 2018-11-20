@@ -181,7 +181,7 @@ public class HTTPService extends Service {
     // returns string representing generated question id
     public void addQuestion(JSONObject question) throws IOException {
         RequestBody body = RequestBody.create(JSON, question.toString());
-        Request request = new Request.Builder().url("POST 104.42.209.62:3300/question").post(body).build();
+        Request request = new Request.Builder().url("https://104.42.209.62:3300/question").post(body).build();
         Response response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
             throw new IOException("Unexpected code " + response);

@@ -60,7 +60,7 @@ public class CreateQuestionActivity extends AppCompatActivity {
             questionJson.put("reported", false);
             questionJson.put("question_id", this.course+this.user_name+question.getText().toString()); //TODO maybe also uncomment the course json
             questionJson.put("course", this.course);
-            Toast.makeText(this, "JsonMade", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "JsonMade", Toast.LENGTH_SHORT).show();
         }
         catch (JSONException e){
             Toast.makeText(this, "JSON EXCEPTION", Toast.LENGTH_SHORT).show();
@@ -70,12 +70,13 @@ public class CreateQuestionActivity extends AppCompatActivity {
         Intent service_intent = new Intent(this, HTTPService.class);
         bindService(service_intent, my_connection, Context.BIND_AUTO_CREATE);
         //TODO app crashes after this maybe try okhttptask
-        try{
+        /*try{
             my_httpservice.addQuestion(questionJson);
         } catch(IOException b){
             Toast.makeText(this, "IO EXCEPTION", Toast.LENGTH_SHORT).show();
             return;
-        }
+        }*/
+        new OkHttpTask().execute("ADD_QUESTION", questionJson.toString());
         finish();
     }
     //for https service
