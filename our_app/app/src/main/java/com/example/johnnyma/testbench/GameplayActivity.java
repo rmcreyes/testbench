@@ -8,9 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +31,16 @@ import java.util.Random;
 
 
 public class GameplayActivity extends AppCompatActivity  {
+
+    //emoji encondings
+    public static final int EMOJI_OK = 0;
+    public static final int EMOJI_BIGTHINK = 1;
+    public static final int EMOJI_FIRE = 2;
+    public static final int EMOJI_POOP = 3;
+    public static final int EMOJI_HUNNIT = 4;
+    public static final int EMOJI_HEART = 5;
+    public static final int EMOJI_CRYLAUGH = 6;
+
     Socket socket; // socket handle
     // handles for all layout elements
     Button incorrect1;
@@ -55,6 +69,17 @@ public class GameplayActivity extends AppCompatActivity  {
     int opponent_rank;
     int currentQuestion = 1;
 
+    //emoji stuff
+    ImageView emoji_bigthink;
+    ImageView emoji_crylaugh;
+    ImageView emoji_heart;
+    ImageView emoji_poop;
+    ImageView emoji_hunnit;
+    ImageView emoji_fire;
+    ImageView emoji_ok;
+    private PopupWindow emojiPopup;
+    private LayoutInflater layoutInflater;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +87,7 @@ public class GameplayActivity extends AppCompatActivity  {
         Intent starting_intent = getIntent();
 
         course = starting_intent.getStringExtra("course");
-        courseHeader = findViewById(R.id.course_header);
+        courseHeader = findViewById(R.id.course);
         courseHeader.setText(course.substring(0,3)+ " " + course.substring(4, 6));
 
         player_name = starting_intent.getStringExtra("player_name");
@@ -96,6 +121,17 @@ public class GameplayActivity extends AppCompatActivity  {
         body = findViewById(R.id.question_body);
 
         questionHeader = findViewById(R.id.question_num);
+
+        //set emoji views and onclick listners for emojis
+        emoji_ok = (ImageView) findViewById(R.id.ok_emoji2);
+        emoji_poop = (ImageView) findViewById(R.id.ok_emoji);
+        emoji_bigthink = (ImageView) findViewById(R.id.bigthink_emoji);
+        emoji_fire = (ImageView) findViewById(R.id.ok_emoji3);
+        emoji_hunnit = (ImageView) findViewById(R.id.hunnit_emoji2);
+        emoji_crylaugh = (ImageView) findViewById(R.id.crylaugh_emoji);
+        emoji_heart = (ImageView) findViewById(R.id.heart_emoji);
+        setEmojiListeners();
+        socket.on("broadcast_emoji", popupEmoji);
 
         socket = SocketHandler.getSocket();
         socket.on("get_questions", getQuestions);
@@ -265,7 +301,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //end turn
+                        endTurn();
                     }
                 }, 1000);
             }
@@ -290,7 +326,7 @@ public class GameplayActivity extends AppCompatActivity  {
             }
         });
         endTurn();
-        while (System.currentTimeMillis() - time < 10000);
+        while (System.currentTimeMillis() - time < 10000); //im not to sure about this waiting stuff TODO
         socket.emit("answer_wrong");
         endTurn();
         // update score based on contents attached to event
@@ -364,6 +400,55 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     };
 
+
+    public Emitter.Listener popupEmoji = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            final Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                    View container = layoutInflater.inflate(R.layout.layout_emoji, null);
+                    ImageView emojiImage = (ImageView) container.findViewById(R.id.emoji);
+                    switch((int) args[0]){
+                        case EMOJI_OK:
+                            emojiImage.setImageResource(R.drawable.ok_emoji);
+                            break;
+                        case EMOJI_BIGTHINK:
+                            emojiImage.setImageResource(R.drawable.bigthink_emoji);
+                            break;
+                        case EMOJI_CRYLAUGH:
+                            emojiImage.setImageResource(R.drawable.crylaugh_emoji);
+                            break;
+                        case EMOJI_FIRE:
+                            emojiImage.setImageResource(R.drawable.fire_emoji);
+                            break;
+                        case EMOJI_HEART:
+                            emojiImage.setImageResource(R.drawable.heart_emoji);
+                            break;
+                        case EMOJI_HUNNIT:
+                            emojiImage.setImageResource(R.drawable.hunnit_emoji);
+                            break;
+                        case EMOJI_POOP:
+                            emojiImage.setImageResource(R.drawable.poop_emoji);
+                            break;
+                    }
+
+                    emojiPopup = new PopupWindow(container, 100, 100, false);
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 500, 500); //TODO change location
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            emojiPopup.dismiss();
+                        }
+                    }, 2000);
+                }
+            });
+        }
+    };
+
     protected int calculateScore(int answerTime){
         return (10000 - answerTime) / 10000 * 500 + 500;
     }
@@ -390,6 +475,66 @@ public class GameplayActivity extends AppCompatActivity  {
                 return;
             }
         }
+    }
+
+    /*
+        USED DURING ONCREATE
+     */
+    protected void setEmojiListeners(){
+        emoji_ok.setClickable(true);
+        emoji_ok.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                socket.emit("send_emoji", EMOJI_OK);
+            }
+        });
+
+        emoji_fire.setClickable(true);
+        emoji_fire.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                socket.emit("send_emoji", EMOJI_FIRE);
+            }
+        });
+
+        emoji_bigthink.setClickable(true);
+        emoji_bigthink.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                socket.emit("send_emoji", EMOJI_BIGTHINK);
+            }
+        });
+        emoji_crylaugh.setClickable(true);
+        emoji_crylaugh.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                socket.emit("send_emoji", EMOJI_CRYLAUGH);
+            }
+        });
+
+        emoji_heart.setClickable(true);
+        emoji_heart.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                socket.emit("send_emoji", EMOJI_HEART);
+            }
+        });
+
+        emoji_hunnit.setClickable(true);
+        emoji_hunnit.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                socket.emit("send_emoji", EMOJI_HUNNIT);
+            }
+        });
+
+        emoji_poop.setClickable(true);
+        emoji_poop.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                socket.emit("send_emoji", EMOJI_POOP);
+            }
+        });
     }
 }
 
