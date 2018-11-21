@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/answer_4"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimary"
+        android:text="seventeen"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/answer_3" />
+
+    <Button
+        android:id="@+id/answer_3"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimary"
+        android:text="1"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/answer_2" />
+
+    <Button
+        android:id="@+id/answer_1"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimary"
+        android:text="3"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_view" />
+
+    <Button
+        android:id="@+id/answer_2"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimary"
+        android:text="eight letters"
+        android:textSize="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/answer_1" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="-73dp" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="327dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:elevation="3dp"
+        app:cardBackgroundColor="@color/questionBox"
+        app:cardCornerRadius="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/question_num_cardview"
+        app:layout_constraintVertical_bias="0.0">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/question_body"
+                android:layout_width="302dp"
+                android:layout_height="135dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="How many letters are in the word 'computer'?"
+                android:textSize="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view_score"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:elevation="3dp"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/player_score"
+                android:layout_width="81dp"
+                android:layout_height="21dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="8dp"
+                android:text="Score: 571"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/player_avatar"
+                app:layout_constraintTop_toBottomOf="@+id/opponent_name"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/opponent_score"
+                android:layout_width="80dp"
+                android:layout_height="19dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:text="Score: 452"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/opponent_avatar"
+                app:layout_constraintTop_toBottomOf="@+id/opponent_name" />
+
+            <TextView
+                android:id="@+id/opponent_name"
+                android:layout_width="115dp"
+                android:layout_height="19dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="8dp"
+                android:text="RobinReyes6969"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/player_avatar"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/opponent_name"
+                android:layout_width="115dp"
+                android:layout_height="19dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:text="JohnnyMa1952"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/opponent_avatar"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/player_avatar"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.444"
+                app:srcCompat="@drawable/rocket_avatar" />
+
+            <ImageView
+                android:id="@+id/opponent_avatar"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/penguin_avatar" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/question_num_cardview"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:elevation="3dp"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <TextView
+                android:id="@+id/question_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Question 6 of 7"
+                android:textSize="20dp"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.428" />
+
+            <TextView
+                android:id="@+id/course"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="CPEN 321"
+                android:textSize="26dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <ImageView
+        android:id="@+id/ok_emoji"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_view_score"
+        app:layout_constraintStart_toEndOf="@+id/ok_emoji2"
+        app:layout_constraintTop_toBottomOf="@+id/answer_4"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/poop_emoji" />
+
+    <ImageView
+        android:id="@+id/ok_emoji3"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_view_score"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ok_emoji"
+        app:layout_constraintTop_toBottomOf="@+id/answer_4"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/fire_emoji" />
+
+    <ImageView
+        android:id="@+id/ok_emoji2"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_view_score"
+        app:layout_constraintStart_toEndOf="@+id/hunnit_emoji2"
+        app:layout_constraintTop_toBottomOf="@+id/answer_4"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ok_emoji" />
+
+    <ImageView
+        android:id="@+id/hunnit_emoji2"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_view_score"
+        app:layout_constraintStart_toEndOf="@+id/heart_emoji"
+        app:layout_constraintTop_toBottomOf="@+id/answer_4"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/hunnit_emoji" />
+
+    <ImageView
+        android:id="@+id/heart_emoji"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_view_score"
+        app:layout_constraintStart_toEndOf="@+id/crylaugh_emoji"
+        app:layout_constraintTop_toBottomOf="@+id/answer_4"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/heart_emoji" />
+
+    <ImageView
+        android:id="@+id/crylaugh_emoji"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_view_score"
+        app:layout_constraintStart_toEndOf="@+id/bigthink_emoji"
+        app:layout_constraintTop_toBottomOf="@+id/answer_4"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/crylaugh_emoji" />
+
+    <ImageView
+        android:id="@+id/bigthink_emoji"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/card_view_score"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/answer_4"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/bigthink_emoji" />
+</android.support.constraint.ConstraintLayout>
