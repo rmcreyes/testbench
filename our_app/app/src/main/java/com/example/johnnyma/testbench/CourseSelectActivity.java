@@ -142,6 +142,24 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         fillCourses();
 
 
+        String json_stat_http = null;
+        try {
+            json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, "CPEN", Integer.toString(321)).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            JSONArray json_stat = new JSONArray(json_stat_http);
+            int ye = json_stat.getJSONObject(0).getJSONArray("stats_list").getJSONObject(0).getInt("rank");
+            //Toast.makeText(CourseSelectActivity.this, "OUR INT IS:" +ye, Toast.LENGTH_SHORT).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         CourseAdapter courseAdapter = new CourseAdapter(this, Courses, getSupportFragmentManager());
         CourseListView.setAdapter(courseAdapter);

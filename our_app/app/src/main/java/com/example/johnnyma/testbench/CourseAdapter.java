@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,15 +90,13 @@ public class CourseAdapter extends BaseAdapter {
             params.setMargins(0, 30, 0, 40);
             DisplayMetrics dm = c.getResources().getDisplayMetrics();
             params.width = dm.widthPixels / 5;
-            //params.height = 150;
-            if(index % 3 == 0)
-//                params.setGravity(Gravity.START);
-                params.setGravity(Gravity.CENTER);
-            else if(index % 3 == 1)
-                params.setGravity(Gravity.CENTER);
-            else
-                params.setGravity(Gravity.CENTER_VERTICAL);
 
+            if(index % 3 == 0)
+                params.setGravity(Gravity.CENTER);
+
+            else if (index % 3 == 2){
+                params.setGravity(Gravity.CENTER_VERTICAL);
+            }
             btn.setLayoutParams(params);
 
             btn.setMaxHeight(0);
