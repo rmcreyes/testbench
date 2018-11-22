@@ -10,9 +10,12 @@ import android.os.Looper;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +60,8 @@ public class GameplayActivity extends AppCompatActivity {
     int currentQuestion = 1;
     boolean answered = false;
     int answer_time = 0;
+    private PopupWindow loadingPopup;
+    private LayoutInflater loadingLayoutInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,21 +217,26 @@ public class GameplayActivity extends AppCompatActivity {
         args.putString("message", "Get Ready for \n  Question"+ currentQuestion +"!");
         loadingQuestionFragment.setArguments(args);
         fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
-        questionHeader.setText("Question " + currentQuestion + "of 7");
+        questionHeader.setText("Question " + currentQuestion + " of 7");
         if (currentQuestion > 7)
             endGame();
         else {
             socket.emit("ready_next");
             // TODO: find a better way to do this
-            Toast.makeText(getApplicationContext(), "shit", Toast.LENGTH_LONG).show();
+            Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
             socket.on("start_question", readyQuestion);
         }
     }
     protected void playQuestion() {
+        FragmentTransaction fragmentTransaction;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.remove(loadingQuestionFragment).commit();
         answered = false;
         body.setText(questions.get(currentQuestion).body);
         // randomly assign questions to question buttons
-        randomizeAnswers(questions.get(currentQuestion));
+        randomizeAnswers(questions.get(currentQuestion - 1));
 
         // start timer
         final int time = (int)System.currentTimeMillis();
@@ -329,6 +339,7 @@ public class GameplayActivity extends AppCompatActivity {
 
     protected void parseQuestions(String questionsString) {
         questions = new ArrayList<>();
+        Log.d("Questions", questionsString);
         for (int i = 0; i < 7 ; i++) {
             try {
                 JSONArray questionsJSON = new JSONArray(questionsString);
@@ -365,20 +376,15 @@ public class GameplayActivity extends AppCompatActivity {
     public Emitter.Listener readyQuestion = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            Log.d("readyQuestion", "in readyQuestion");
+
             // int time = (int)System.currentTimeMillis();
             // while(System.currentTimeMillis() - time < 3000);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
                 public void run() {
-                    Toast.makeText(getApplicationContext(), "fuckkkk", Toast.LENGTH_LONG).show();
-                    FragmentTransaction fragmentTransaction;
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fragmentManager.findFragmentById(R.id.fragment_container);
-                    if (loadingQuestionFragment != null) {
-                        fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.remove(loadingQuestionFragment).commit();
-                    }
+                    Log.d("readyQuestion", "about to play question");
                     playQuestion();
                 }
             });
