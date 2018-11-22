@@ -47,28 +47,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Enter the question:"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                />
 
             <EditText
                 android:id="@+id/questionInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:maxLength="100"/>
 
             <TextView
                 android:id="@+id/correctAnswerText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Enter the correct answer:"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                />
 
             <EditText
                 android:id="@+id/correctAnswerInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:maxLength="30"/>
 
             <TextView
                 android:id="@+id/wrongAnswer1Text"
@@ -82,7 +86,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:maxLength="30"/>
 
             <TextView
                 android:id="@+id/wrongAnswer2Text"
@@ -96,21 +101,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:maxLength="30"/>
 
             <TextView
                 android:id="@+id/wrongAnswer3Text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Enter a wrong answer:"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
 
             <EditText
                 android:id="@+id/wrongAnswer3Input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:maxLength="30"/>
 
 
         </LinearLayout>

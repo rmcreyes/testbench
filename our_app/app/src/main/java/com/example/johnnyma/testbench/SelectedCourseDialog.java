@@ -49,7 +49,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         builder.setView(v);
 
         course_text = v.findViewById(R.id.course_text);
-        course_text.setText(course);
+        course_text.setText(s_course.substring(0,4) + " " + s_course.substring(4,7));
 
         // have each button signal a different action in CourseSelectActivity
         battle_btn = v.findViewById(R.id.battle_btn);
