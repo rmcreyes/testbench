@@ -6,12 +6,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 public class ProfessorActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+    private ListView QuestionListView;
 
 
     @Override
@@ -27,6 +29,9 @@ public class ProfessorActivity extends AppCompatActivity {
                 R.array.filter_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        QuestionListView = findViewById(R.id.list_view);
+
     }
 
     @Override
