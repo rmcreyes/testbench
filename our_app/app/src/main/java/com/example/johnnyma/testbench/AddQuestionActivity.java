@@ -15,6 +15,11 @@ public class AddQuestionActivity extends AppCompatActivity {
 
     private String course;
     private TextView title;
+    EditText question;
+    EditText correctAnswer;
+    EditText wrongAnswer1;
+    EditText wrongAnswer2;
+    EditText wrongAnswer3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,32 +30,25 @@ public class AddQuestionActivity extends AppCompatActivity {
         title = findViewById(R.id.title);
         if(extras.containsKey("course"))
             this.course = onCreateIntent.getStringExtra("course");
-        title.setText("Make a question for " + course);
+        title.setText("Make a question for " + course.substring(0,4) + " " + course.substring(4,7));
+        question = findViewById(R.id.questionInput);
+        correctAnswer = findViewById(R.id.correctAnswerInput);
+        wrongAnswer1 = findViewById(R.id.wrongAnswer1Input);
+        wrongAnswer2 = findViewById(R.id.wrongAnswer2Input);
+        wrongAnswer3 = findViewById(R.id.wrongAnswer3Input);
     }
 
     public void submitQuestionButton(View view){
-        EditText question = findViewById(R.id.questionInput);
-        EditText correctAnswer = findViewById(R.id.correctAnswerInput);
-        EditText wrongAnswer1 = findViewById(R.id.wrongAnswer1Input);
-        EditText wrongAnswer2 = findViewById(R.id.wrongAnswer2Input);
-        EditText wrongAnswer3 = findViewById(R.id.wrongAnswer3Input);
-        JSONObject questionJson = new JSONObject();
-        try {
-            questionJson.put("question_text", question.getText().toString());
-            questionJson.put("correct_answer", correctAnswer.getText().toString());
-            questionJson.put("incorrect_answer_1", wrongAnswer1.getText().toString());
-            questionJson.put("incorrect_answer_2", wrongAnswer2.getText().toString());
-            questionJson.put("incorrect_answer_3", wrongAnswer3.getText().toString());
-            questionJson.put("creator_uID", GlobalTokens.USER_ID);
-            questionJson.put("verified", false);
-            questionJson.put("course_subject", this.course);
-            Toast.makeText(this, "JsonMade", Toast.LENGTH_SHORT).show();
-            new OkHttpTask().execute("ADD_QUESTION", questionJson.toString());
-        }
-        catch (JSONException e){
-            Toast.makeText(this, "JSON EXCEPTION", Toast.LENGTH_SHORT).show();
-            return;
-        }
+            new OkHttpTask().execute("ADD_QUESTION",
+                    question.getText().toString(),
+                    correctAnswer.getText().toString(),
+                    wrongAnswer1.getText().toString(),
+                    wrongAnswer2.getText().toString(),
+                    wrongAnswer3.getText().toString(),
+                    GlobalTokens.USER_ID,
+                    "false",
+                    this.course.substring(0,4).toUpperCase(),
+                    this.course.substring(4,7));
         finish();
     }
 }

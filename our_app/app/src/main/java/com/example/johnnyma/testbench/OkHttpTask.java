@@ -153,6 +153,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 builder.url(IP + "/users/oauth/facebook")
                         .post(body);
                 break;
+
             case DELETE_QUESTION:
                 builder.url(IP + "/api/question/" + strings[1] ).delete()
                         .addHeader("Authorization", GlobalTokens.JWT_KEY);
@@ -315,6 +316,24 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 builder.url(IP + "/api/question/verified/"+ strings[1])
                         .addHeader("Authorization", GlobalTokens.JWT_KEY)
                         .put(body);
+
+            case ADD_QUESTION:
+                try{
+                    reqBody.put("question_text", strings[1]);
+                    reqBody.put("correct_answer", strings[2]);
+                    reqBody.put("incorrect_answer_1", strings[3]);
+                    reqBody.put("incorrect_answer_2", strings[4]);
+                    reqBody.put("incorrect_answer_3", strings[5]);
+                    reqBody.put("creator_uID", strings[6]);
+                    reqBody.put("verified", strings[7]);
+                    reqBody.put("course_subject", strings[8]);
+                    reqBody.put("course_number", strings[9]);
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+                body = RequestBody.create(JSON, reqBody.toString());
+                builder.url(IP + "/api/question").post(body).addHeader("Authorization", GlobalTokens.JWT_KEY);
+
                 break;
         }
         return builder.build();

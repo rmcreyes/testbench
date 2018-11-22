@@ -72,7 +72,7 @@ public class CourseAdapter extends BaseAdapter {
 
         // for list view element i, set the course header to be the ith string
         // in the keyset
-        String s_course_header = courseList.get(i);
+        final String s_course_header = courseList.get(i);
         course_header.setText(s_course_header);
         // retrieve the list of course codes pertaining to the course header
         List<String> course_codes = Courses.get(s_course_header);
@@ -110,7 +110,7 @@ public class CourseAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     // opens a dialog associated with the text of the button
-                    openDialog(((Button) view).getText().toString());
+                    openDialog(s_course_header + ((Button) view).getText().toString());
                 }
             });
         }
