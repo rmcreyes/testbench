@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="351dp"
@@ -12,6 +13,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:translationZ="99dp"
         app:layout_constraintBottom_toTopOf="@+id/hunnit_emoji2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -278,11 +280,8 @@
         android:layout_height="45dp"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/ok_emoji2"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/poop_emoji" />
 
     <ImageView
@@ -292,12 +291,9 @@
         android:layout_marginBottom="6dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ok_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/fire_emoji" />
 
     <ImageView
@@ -306,11 +302,8 @@
         android:layout_height="45dp"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/hunnit_emoji2"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ok_emoji" />
 
     <ImageView
@@ -319,11 +312,8 @@
         android:layout_height="45dp"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/heart_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/hunnit_emoji" />
 
     <ImageView
@@ -332,11 +322,8 @@
         android:layout_height="45dp"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/crylaugh_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/heart_emoji" />
 
     <ImageView
@@ -345,11 +332,8 @@
         android:layout_height="45dp"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/bigthink_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/crylaugh_emoji" />
 
     <ImageView
@@ -358,10 +342,7 @@
         android:layout_height="45dp"
         android:layout_marginBottom="6dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/bigthink_emoji" />
 </android.support.constraint.ConstraintLayout>

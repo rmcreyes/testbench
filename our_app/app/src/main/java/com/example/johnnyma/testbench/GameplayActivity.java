@@ -209,7 +209,7 @@ public class GameplayActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
         Bundle args = new Bundle();
-        args.putString("message", "Get Ready for \\n  Question"+ currentQuestion +"!");
+        args.putString("message", "Get Ready for \n  Question"+ currentQuestion +"!");
         loadingQuestionFragment.setArguments(args);
         fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
         questionHeader.setText("Question " + currentQuestion + "of 7");
@@ -218,6 +218,7 @@ public class GameplayActivity extends AppCompatActivity {
         else {
             socket.emit("ready_next");
             // TODO: find a better way to do this
+            Toast.makeText(getApplicationContext(), "shit", Toast.LENGTH_LONG).show();
             socket.on("start_question", readyQuestion);
         }
     }
@@ -364,8 +365,8 @@ public class GameplayActivity extends AppCompatActivity {
     public Emitter.Listener readyQuestion = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            int time = (int)System.currentTimeMillis();
-            while(System.currentTimeMillis() - time < 3000);
+            // int time = (int)System.currentTimeMillis();
+            // while(System.currentTimeMillis() - time < 3000);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
