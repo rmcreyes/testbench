@@ -28,6 +28,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
     public static final String GET_USER_COURSES = "GET_USER_COURSES";
     public static final String ADD_TO_USER_COURSES = "ADD_TO_USER_COURSES";
     public static final String SET_USERNAME = "SET_USERNAME";
+    public static final String EDIT_PROFILE = "EDIT_PROFILE";
     public static final String IP = "http://40.78.64.46:3300";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -95,6 +96,19 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                         .addHeader("Authorization", GlobalTokens.JWT_KEY)
                         .put(body);
                 //builder.url(IP + "/api/getcourses/" + GlobalTokens.USER_ID)
+                break;
+            case EDIT_PROFILE:
+                try {
+                    reqBody.put("alias", strings[1]);
+                    reqBody.put("username", strings[2]);
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                body = RequestBody.create(JSON, reqBody.toString());
+                builder.url(IP + "/api/user/"+ GlobalTokens.USER_ID)
+                        .addHeader("Authorization", GlobalTokens.JWT_KEY)
+                        .put(body);
                 break;
             case POST_USER_JWT:
                 //JSONObject fbAuthBody = new JSONObject();
