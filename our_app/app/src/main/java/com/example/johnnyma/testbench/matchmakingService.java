@@ -30,7 +30,7 @@ public class MatchmakingService extends Service {
     public Socket mSocket;
     {
         try{
-            mSocket = IO.socket("http://104.42.209.62:3300/");
+            mSocket = IO.socket("http://40.78.64.46:3300/");
             SocketHandler.setSocket(mSocket);
         } catch (URISyntaxException e){}
     }
@@ -91,9 +91,9 @@ public class MatchmakingService extends Service {
         JSONObject info = new JSONObject();
         try {
             info.put("username", name);
-            info.put("course", courseID);
+            info.put("course_subject",  courseID.substring(0, 4));
+            info.put("course_number", Integer.valueOf(courseID.substring(4)));
             info.put("rank", rank);
-            info.put("pic", "0");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -104,10 +104,9 @@ public class MatchmakingService extends Service {
         JSONObject info = new JSONObject();
         try {
             info.put("username", name);
-            info.put("course_subject", courseID.substring(0, 3));
-            info.put("course_number", Integer.parseInt(courseID.substring(4, 6)));
+            info.put("course_subject",  courseID.substring(0, 4));
+            info.put("course_number", Integer.valueOf(courseID.substring(4)));
             info.put("rank", rank);
-            //info.put("pic", "0");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -145,8 +144,6 @@ public class MatchmakingService extends Service {
                         JSONObject data = new JSONObject((String) args[0]);
                         opponentUsername = data.getString("username");
                         opponentRank = Integer.parseInt(data.getString("rank"));
-                        opponentPic = Integer.parseInt(data.getString("pic"));
-                        questions = data.getJSONArray("questions");
                     } catch (JSONException e) {
                         return;
                     }

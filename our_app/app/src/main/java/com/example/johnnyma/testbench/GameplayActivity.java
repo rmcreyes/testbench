@@ -28,7 +28,7 @@ import java.util.Random;
  */
 
 
-public class GameplayActivity extends AppCompatActivity  {
+public class GameplayActivity extends AppCompatActivity {
     Socket socket; // socket handle
     // handles for all layout elements
     Button incorrect1;
@@ -54,10 +54,9 @@ public class GameplayActivity extends AppCompatActivity  {
     String opponent_name;
     int player_avatar;
     int opponent_avatar;
-    int player_rank;
-    int opponent_rank;
     int currentQuestion = 1;
     boolean answered = false;
+    int answer_time = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,27 +66,24 @@ public class GameplayActivity extends AppCompatActivity  {
 
         course = starting_intent.getStringExtra("course");
         courseHeader = findViewById(R.id.course_header);
-        courseHeader.setText(course.substring(0,3)+ " " + course.substring(4, 6));
+        courseHeader.setText(course);
 
         player_name = starting_intent.getStringExtra("player_name");
-        playerName = findViewById(R.id.opponent_name);
+        playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
-        player_avatar = Integer.parseInt(starting_intent.getStringExtra("player_avatar"));
+        player_avatar = starting_intent.getIntExtra("player_name", 0);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
-
-        player_rank = Integer.parseInt(starting_intent.getStringExtra("player_rank"));
 
         opponent_name = starting_intent.getStringExtra("opponent_name");
         opponentName = findViewById(R.id.opponent_name);
         opponentName.setText(opponent_name);
 
-        opponent_avatar = Integer.parseInt(starting_intent.getStringExtra("opponent_avatar"));
+        opponent_avatar = starting_intent.getIntExtra("opponent_rank", 0);
         opponentAvatar = findViewById(R.id.opponent_avatar);
         setOpponentAvatar();
 
-        opponent_rank = Integer.parseInt(starting_intent.getStringExtra("opponent_rank"));
 
         player_score = 0;
         playerScore = findViewById(R.id.player_score);
@@ -107,7 +103,7 @@ public class GameplayActivity extends AppCompatActivity  {
         waitForQuestion();
     }
     protected void setPlayerAvatar(){
-        switch(player_avatar) {
+        switch(player_avatar % 6) {
             case 0:
                 playerAvatar.setImageResource(R.drawable.penguin_avatar);
             case 1:
@@ -124,7 +120,7 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     protected void setOpponentAvatar(){
-        switch(opponent_avatar) {
+        switch(opponent_avatar % 6) {
             case 0:
                 opponentAvatar.setImageResource(R.drawable.penguin_avatar);
             case 1:
@@ -149,7 +145,6 @@ public class GameplayActivity extends AppCompatActivity  {
             rand = random.nextInt() % 4 + 1;
             if(answers.contains(rand))
                 answers.add(rand);
-
         }
         switch (answers.indexOf(1)) {
             case 0:
@@ -212,25 +207,22 @@ public class GameplayActivity extends AppCompatActivity  {
     protected void waitForQuestion() {
         // set fragment
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragment_container, new LoadingQuestionFragment()).commit();
-        long time = System.currentTimeMillis();
+        LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
+        Bundle args = new Bundle();
+        args.putString("message", "Get Ready for \\n  Question"+ currentQuestion +"!");
+        loadingQuestionFragment.setArguments(args);
+        fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
+        questionHeader.setText("Question " + currentQuestion + "of 7");
         if (currentQuestion > 7)
             endGame();
         else {
             socket.emit("ready_next");
-            while(System.currentTimeMillis() - time < 3000);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fragmentManager.findFragmentById(R.id.fragment_container);
-            if (loadingQuestionFragment != null) {
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.remove(loadingQuestionFragment).commit();
-            }
+            // TODO: find a better way to do this
             socket.on("start_question", readyQuestion);
         }
     }
     protected void playQuestion() {
         answered = false;
-        questionHeader.setText("Question " + currentQuestion + "of 7");
         body.setText(questions.get(currentQuestion).body);
         // randomly assign questions to question buttons
         randomizeAnswers(questions.get(currentQuestion));
@@ -241,6 +233,7 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (!answered) {
+                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     // add to event answer time
                     socket.emit("answer_wrong");
@@ -261,6 +254,7 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (!answered) {
+                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     // add to event answer time
                     socket.emit("answer_wrong");
@@ -281,6 +275,7 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (!answered) {
+                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     // add to event answer time
                     socket.emit("answer_wrong");
@@ -301,6 +296,7 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (!answered) {
+                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     correct.setBackgroundColor(0x885f89);
                     correct.setTextColor(0x29722f);
@@ -318,9 +314,10 @@ public class GameplayActivity extends AppCompatActivity  {
                 }
             }
         });
-        endTurn();
+        socket.on("turn_over", turnOver);
         while (System.currentTimeMillis() - time < 10000);
         socket.emit("answer_wrong");
+        answer_time += 10000;
         endTurn();
         // update score based on contents attached to event
     }
@@ -330,6 +327,7 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     protected void parseQuestions(String questionsString) {
+        questions = new ArrayList<>();
         for (int i = 0; i < 7 ; i++) {
             try {
                 JSONArray questionsJSON = new JSONArray(questionsString);
@@ -349,8 +347,8 @@ public class GameplayActivity extends AppCompatActivity  {
                 public void run() {
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
-                        player_score = scores.getInt("player_score");
-                        opponent_score = scores.getInt("opponent_score");
+                        player_score = scores.getInt(player_name);
+                        opponent_score = scores.getInt(opponent_name);
                     } catch (JSONException e) {
                         return;
                     }
@@ -366,10 +364,20 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener readyQuestion = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            int time = (int)System.currentTimeMillis();
+            while(System.currentTimeMillis() - time < 3000);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
                 public void run() {
+                    Toast.makeText(getApplicationContext(), "fuckkkk", Toast.LENGTH_LONG).show();
+                    FragmentTransaction fragmentTransaction;
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+                    if (loadingQuestionFragment != null) {
+                        fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.remove(loadingQuestionFragment).commit();
+                    }
                     playQuestion();
                 }
             });
@@ -379,6 +387,7 @@ public class GameplayActivity extends AppCompatActivity  {
     protected int calculateScore(int answerTime){
         return (10000 - answerTime) / 10000 * 500 + 500;
     }
+
     private class Question {
         String id;
         String body;
@@ -404,4 +413,3 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
 }
-

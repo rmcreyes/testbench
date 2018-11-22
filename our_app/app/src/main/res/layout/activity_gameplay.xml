@@ -4,7 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="351dp"
+        android:layout_height="400dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/hunnit_emoji2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/question_num_cardview"></FrameLayout>
     <Button
         android:id="@+id/answer_4"
         android:layout_width="332dp"
@@ -135,7 +146,7 @@
                 android:id="@+id/player_score"
                 android:layout_width="81dp"
                 android:layout_height="21dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="22dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginTop="8dp"
                 android:text="Score: 571"
@@ -161,7 +172,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/opponent_name" />
 
             <TextView
-                android:id="@+id/_name"
+                android:id="@+id/player_name"
                 android:layout_width="115dp"
                 android:layout_height="19dp"
                 android:layout_marginEnd="4dp"
@@ -246,7 +257,7 @@
                 app:layout_constraintVertical_bias="0.428" />
 
             <TextView
-                android:id="@+id/course"
+                android:id="@+id/course_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -353,8 +364,4 @@
         app:layout_constraintTop_toBottomOf="@+id/answer_4"
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/bigthink_emoji" />
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"></FrameLayout>
 </android.support.constraint.ConstraintLayout>

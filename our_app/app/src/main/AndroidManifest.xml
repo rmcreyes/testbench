@@ -48,6 +48,7 @@
         <activity android:name=".EmailActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".SettingsActivity" />
+        <activity android:name=".GameplayActivity"/>
     </application>
 
 </manifest>
