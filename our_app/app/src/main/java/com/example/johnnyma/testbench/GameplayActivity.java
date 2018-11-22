@@ -26,7 +26,6 @@ import java.util.Random;
 
 /*
  * TODO: add loading question dialog
- * TODO: add emoji-sending code
  */
 
 
@@ -88,7 +87,7 @@ public class GameplayActivity extends AppCompatActivity  {
 
         course = starting_intent.getStringExtra("course");
         courseHeader = findViewById(R.id.course);
-        courseHeader.setText(course.substring(0,3)+ " " + course.substring(4, 6));
+        courseHeader.setText(course.substring(0,4)+ " " + course.substring(4, 7));
 
         player_name = starting_intent.getStringExtra("player_name");
         playerName = findViewById(R.id.opponent_name);
@@ -333,7 +332,8 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     protected void endGame(){
-        return;
+        //TODO go to show score screen activity
+        finish();
     }
 
     protected void parseQuestions(JSONArray questionsJSON) {
