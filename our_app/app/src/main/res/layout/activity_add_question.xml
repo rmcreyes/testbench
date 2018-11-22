@@ -55,8 +55,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:maxLength="100"/>
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="120"
+                android:scrollHorizontally="false"
+                android:maxLines = "3"
+                android:gravity = "top|left"
+                android:imeOptions="actionDone"
+                android:lines = "3"/>
 
             <TextView
                 android:id="@+id/correctAnswerText"
@@ -79,7 +84,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Enter a wrong answer:"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                />
 
             <EditText
                 android:id="@+id/wrongAnswer1Input"
@@ -109,7 +115,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Enter a wrong answer:"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/wrongAnswer3Input"
