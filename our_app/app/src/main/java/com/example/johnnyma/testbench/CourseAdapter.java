@@ -92,11 +92,13 @@ public class CourseAdapter extends BaseAdapter {
             params.width = dm.widthPixels / 5;
 
             if(index % 3 == 0)
+//                params.setGravity(Gravity.START);
                 params.setGravity(Gravity.CENTER);
-
-            else if (index % 3 == 2){
+            else if(index % 3 == 1)
+                params.setGravity(Gravity.CENTER);
+            else
                 params.setGravity(Gravity.CENTER_VERTICAL);
-            }
+
             btn.setLayoutParams(params);
 
             btn.setMaxHeight(0);
