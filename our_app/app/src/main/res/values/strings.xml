@@ -20,8 +20,8 @@
     <string-array name="filter_array">
         <item>All</item>
         <item>Verified</item>
-        <item>Unverified</item>
         <item>Reported</item>
+        <item>Unchecked</item>
     </string-array>
 
 

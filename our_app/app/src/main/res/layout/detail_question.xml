@@ -125,7 +125,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="4"
-                android:textColor="@color/colorAccent"
                 android:textStyle="italic"
                 app:layout_constraintStart_toEndOf="@+id/rate3"
                 app:layout_constraintTop_toTopOf="parent"

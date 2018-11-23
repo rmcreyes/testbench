@@ -9,25 +9,25 @@
         app:showAsAction="always" >
         <menu>
 
-            <item
-                android:id="@+id/newest"
-                android:title="Newest"
-                app:showAsAction="ifRoom" />
+            <!--<item-->
+                <!--android:id="@+id/newest"-->
+                <!--android:title="Newest"-->
+                <!--app:showAsAction="ifRoom" />-->
 
-            <item
-                android:id="@+id/oldest"
-                android:title="Oldest"
-                app:showAsAction="ifRoom" />
+            <!--<item-->
+                <!--android:id="@+id/oldest"-->
+                <!--android:title="Oldest"-->
+                <!--app:showAsAction="ifRoom" />-->
 
-            <item
-                android:id="@+id/easiest"
-                android:title="Easiest"
-                app:showAsAction="ifRoom" />
+            <!--<item-->
+                <!--android:id="@+id/easiest"-->
+                <!--android:title="Easiest"-->
+                <!--app:showAsAction="ifRoom" />-->
 
-            <item
-                android:id="@+id/hardest"
-                android:title="Hardest"
-                app:showAsAction="ifRoom" />
+            <!--<item-->
+                <!--android:id="@+id/hardest"-->
+                <!--android:title="Hardest"-->
+                <!--app:showAsAction="ifRoom" />-->
 
             <item
                 android:id="@+id/best_rated"

@@ -5,15 +5,33 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class ProfessorActivity extends AppCompatActivity {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class ProfessorActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private Toolbar toolbar;
     private ListView QuestionListView;
+
+    private List<Question> allQuestions;
+    private List<Question> shownQuestions;
+
+    private static final int ALL = 0;
+    private static final int VERIFIED = 1;
+    private static final int REPORTED = 2;
+    private static final int UNCHECKED = 3;
 
 
     @Override
@@ -21,17 +39,21 @@ public class ProfessorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_professor);
 
+        getQuestions();
+
         toolbar = findViewById(R.id.toolbar);
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        QuestionListView = findViewById(R.id.list_view);
         setSupportActionBar(toolbar);
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.filter_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
-        QuestionListView = findViewById(R.id.list_view);
-
+        setShownQuestions(ALL);
+        resetQuestionList();
     }
 
     @Override
@@ -45,27 +67,14 @@ public class ProfessorActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch(id) {
-            case R.id.newest:
-                Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.oldest:
-                Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.easiest:
-                Toast.makeText(this, "Easiest", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.hardest:
-                Toast.makeText(this, "Hardest", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.best_rated:
+                case R.id.best_rated:
+                Collections.sort(shownQuestions, new QuestionComparator());
+                Collections.reverse(shownQuestions);
                 Toast.makeText(this, "Best rated", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.worst_rated:
+                Collections.sort(shownQuestions, new QuestionComparator());
                 Toast.makeText(this, "Worst rated", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -73,6 +82,155 @@ public class ProfessorActivity extends AppCompatActivity {
                 break;
         }
 
+        resetQuestionList();
         return super.onOptionsItemSelected(item);
+    }
+
+    public void resetQuestionList() {
+        QuestionAdapter questionAdapter = new QuestionAdapter(this, shownQuestions);
+        QuestionListView.setAdapter(questionAdapter);
+        QuestionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(ProfessorActivity.this, shownQuestions.get(i).getCorrectAnswer(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String filter = (String) adapterView.getItemAtPosition(i);
+
+        switch(filter) {
+            case "All" :
+                setShownQuestions(ALL);
+                Toast.makeText(this, "ALL", Toast.LENGTH_SHORT).show();
+                break;
+
+            case "Verified" :
+                setShownQuestions(VERIFIED);
+                Toast.makeText(this, "VERIFIED", Toast.LENGTH_SHORT).show();
+                break;
+
+            case "Reported" :
+                setShownQuestions(REPORTED);
+                Toast.makeText(this, "REPORTED", Toast.LENGTH_SHORT).show();
+                break;
+
+            case "Unchecked" :
+                setShownQuestions(UNCHECKED);
+                Toast.makeText(this, "UNCHECKED", Toast.LENGTH_SHORT).show();
+                break;
+
+            default :
+                setShownQuestions(ALL);
+                Toast.makeText(this, "DEFAULT", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        Toast.makeText(this, "nothing selected", Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
+    private void setShownQuestions(int filter) {
+
+        if(filter == ALL)
+            shownQuestions = new ArrayList<Question>(allQuestions);
+        else {
+            shownQuestions =  new ArrayList<Question>();
+
+            switch (filter) {
+                case VERIFIED:
+                    for (Question q : allQuestions)
+                        if (q.isVerified())
+                            shownQuestions.add(q);
+                    break;
+
+                case REPORTED:
+                    for (Question q : allQuestions)
+                        if (q.isReported())
+                            shownQuestions.add(q);
+                    break;
+
+                case UNCHECKED:
+                    for(Question q : allQuestions)
+                        if(!q.isReported() || !q.isVerified())
+                            shownQuestions.add(q);
+                    break;
+
+                default:
+                    shownQuestions = new ArrayList<Question>(allQuestions);
+                    break;
+            }
+        }
+
+        resetQuestionList();
+    }
+
+
+
+    private void getQuestions() {
+        allQuestions = new ArrayList<Question>();
+
+        try {
+            JSONObject json1 = new JSONObject();
+            json1.put("id", "some id");
+            json1.put("question_text", "This is a question?");
+            json1.put("correct_answer", "1 true true");
+            json1.put("incorrect_answer_1", "This is the first incorrect answer.");
+            json1.put("incorrect_answer_2", "This is the second incorrect answer.");
+            json1.put("incorrect_answer_3", "This is the third incorrect answer.");
+            json1.put("rating", 1);
+            json1.put("verified", true);
+            json1.put("reported", true);
+            allQuestions.add(new Question(json1));
+
+            JSONObject json2 = new JSONObject();
+            json2.put("id", "some id");
+            json2.put("question_text", "This is a question?");
+            json2.put("correct_answer", "1 false false");
+            json2.put("incorrect_answer_1", "This is the first incorrect answer.");
+            json2.put("incorrect_answer_2", "This is the second incorrect answer.");
+            json2.put("incorrect_answer_3", "This is the third incorrect answer.");
+            json2.put("rating", 1);
+            json2.put("verified", false);
+            json2.put("reported", false);
+            allQuestions.add(new Question(json2));
+
+            JSONObject json3 = new JSONObject();
+            json3.put("id", "some id");
+            json3.put("question_text", "This is a question?");
+            json3.put("correct_answer", "2 true false");
+            json3.put("incorrect_answer_1", "This is the first incorrect answer.");
+            json3.put("incorrect_answer_2", "This is the second incorrect answer.");
+            json3.put("incorrect_answer_3", "This is the third incorrect answer.");
+            json3.put("rating", 2);
+            json3.put("verified", true);
+            json3.put("reported", false);
+            allQuestions.add(new Question(json3));
+
+            JSONObject json4 = new JSONObject();
+            json4.put("id", "some id");
+            json4.put("question_text", "This is a question?");
+            json4.put("correct_answer", "3 false false");
+            json4.put("incorrect_answer_1", "This is the first incorrect answer.");
+            json4.put("incorrect_answer_2", "This is the second incorrect answer.");
+            json4.put("incorrect_answer_3", "This is the third incorrect answer.");
+            json4.put("rating", 3);
+            json4.put("verified", false);
+            json4.put("reported", false);
+            allQuestions.add(new Question(json4));
+
+
+        } catch(JSONException e) {
+            Toast.makeText(this, "json exception", Toast.LENGTH_SHORT).show();
+            return;
+        }
     }
 }
