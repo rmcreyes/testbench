@@ -102,9 +102,9 @@ public class CourseAdapter extends BaseAdapter {
             btn.setLayoutParams(params);
 
             btn.setMaxHeight(0);
-            //btn.setBackgroundTint(R.color.colorAccent);
+
             btn.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorAccent, null));
-                    //getColorStateList(R.color.colorAccent));
+
 
             course_grid.addView(btn, index);
 

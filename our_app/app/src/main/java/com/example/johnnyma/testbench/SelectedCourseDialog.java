@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -32,6 +33,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
     private Button battle_btn;
     private Button add_question_btn;
     private Button stats_btn;
+    private Button prof_btn;
     private SelectedCourseDialogListener listener;
     private LinearLayout leaderboard_layout;
     private LinearLayout stats_layout;
@@ -82,6 +84,10 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         View v = inflater.inflate(R.layout.dialog_selected_course, null);
         builder.setView(v);
 
+        progress_dialog = new ProgressDialog(getContext());
+        progress_dialog.setMessage("Recieving data...");
+        progress_dialog.show();
+
 
         leaderboard_layout = v.findViewById(R.id.leaderboard_layout);
         stats_layout = v.findViewById(R.id.stats_layout);
@@ -103,9 +109,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         third_place_layout = v.findViewById(R.id.third_place_layout);
 
         leaderboard_json = null;
-        progress_dialog = new ProgressDialog(getContext());
-        progress_dialog.setMessage("Recieving data...");
-        progress_dialog.show();
+
         String json_stat_http = null;
         String json_ranking_http = null;
         try {
@@ -234,10 +238,45 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
                     stats_btn.setText("VIEW LEADERBOARD");
                 }
 
-
-                //dismiss();
             }
         });
+
+        prof_btn = v.findViewById(R.id.prof_btn);
+        prof_btn.setVisibility(View.GONE);
+
+        try {
+            String prof_courses_json = new OkHttpTask().execute(OkHttpTask.GET_PROF_COURSES).get();
+            try {
+                JSONArray jsonArray = new JSONArray(prof_courses_json);
+
+
+                for(int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                    String course_subject = jsonObject.getString("course_subject");
+                    int course_number = jsonObject.getInt("course_number");
+
+                    if((course_subject + course_number).equals(s_course)) {
+                        prof_btn.setVisibility(View.VISIBLE);
+                        prof_btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                listener.chooseCourseView(CourseActionDefs.REVIEW_QUESTIONS, s_course, 0);
+                                dismiss();
+                            }
+                        });
+                        break;
+                    }
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
         progress_dialog.dismiss();
         return builder.create();

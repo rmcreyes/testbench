@@ -197,7 +197,7 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
 
         try {
             JSONObject json1 = new JSONObject();
-            json1.put("id", "some id");
+            json1.put("_id", "some id");
             json1.put("question_text", "This is a question?");
             json1.put("correct_answer", "1 true true");
             json1.put("incorrect_answer_1", "This is the first incorrect answer.");
@@ -209,7 +209,7 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
             allQuestions.add(new Question(json1));
 
             JSONObject json2 = new JSONObject();
-            json2.put("id", "some id");
+            json2.put("_id", "some id");
             json2.put("question_text", "This is a question?");
             json2.put("correct_answer", "1 false false");
             json2.put("incorrect_answer_1", "This is the first incorrect answer.");
@@ -221,7 +221,7 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
             allQuestions.add(new Question(json2));
 
             JSONObject json3 = new JSONObject();
-            json3.put("id", "some id");
+            json3.put("_id", "some id");
             json3.put("question_text", "This is a question?");
             json3.put("correct_answer", "2 true false");
             json3.put("incorrect_answer_1", "This is the first incorrect answer.");
@@ -233,7 +233,7 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
             allQuestions.add(new Question(json3));
 
             JSONObject json4 = new JSONObject();
-            json4.put("id", "some id");
+            json4.put("_id", "some id");
             json4.put("question_text", "This is a question?");
             json4.put("correct_answer", "3 false false");
             json4.put("incorrect_answer_1", "This is the first incorrect answer.");
