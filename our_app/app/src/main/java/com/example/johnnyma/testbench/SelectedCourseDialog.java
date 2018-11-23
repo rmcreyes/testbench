@@ -1,8 +1,5 @@
 package com.example.johnnyma.testbench;
-
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -11,19 +8,15 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -109,21 +102,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
 
         String json_stat_http = getArguments().getString("json_stat_http");
         String json_ranking_http = getArguments().getString("json_ranking_http");
-        // try {
-        //     json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, s_course.substring(0,4), s_course.substring(4,7)).get();
-        // } catch (InterruptedException e) {
-        //     e.printStackTrace();
-        // } catch (ExecutionException e) {
-        //     e.printStackTrace();
-        // }
-
-        // try {
-        //     json_ranking_http = new OkHttpTask().execute(OkHttpTask.GET_RANK, s_course.substring(0,4), s_course.substring(4,7)).get();
-        // } catch (InterruptedException e) {
-        //     e.printStackTrace();
-        // } catch (ExecutionException e) {
-        //     e.printStackTrace();
-        // }
 
         try {
             JSONArray json_stat = new JSONArray(json_stat_http);
@@ -239,47 +217,28 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         });
 
         prof_btn = v.findViewById(R.id.prof_btn);
-        if(getArguments().getBoolean("is_prof_of"))
+        if(getArguments().getBoolean("is_prof_of")) {
             prof_btn.setVisibility(View.VISIBLE);
+            prof_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.chooseCourseView(CourseActionDefs.REVIEW_QUESTIONS, s_course, 0);
+                }
+            });
+        }
         else
             prof_btn.setVisibility(View.GONE);
 
-        // try {
-        //     String prof_courses_json = new OkHttpTask().execute(OkHttpTask.GET_PROF_COURSES).get();
-        //     try {
-        //         JSONArray jsonArray = new JSONArray(prof_courses_json);
-
-
-        //         for(int i = 0; i < jsonArray.length(); i++) {
-        //             JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-        //             String course_subject = jsonObject.getString("course_subject");
-        //             int course_number = jsonObject.getInt("course_number");
-
-        //             if((course_subject + course_number).equals(s_course)) {
-        //                 prof_btn.setVisibility(View.VISIBLE);
-        //                 prof_btn.setOnClickListener(new View.OnClickListener() {
-        //                     @Override
-        //                     public void onClick(View view) {
-        //                         listener.chooseCourseView(CourseActionDefs.REVIEW_QUESTIONS, s_course, 0);
-        //                         dismiss();
-        //                     }
-        //                 });
-        //                 break;
-        //             }
-
-        //         }
-        //     } catch (JSONException e) {
-        //         e.printStackTrace();
-        //     }
-        // } catch (InterruptedException e) {
-        //     e.printStackTrace();
-        // } catch (ExecutionException e) {
-        //     e.printStackTrace();
-        // }
-
 
         return builder.create();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        synchronized (CourseSelectLock.lock) {
+            CourseSelectLock.pressed = false;
+        }
     }
 
     public interface SelectedCourseDialogListener {

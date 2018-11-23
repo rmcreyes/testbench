@@ -50,11 +50,14 @@ public class CourseAdapter extends BaseAdapter {
     private String json_ranking_http;
     private boolean is_prof_of;
 
+    private CourseSelectLock courseSelectLock;
+
     public CourseAdapter(Context c, Map<String, List<String>> courses, FragmentManager fm) {
         this.c = c;
         Courses = courses;
         mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.fm = fm;
+        this.courseSelectLock = courseSelectLock;
     }
 
     @Override
@@ -127,7 +130,12 @@ public class CourseAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     // opens a dialog associated with the text of the button
-                    openDialog(s_course_header + ((Button) view).getText().toString());
+                    synchronized (CourseSelectLock.lock) {
+                        if (!CourseSelectLock.pressed) {
+                            CourseSelectLock.pressed = true;
+                            openDialog(s_course_header + ((Button) view).getText().toString());
+                        }
+                    }
                 }
             });
         }
@@ -144,56 +152,53 @@ public class CourseAdapter extends BaseAdapter {
      * @param s_course - course name of the dialog's course
      */
     public void openDialog(final String s_course){
-//        ((Activity) c).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         final SelectedCourseDialog selectedCourseDialog = new SelectedCourseDialog();
         Toast.makeText(c, "make dialog", Toast.LENGTH_SHORT).show();
         progressDialog = new ProgressDialog(c);
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
 
-        Thread thread = new Thread(){
-            @Override
-            public void run() {
-                boolean success = makeHttpRequests(s_course);
-
-                if(success) {
-                    Bundle args = new Bundle();
-                    args.putString("course", s_course);
-                    args.putString("json_stat_http", json_stat_http);
-                    args.putString("json_ranking_http", json_ranking_http);
-                    args.putBoolean("is_prof_of", is_prof_of);
-                    selectedCourseDialog.setArguments(args);
-//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    progressDialog.dismiss();
-                    selectedCourseDialog.show(fm, "selected course dialog");
-                }
-                else {
-//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    progressDialog.dismiss();
-                }
-            }
-        };
-        thread.start();
-
-//        final boolean success = makeHttpRequests(s_course);
+//        Thread thread = new Thread(){
+//            @Override
+//            public void run() {
+//                boolean success = makeHttpRequests(s_course);
 //
-//        if(success) {
-//            Bundle args = new Bundle();
-//            args.putString("course", s_course);
-//            args.putString("json_stat_http", json_stat_http);
-//            args.putString("json_ranking_http", json_ranking_http);
-//            args.putBoolean("is_prof_of", is_prof_of);
-//            selectedCourseDialog.setArguments(args);
-//            progressDialog.dismiss();
-//            Toast.makeText(c, "dialog dismiss", Toast.LENGTH_SHORT).show();
-//            selectedCourseDialog.show(fm, "selected course dialog");
-//        }
-//        else {
-//            ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//            progressDialog.dismiss();
-//            Toast.makeText(c, "Unable to connect to server. Try again later", Toast.LENGTH_SHORT).show();
-//        }
+//                if(success) {
+//                    Bundle args = new Bundle();
+//                    args.putString("course", s_course);
+//                    args.putString("json_stat_http", json_stat_http);
+//                    args.putString("json_ranking_http", json_ranking_http);
+//                    args.putBoolean("is_prof_of", is_prof_of);
+//                    selectedCourseDialog.setArguments(args);
+//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                    progressDialog.dismiss();
+//                    selectedCourseDialog.show(fm, "selected course dialog");
+//                }
+//                else {
+//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                    progressDialog.dismiss();
+//                }
+//            }
+//        };
+//        thread.start();
+
+        boolean success = makeHttpRequests(s_course);
+
+        if(success) {
+            Bundle args = new Bundle();
+            args.putString("course", s_course);
+            args.putString("json_stat_http", json_stat_http);
+            args.putString("json_ranking_http", json_ranking_http);
+            args.putBoolean("is_prof_of", is_prof_of);
+            selectedCourseDialog.setArguments(args);
+            progressDialog.dismiss();
+            Toast.makeText(c, "dialog dismiss", Toast.LENGTH_SHORT).show();
+            selectedCourseDialog.show(fm, "selected course dialog");
+        }
+        else {
+            progressDialog.dismiss();
+            Toast.makeText(c, "Unable to connect to server. Try again later", Toast.LENGTH_SHORT).show();
+        }
 
 //        final Handler handler = new Handler();
 //        handler.post(new Runnable() {

@@ -71,6 +71,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_select);
 
+        CourseSelectLock.lock = new Object();
 
         CourseListView = findViewById(R.id.list_view);
         profile_btn = findViewById(R.id.profile_btn);
@@ -279,6 +280,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 Intent r_intent = new Intent(this, ProfessorActivity.class);
                 startActivity(r_intent);
                 break;
+
 
             default: break;
         }
