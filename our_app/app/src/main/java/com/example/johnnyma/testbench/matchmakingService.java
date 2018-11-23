@@ -22,14 +22,12 @@ import java.util.Random;
 public class MatchmakingService extends Service {
     private String name;
     private int rank;
-    private int pic;
     public String opponentUsername;
     public int opponentRank;
-    public int opponentPic;
     JSONArray questions;
     public Socket mSocket;
     {
-        try{
+        try {
             mSocket = IO.socket("http://40.78.64.46:3300/");
             SocketHandler.setSocket(mSocket);
         } catch (URISyntaxException e){}
