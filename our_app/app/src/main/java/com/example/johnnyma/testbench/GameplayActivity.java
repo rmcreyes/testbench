@@ -102,6 +102,8 @@ public class GameplayActivity extends AppCompatActivity {
         parseQuestions(starting_intent.getStringExtra("questions"));
 
         socket = SocketHandler.getSocket();
+        socket.on("turn_over", turnOver);
+        socket.on("start_question", readyQuestion);
         waitForQuestion();
     }
     protected void setPlayerAvatar(){
@@ -219,11 +221,7 @@ public class GameplayActivity extends AppCompatActivity {
         correct.setText(q.correctAnswer);*/
     }
 
-    protected void endTurn(){
-        Log.d("in endturn", "in endturn");
-        if (!turn_ended)
-            socket.on("turn_over", turnOver);
-    }
+
 
     protected void waitForQuestion() {
         // set fragment
@@ -233,20 +231,32 @@ public class GameplayActivity extends AppCompatActivity {
 //        loadingQuestionFragment = new LoadingQuestionFragment();
 //        loadingQuestionFragment.setArguments(args);
 //        fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
-        questionHeader.setText("Question " + currentQuestion + " of 7");
+        if (currentQuestion < 8)
+            questionHeader.setText("Question " + currentQuestion + " of 7");
         if (currentQuestion > 7)
             endGame();
         else {
             socket.emit("ready_next");
             // TODO: find a better way to do this
             Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
-            socket.on("start_question", readyQuestion);
         }
     }
+    protected void resetButtonColors(){
+//        incorrect1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+//        incorrect1.setTextColor(Color.parseColor("#ffffff"));
+//        incorrect2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+//        incorrect2.setTextColor(Color.parseColor("#ffffff"));
+//        incorrect3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+//        incorrect3.setTextColor(Color.parseColor("#ffffff"));
+//        correct.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+//        correct.setTextColor(Color.parseColor("#ffffff"));
+    }
     protected void playQuestion() {
+        resetButtonColors();
 //        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 //        fragmentTransaction.remove(loadingQuestionFragment).commit();
         answered = false;
+        turn_ended = false;
         Log.d("playQuestion", "in playQuestion");
 
         body.setText(questions.get(currentQuestion - 1).body);
@@ -258,22 +268,14 @@ public class GameplayActivity extends AppCompatActivity {
         incorrect1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!answered) {
+                if (!answered && !turn_ended) {
                     answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     // add to event answer time
-                    socket.emit("answer_wrong");
+                    socket.emit("on_answer", "ANSWER_WRONG", 0);
                     Log.d("answer 1 pressed", "here");
                     incorrect1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
                     incorrect1.setTextColor(Color.parseColor("#491212"));
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("run", "about to call endturn");
-                            endTurn();
-                        }
-                    }, 1000);
                 }
             }
         });
@@ -281,21 +283,15 @@ public class GameplayActivity extends AppCompatActivity {
         incorrect2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!answered) {
+                if (!answered && !turn_ended) {
                     answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     // add to event answer time
-                    socket.emit("answer_wrong");
+                    socket.emit("on_answer", "ANSWER_WRONG", 0);
                     incorrect2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
 
                     incorrect2.setTextColor(Color.parseColor("#491212"));
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            endTurn();
-                        }
-                    }, 1000);
+
                 }
             }
         });
@@ -303,20 +299,13 @@ public class GameplayActivity extends AppCompatActivity {
         incorrect3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!answered) {
+                if (!answered && !turn_ended) {
                     answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     // add to event answer time
-                    socket.emit("answer_wrong");
+                    socket.emit("on_answer", "ANSWER_WRONG", 0);
                     incorrect3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
                     incorrect3.setTextColor(Color.parseColor("#491212"));
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //end turn
-                        }
-                    }, 1000);
                 }
             }
         });
@@ -324,39 +313,31 @@ public class GameplayActivity extends AppCompatActivity {
         correct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!answered) {
+                if (!answered && !turn_ended) {
                     answer_time += System.currentTimeMillis() - time;
                     answered = true;
                     correct.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
 
                     correct.setTextColor(Color.parseColor("#0f2711"));
                     int score = calculateScore((int) System.currentTimeMillis() - time);
-                    socket.emit("answer_right", score);
-
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            endTurn();
-                        }
-                    }, 1000);
+                    socket.emit("on_answer", "ANSWER_RIGHT", score);
+                    Log.d("answer right", "answer right");
 
                 }
             }
         });
-
-        socket.on("turn_over", turnOver);
-
-        while (System.currentTimeMillis() - time < 10000);
-        socket.emit("answer_wrong");
+        while (System.currentTimeMillis() - time < 10000) {
+            Log.d("time since start", Integer.toString((int)System.currentTimeMillis() - time));
+        }
+        Log.d("timed out", "timeout" + currentQuestion);
+        //socket.emit("on_answer", "ANSWER_WRONG", 0);
         answer_time += 10000;
-        endTurn();
 
         // update score based on contents attached to event
     }
 
     protected void endGame(){
-        return;
+        finish();
     }
 
     protected void parseQuestions(String questionsString) {
@@ -375,20 +356,24 @@ public class GameplayActivity extends AppCompatActivity {
     public Emitter.Listener turnOver = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            Log.d("turnOver", "in turnover: " + currentQuestion);
+            turn_ended = true;
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
                 public void run() {
+                    Log.d("fuckkkk", "i'm running now");
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
                         if (scores.getBoolean("correct")) {
                             if (scores.getString("user").equals(player_name)) {
-                                player_score += scores.getInt("pts_incr");
+                                player_score += scores.getInt("points");
                             } else {
-                                opponent_score += scores.getInt("ptrs_incr");
+                                opponent_score += scores.getInt("points");
                             }
                         }
                     } catch (JSONException e) {
+                        Log.d("fuck","json exception in turnover");
                         return;
                     }
                     playerScore.setText("Score: " + player_score);
@@ -419,7 +404,7 @@ public class GameplayActivity extends AppCompatActivity {
     };
 
     protected int calculateScore(int answerTime){
-        return (10000 - answerTime) / 10000 * 500 + 500;
+        return (int) ((double)10000 - answerTime) / 10000 * 500 + 500;
     }
 
     private class Question {
