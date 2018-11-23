@@ -95,6 +95,92 @@ public class CourseAdapter extends BaseAdapter {
         // retrieve the list of course codes pertaining to the course header
         List<String> course_codes = Courses.get(s_course_header);
 
+        if(course_codes.size() == 2) {
+            Button btn1 = new Button(c);
+            btn1.setText(course_codes.get(0));
+            btn1.setTextSize(btn1.getTextSize() * 0.225f);
+            btn1.setTypeface(null, Typeface.BOLD);
+
+            GridLayout.LayoutParams params1 = new GridLayout.LayoutParams();
+            params1.setMargins(0, 30, 0, 40);
+            DisplayMetrics dm1 = c.getResources().getDisplayMetrics();
+            params1.width = dm1.widthPixels / 5;
+
+            params1.setGravity(Gravity.START);
+
+            btn1.setLayoutParams(params1);
+
+            btn1.setMaxHeight(0);
+
+            btn1.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorAccent, null));
+
+
+            course_grid.addView(btn1, 0);
+
+            btn1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // opens a dialog associated with the text of the button
+                    synchronized (CourseSelectLock.lock) {
+                        if (!CourseSelectLock.pressed) {
+                            CourseSelectLock.pressed = true;
+                            openDialog(s_course_header + ((Button) view).getText().toString());
+                        }
+                    }
+                }
+            });
+
+            Button btn2 = new Button(c);
+            btn2.setText(course_codes.get(0));
+            btn2.setTextSize(btn2.getTextSize() * 0.225f);
+            btn2.setTypeface(null, Typeface.BOLD);
+
+            GridLayout.LayoutParams params2 = new GridLayout.LayoutParams();
+            params2.setMargins(0, 30, 0, 40);
+            DisplayMetrics dm2 = c.getResources().getDisplayMetrics();
+            params2.width = dm2.widthPixels / 5;
+
+            params2.setGravity(Gravity.CENTER);
+
+            btn2.setLayoutParams(params2);
+
+            btn2.setMaxHeight(0);
+
+            btn2.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorAccent, null));
+
+
+            course_grid.addView(btn2, 1);
+
+            btn2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // opens a dialog associated with the text of the button
+                    synchronized (CourseSelectLock.lock) {
+                        if (!CourseSelectLock.pressed) {
+                            CourseSelectLock.pressed = true;
+                            openDialog(s_course_header + ((Button) view).getText().toString());
+                        }
+                    }
+                }
+            });
+
+            Button btn3 = new Button(c);
+            GridLayout.LayoutParams params3 = new GridLayout.LayoutParams();
+            params3.setMargins(0, 30, 0, 40);
+            params3.setGravity(Gravity.CENTER_VERTICAL);
+            btn3.setLayoutParams(params3);
+            course_grid.addView(btn3, 2);
+            btn3.setVisibility(View.INVISIBLE);
+
+
+
+            ImageView accent = v.findViewById(R.id.accent);
+            accent.getLayoutParams().height = course_grid.getHeight();
+
+            return v;
+
+        }
+
         // create a button for each course code of each course header
         for(int index = 0; index < course_codes.size(); index++) {
             Button btn = new Button(c);
