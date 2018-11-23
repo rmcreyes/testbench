@@ -116,7 +116,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:text="How many letters are in the word 'computer'?"
-                android:textSize="24dp"
+                android:textSize="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
