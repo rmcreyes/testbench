@@ -51,6 +51,7 @@ public class QuestionAdapter extends BaseAdapter {
         TextView question_text = (TextView) v.findViewById(R.id.question);
         TextView answer_text = (TextView) v.findViewById(R.id.answer);
 
+        TextView rate0 = (TextView) v.findViewById(R.id.rate0);
         TextView rate1 = (TextView) v.findViewById(R.id.rate1);
         TextView rate2 = (TextView) v.findViewById(R.id.rate2);
         TextView rate3 = (TextView) v.findViewById(R.id.rate3);
@@ -66,6 +67,7 @@ public class QuestionAdapter extends BaseAdapter {
         answer_text.setText(question.getCorrectAnswer());
 
         List<TextView> ratings = new ArrayList<TextView>();
+        ratings.add(rate0);
         ratings.add(rate1);
         ratings.add(rate2);
         ratings.add(rate3);
@@ -73,7 +75,12 @@ public class QuestionAdapter extends BaseAdapter {
         ratings.add(rate5);
 
         int rating = question.getRating();
-        ratings.get(rating - 1).setTextColor(ContextCompat.getColor(c, R.color.answerColor));
+        if(rating != -1)
+            ratings.get(rating).setTextColor(ContextCompat.getColor(c, R.color.answerColor));
+        else {
+            for(TextView r : ratings)
+                r.setVisibility(View.INVISIBLE);
+        }
 
         if(!question.isVerified())
             verified_question.setVisibility(View.INVISIBLE);
