@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /*
  * TODO: add loading question dialog
@@ -31,10 +34,10 @@ import java.util.Random;
 public class GameplayActivity extends AppCompatActivity {
     Socket socket; // socket handle
     // handles for all layout elements
-    Button incorrect1;
-    Button incorrect2;
-    Button incorrect3;
-    Button correct;
+    Button answer1;
+    Button answer2;
+    Button answer3;
+    Button answer4;
     TextView body;
     TextView playerName;
     TextView opponentName;
@@ -47,7 +50,6 @@ public class GameplayActivity extends AppCompatActivity {
     // all questions
     ArrayList<Question> questions;
 
-    LoadingQuestionFragment loadingQuestionFragment;
     String course;
     int player_score;
     int opponent_score;
@@ -56,9 +58,10 @@ public class GameplayActivity extends AppCompatActivity {
     int player_avatar;
     int opponent_avatar;
     int currentQuestion = 1;
-    boolean answered = false;
     int answer_time = 0;
+    boolean answered = false;
     boolean turn_ended = false;
+    boolean loading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,10 @@ public class GameplayActivity extends AppCompatActivity {
 
         questionHeader = findViewById(R.id.question_num);
 
+        answer1 = findViewById(R.id.answer_1);
+        answer2 = findViewById(R.id.answer_2);
+        answer3 = findViewById(R.id.answer_3);
+        answer4 = findViewById(R.id.answer_4);
         parseQuestions(starting_intent.getStringExtra("questions"));
 
         socket = SocketHandler.getSocket();
@@ -142,14 +149,10 @@ public class GameplayActivity extends AppCompatActivity {
 
 
     protected void randomizeAnswers(Question q){
-        incorrect1 = findViewById(R.id.answer_1);
-        incorrect1.setText(q.incorrectAnswer1);
-        incorrect2 = findViewById(R.id.answer_2);
-        incorrect2.setText(q.incorrectAnswer2);
-        incorrect3 = findViewById(R.id.answer_3);
-        incorrect3.setText(q.incorrectAnswer3);
-        correct = findViewById(R.id.answer_4);
-        correct.setText(q.correctAnswer);
+        answer1.setText(q.incorrectAnswer1);
+        answer1.setText(q.incorrectAnswer2);
+        answer4.setText(q.incorrectAnswer3);
+        answer4.setText(q.correctAnswer);
 
        /* ArrayList<Integer> answers = new ArrayList<>();
         Random random = new Random();
@@ -224,37 +227,37 @@ public class GameplayActivity extends AppCompatActivity {
 
 
     protected void waitForQuestion() {
-        // set fragment
-//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//        Bundle args = new Bundle();
-//        args.putString("message", "Get Ready for \n  Question"+ currentQuestion +"!");
-//        loadingQuestionFragment = new LoadingQuestionFragment();
-//        loadingQuestionFragment.setArguments(args);
-//        fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
-        if (currentQuestion < 8)
-            questionHeader.setText("Question " + currentQuestion + " of 7");
-        if (currentQuestion > 7)
-            endGame();
-        else {
-            socket.emit("ready_next");
-            // TODO: find a better way to do this
-            Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
-        }
+        resetButtonColors();
+        Bundle args = new Bundle();
+        args.putString("message", "Get Ready for \n  Question "+ currentQuestion +"!");
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
+        loadingQuestionFragment.setArguments(args);
+        ft.add(R.id.fragment_container, loadingQuestionFragment, "loading_question");
+        ft.commit();
+        socket.emit("ready_next");
+        // TODO: find a better way to do this
+        Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
     }
     protected void resetButtonColors(){
-//        incorrect1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
-//        incorrect1.setTextColor(Color.parseColor("#ffffff"));
-//        incorrect2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
-//        incorrect2.setTextColor(Color.parseColor("#ffffff"));
-//        incorrect3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
-//        incorrect3.setTextColor(Color.parseColor("#ffffff"));
-//        correct.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
-//        correct.setTextColor(Color.parseColor("#ffffff"));
+        answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+        answer1.setTextColor(Color.parseColor("#ffffff"));
+        answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+        answer2.setTextColor(Color.parseColor("#ffffff"));
+        answer3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+        answer3.setTextColor(Color.parseColor("#ffffff"));
+        answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
+        answer4.setTextColor(Color.parseColor("#ffffff"));
     }
     protected void playQuestion() {
-        resetButtonColors();
-//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//        fragmentTransaction.remove(loadingQuestionFragment).commit();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fm.findFragmentByTag("loading_question");
+        ft.remove(loadingQuestionFragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.commit();
         answered = false;
         turn_ended = false;
         Log.d("playQuestion", "in playQuestion");
@@ -265,22 +268,36 @@ public class GameplayActivity extends AppCompatActivity {
 
         // start timer
         final int time = (int)System.currentTimeMillis();
-        incorrect1.setOnClickListener(new View.OnClickListener() {
+        answer1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!answered && !turn_ended) {
                     answer_time += System.currentTimeMillis() - time;
                     answered = true;
-                    // add to event answer time
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     Log.d("answer 1 pressed", "here");
-                    incorrect1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
-                    incorrect1.setTextColor(Color.parseColor("#491212"));
+                    answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
+                    answer1.setTextColor(Color.parseColor("#491212"));
                 }
             }
         });
 
-        incorrect2.setOnClickListener(new View.OnClickListener() {
+        answer2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!answered && !turn_ended) {
+                    answer_time += System.currentTimeMillis() - time;
+                    answered = true;
+                    socket.emit("on_answer", "ANSWER_WRONG", 0);
+                    answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
+
+                    answer2.setTextColor(Color.parseColor("#491212"));
+
+                }
+            }
+        });
+
+        answer3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!answered && !turn_ended) {
@@ -288,37 +305,21 @@ public class GameplayActivity extends AppCompatActivity {
                     answered = true;
                     // add to event answer time
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
-                    incorrect2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
-
-                    incorrect2.setTextColor(Color.parseColor("#491212"));
-
+                    answer3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
+                    answer3.setTextColor(Color.parseColor("#491212"));
                 }
             }
         });
 
-        incorrect3.setOnClickListener(new View.OnClickListener() {
+        answer4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!answered && !turn_ended) {
                     answer_time += System.currentTimeMillis() - time;
                     answered = true;
-                    // add to event answer time
-                    socket.emit("on_answer", "ANSWER_WRONG", 0);
-                    incorrect3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
-                    incorrect3.setTextColor(Color.parseColor("#491212"));
-                }
-            }
-        });
+                    answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
 
-        correct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!answered && !turn_ended) {
-                    answer_time += System.currentTimeMillis() - time;
-                    answered = true;
-                    correct.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
-
-                    correct.setTextColor(Color.parseColor("#0f2711"));
+                    answer4.setTextColor(Color.parseColor("#0f2711"));
                     int score = calculateScore((int) System.currentTimeMillis() - time);
                     socket.emit("on_answer", "ANSWER_RIGHT", score);
                     Log.d("answer right", "answer right");
@@ -357,7 +358,6 @@ public class GameplayActivity extends AppCompatActivity {
         @Override
         public void call(final Object... args){
             Log.d("turnOver", "in turnover: " + currentQuestion);
-            turn_ended = true;
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
@@ -365,21 +365,23 @@ public class GameplayActivity extends AppCompatActivity {
                     Log.d("fuckkkk", "i'm running now");
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
-                        if (scores.getBoolean("correct")) {
+                        if (scores.getBoolean("correct") || (!scores.getBoolean("correct") && answered)) {
                             if (scores.getString("user").equals(player_name)) {
                                 player_score += scores.getInt("points");
                             } else {
                                 opponent_score += scores.getInt("points");
                             }
+                            turn_ended = true;
+                            playerScore.setText("Score: " + player_score);
+                            opponentScore.setText("Score: " + opponent_score);
+                            currentQuestion++;
+                            if (currentQuestion > 7) endGame();
+                            waitForQuestion();
                         }
                     } catch (JSONException e) {
                         Log.d("fuck","json exception in turnover");
                         return;
                     }
-                    playerScore.setText("Score: " + player_score);
-                    opponentScore.setText("Score: " + opponent_score);
-                    currentQuestion++;
-                    waitForQuestion();
                 }
             });
         }
@@ -389,14 +391,10 @@ public class GameplayActivity extends AppCompatActivity {
         @Override
         public void call(final Object... args){
             Log.d("readyQuestion", "in readyQuestion");
-
-            // int time = (int)System.currentTimeMillis();
-            // while(System.currentTimeMillis() - time < 3000);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
                 public void run() {
-                    Log.d("readyQuestion", "about to play question");
                     playQuestion();
                 }
             });
@@ -404,7 +402,7 @@ public class GameplayActivity extends AppCompatActivity {
     };
 
     protected int calculateScore(int answerTime){
-        return (int) ((double)10000 - answerTime) / 10000 * 500 + 500;
+        return (int)((10000.0 - answerTime) / 10000.0 * 50.0 + 50);
     }
 
     private class Question {
