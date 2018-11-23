@@ -208,16 +208,8 @@ public class GameplayActivity extends AppCompatActivity  {
 
 
     protected void randomizeAnswers(Question q){
-        answer1.setText(q.getIncorrectAnswer1());
-        answer2.setText(q.getIncorrectAnswer2());
-        answer3.setText(q.getIncorrectAnswer3());
-        answer4.setText(q.getCorrectAnswer());
-        ArrayList<String> answers = new ArrayList<>();
-        answers.add(q.getIncorrectAnswer1());
-        answers.add(q.getIncorrectAnswer2());
-        answers.add(q.getIncorrectAnswer3());
         Random random = new Random();
-        int rand = random.nextInt() % 4 + 1;
+        int rand = random.nextInt(4) + 1;
         switch (rand) {
             case 1: {
                 answer1.setText(q.getCorrectAnswer());
@@ -314,7 +306,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
-                    answerChosen(answer1, 1, 0);
+                    answerChosen(answer1, 1, (int)System.currentTimeMillis() - time);
                 }
             }
         });
@@ -325,7 +317,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
-                    answerChosen(answer2, 2, 0);
+                    answerChosen(answer2, 2, (int)System.currentTimeMillis() - time);
 
                 }
             }
@@ -337,7 +329,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
-                    answerChosen(answer3, 3, 0);
+                    answerChosen(answer3, 3, (int)System.currentTimeMillis() - time);
 
                 }
 
@@ -354,10 +346,11 @@ public class GameplayActivity extends AppCompatActivity  {
                 }
             }
         });
+        final int timedQuestion = currentQuestion;
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (!answered && !turn_ended) {
+                if (!answered && !turn_ended && timedQuestion == currentQuestion) {
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer_time += 10000;
                     answered = true;
@@ -369,10 +362,10 @@ public class GameplayActivity extends AppCompatActivity  {
 
     protected void answerChosen(Button answer, int num, int time) {
         if (num == correct_loc) {
+            socket.emit("on_answer", "ANSWER_RIGHT", calculateScore(time));
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
             answer.setTextColor(Color.parseColor("#0f2711"));
             int score = calculateScore(time);
-            socket.emit("on_answer", "ANSWER_RIGHT", score);
         } else {
             socket.emit("on_answer", "ANSWER_WRONG", 0);
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
@@ -421,6 +414,7 @@ public class GameplayActivity extends AppCompatActivity  {
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
                         if (scores.getBoolean("correct")) {
+                            turn_ended = true;
                             if (scores.getString("user").equals(player_name)) {
                                 player_score += scores.getInt("points");
                                 correctlyAnswered++;
@@ -429,7 +423,6 @@ public class GameplayActivity extends AppCompatActivity  {
                                 opponent_score += scores.getInt("points");
                                 round_winner = opponent_name;
                             }
-                            turn_ended = true;
                             playerScore.setText("Score: " + player_score);
                             opponentScore.setText("Score: " + opponent_score);
                             currentQuestion++;
