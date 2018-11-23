@@ -9,9 +9,17 @@
     <color name="crimson">#f93535</color>
     <color name="colorCoursetag">#e6e6e6</color>
 
+
     <color name="webworkGreen">#29722f</color>
 
     <color name="tophalfQuestion">#4e4e4e</color>
     <color name="bottomHalfQuestion">#303030</color>
     <color name="answerColor">#e7d75b</color>
+
+    <color name="colorButtonWrongAnswer">#c12727</color>
+    <color name="colorTextWrongAnswer">#491212</color>
+    <color name="colorButtonRightAnswer">#8FFF79</color>
+    <color name="colorTextRightAnswer">#0f2711</color>
+
+
 </resources>

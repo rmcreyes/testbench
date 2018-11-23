@@ -15,7 +15,7 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <service android:name=".matchmakingService" />
+        <service android:name=".MatchmakingService" />
 
         <activity android:name=".CourseSelectActivity">
 
@@ -50,6 +50,9 @@
         <activity android:name=".EmailActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".SettingsActivity" />
+
+        <activity android:name=".GameplayActivity"/>
+
         <activity android:name=".AddQuestionActivity" />
 
         <activity android:name=".ProfessorActivity">
