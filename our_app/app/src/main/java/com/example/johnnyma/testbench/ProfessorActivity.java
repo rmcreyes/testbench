@@ -1,6 +1,7 @@
 package com.example.johnnyma.testbench;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 public class ProfessorActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, ProfReviewDialog.ProfReviewDialogListener {
 
@@ -41,11 +44,16 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
 
     private int current_filter;
 
+    private String course;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_professor);
+
+        Intent intent = getIntent();
+        course = intent.getStringExtra("course");
 
         getQuestions();
 
@@ -190,65 +198,108 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
         resetQuestionList();
     }
 
+//    private void getQuestions(String questions_json) {
+//        allQuestions = new ArrayList<Question>();
+//
+//        try {
+//            JSONArray jsonArray = new JSONArray(questions_json);
+//
+//            for(int i = 0; i < jsonArray.length(); i++) {
+//                JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                allQuestions.add(new Question(jsonObject));
+//            }
+//        } catch(JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
 
 
     private void getQuestions() {
         allQuestions = new ArrayList<Question>();
 
+        String course_subject = course.substring(0, 4);
+        String course_number = course.substring(4, 7);
+
+        String course_questions;
+
         try {
-            JSONObject json1 = new JSONObject();
-            json1.put("_id", "some id");
-            json1.put("question_text", "This is a question?");
-            json1.put("correct_answer", "1 true true");
-            json1.put("incorrect_answer_1", "This is the first incorrect answer.");
-            json1.put("incorrect_answer_2", "This is the second incorrect answer.");
-            json1.put("incorrect_answer_3", "This is the third incorrect answer.");
-            json1.put("rating", 1);
-            json1.put("verified", true);
-            json1.put("reported", true);
-            allQuestions.add(new Question(json1));
-
-            JSONObject json2 = new JSONObject();
-            json2.put("_id", "some id");
-            json2.put("question_text", "This is a question?");
-            json2.put("correct_answer", "1 false false");
-            json2.put("incorrect_answer_1", "This is the first incorrect answer.");
-            json2.put("incorrect_answer_2", "This is the second incorrect answer.");
-            json2.put("incorrect_answer_3", "This is the third incorrect answer.");
-            json2.put("rating", 1);
-            json2.put("verified", false);
-            json2.put("reported", false);
-            allQuestions.add(new Question(json2));
-
-            JSONObject json3 = new JSONObject();
-            json3.put("_id", "some id");
-            json3.put("question_text", "This is a question?");
-            json3.put("correct_answer", "2 true false");
-            json3.put("incorrect_answer_1", "This is the first incorrect answer.");
-            json3.put("incorrect_answer_2", "This is the second incorrect answer.");
-            json3.put("incorrect_answer_3", "This is the third incorrect answer.");
-            json3.put("rating", 2);
-            json3.put("verified", true);
-            json3.put("reported", false);
-            allQuestions.add(new Question(json3));
-
-            JSONObject json4 = new JSONObject();
-            json4.put("_id", "some id");
-            json4.put("question_text", "This is a question?");
-            json4.put("correct_answer", "3 false false");
-            json4.put("incorrect_answer_1", "This is the first incorrect answer.");
-            json4.put("incorrect_answer_2", "This is the second incorrect answer.");
-            json4.put("incorrect_answer_3", "This is the third incorrect answer.");
-            json4.put("rating", 3);
-            json4.put("verified", false);
-            json4.put("reported", false);
-            allQuestions.add(new Question(json4));
-
-
-        } catch(JSONException e) {
-            Toast.makeText(this, "json exception", Toast.LENGTH_SHORT).show();
+            course_questions = new OkHttpTask().execute(OkHttpTask.GET_COURSE_QUESTIONS, course_subject, course_number).get();
+        } catch (InterruptedException e) {
+            Toast.makeText(this, "Failed to get questions", Toast.LENGTH_SHORT).show();
+            return;
+        } catch (ExecutionException e) {
+            Toast.makeText(this, "Failed to get questions", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        try {
+            JSONArray jsonArray = new JSONArray(course_questions);
+
+            for(int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                allQuestions.add(new Question(jsonObject));
+            }
+        } catch(JSONException e) {
+            Toast.makeText(this, "Failed to get questions", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+//        try {
+//            JSONObject json1 = new JSONObject();
+//            json1.put("_id", "some id");
+//            json1.put("question_text", "This is a question?");
+//            json1.put("correct_answer", "1 true true");
+//            json1.put("incorrect_answer_1", "This is the first incorrect answer.");
+//            json1.put("incorrect_answer_2", "This is the second incorrect answer.");
+//            json1.put("incorrect_answer_3", "This is the third incorrect answer.");
+//            json1.put("rating", 1);
+//            json1.put("verified", true);
+//            json1.put("reported", true);
+//            allQuestions.add(new Question(json1));
+//
+//            JSONObject json2 = new JSONObject();
+//            json2.put("_id", "some id");
+//            json2.put("question_text", "This is a question?");
+//            json2.put("correct_answer", "1 false false");
+//            json2.put("incorrect_answer_1", "This is the first incorrect answer.");
+//            json2.put("incorrect_answer_2", "This is the second incorrect answer.");
+//            json2.put("incorrect_answer_3", "This is the third incorrect answer.");
+//            json2.put("rating", 1);
+//            json2.put("verified", false);
+//            json2.put("reported", false);
+//            allQuestions.add(new Question(json2));
+//
+//            JSONObject json3 = new JSONObject();
+//            json3.put("_id", "some id");
+//            json3.put("question_text", "This is a question?");
+//            json3.put("correct_answer", "2 true false");
+//            json3.put("incorrect_answer_1", "This is the first incorrect answer.");
+//            json3.put("incorrect_answer_2", "This is the second incorrect answer.");
+//            json3.put("incorrect_answer_3", "This is the third incorrect answer.");
+//            json3.put("rating", 2);
+//            json3.put("verified", true);
+//            json3.put("reported", false);
+//            allQuestions.add(new Question(json3));
+//
+//            JSONObject json4 = new JSONObject();
+//            json4.put("_id", "some id");
+//            json4.put("question_text", "This is a question?");
+//            json4.put("correct_answer", "3 false false");
+//            json4.put("incorrect_answer_1", "This is the first incorrect answer.");
+//            json4.put("incorrect_answer_2", "This is the second incorrect answer.");
+//            json4.put("incorrect_answer_3", "This is the third incorrect answer.");
+//            json4.put("rating", 3);
+//            json4.put("verified", false);
+//            json4.put("reported", false);
+//            allQuestions.add(new Question(json4));
+//
+//
+//        } catch(JSONException e) {
+//            Toast.makeText(this, "json exception", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
     }
 
     @Override
