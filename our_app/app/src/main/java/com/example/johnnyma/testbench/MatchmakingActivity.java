@@ -27,7 +27,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
     private String playerUsername;
 
-    private String usernamePlayer;
 
     private TextView textview;
     private GifImageView loading_gif;
@@ -48,8 +47,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
                 opponentUsername = my_service.getOpponentUsername();
                 opponentRank = my_service.getOpponentRank();
 
-                opponentUsername = my_service.opponentUsername;
-                opponentRank = my_service.opponentRank;
+
 
                 textview.setVisibility(View.INVISIBLE);
                 loading_gif.setVisibility(View.INVISIBLE);
