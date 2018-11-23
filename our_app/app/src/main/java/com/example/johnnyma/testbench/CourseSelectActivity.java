@@ -60,6 +60,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private Bundle extras;
     private boolean isProf;
     private String username;
+    private String validUsername;
 
     // each course header(eg. CPEN) is a key to a list of course codes (eg. 311, 321, 331)
     private Map<String, List<String>> Courses;
@@ -115,22 +116,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             try {
                 username = u_json.getString("username");
             } catch (JSONException e) {
-                username = promptUsername();
-
-//                try {
-//                    user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
-//                    u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
-//                    username = u_json.getString("username");
-//                } catch (InterruptedException ed) {
-//                    user_json = null;
-//                    Log.d("BELHTDFG","InterruptedException");
-//                } catch (ExecutionException ed) {
-//                    user_json = null;
-//                    Log.d("BELHTDFG","ExecutionException");
-//                } catch (JSONException e1) {
-//                    e1.printStackTrace();
-//                }
-
+                promptUsername();
+                //Toast.makeText(CourseSelectActivity.this, "after prompt", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -154,6 +141,24 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         }
         fillCourses();
 
+
+        String json_stat_http = null;
+        try {
+            json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, "CPEN", Integer.toString(321)).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            JSONArray json_stat = new JSONArray(json_stat_http);
+            int ye = json_stat.getJSONObject(0).getJSONArray("stats_list").getJSONObject(0).getInt("rank");
+            //Toast.makeText(CourseSelectActivity.this, "OUR INT IS:" +ye, Toast.LENGTH_SHORT).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
         CourseAdapter courseAdapter = new CourseAdapter(this, Courses, getSupportFragmentManager());
@@ -265,7 +270,9 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 startActivity(intent);
                 break;
             case CourseActionDefs.ADD_QUESTION:
-                Toast.makeText(this, "ADD QUESTION " + course, Toast.LENGTH_SHORT).show();
+                Intent q_intent = new Intent(this, AddQuestionActivity.class);
+                q_intent.putExtra("course",course);
+                startActivity(q_intent);
                 break;
             case CourseActionDefs.GET_STATS:
                 Toast.makeText(this, "GET STATS " + course, Toast.LENGTH_SHORT).show();
@@ -304,7 +311,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         CourseListView.setAdapter(courseAdapter);
     }
 
-    private String promptUsername()
+    private void promptUsername()
     {
         AlertDialog.Builder alert = new AlertDialog.Builder(CourseSelectActivity.this);
 
@@ -312,7 +319,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         //this is what I did to added the layout to the alert dialog
         View layout=inflater.inflate(R.layout.dialog_assign_username,null);
         alert.setView(layout);
-
         final EditText usernameInput=(EditText)layout.findViewById(R.id.username_text);
         final TextView error_text = (TextView) layout.findViewById(R.id.error_text);
         alert.setCancelable(false).setPositiveButton(android.R.string.ok, null);
@@ -328,6 +334,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
                     @Override
                     public void onClick(View view) {
+
                         // TODO Do something
                         String un_resp;
                         try {
@@ -347,6 +354,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                                 ColorStateList colorStateList = ColorStateList.valueOf(Color.RED);
                                 ViewCompat.setBackgroundTintList(usernameInput, colorStateList);
                             } else {
+                                //validUsername = usernameInput.getText().toString();
+                                username = usernameInput.getText().toString();
                                 Toast.makeText(CourseSelectActivity.this, "username added!", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
                             }
@@ -357,7 +366,10 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             }
         });
         dialog.show();
-        return usernameInput.getText().toString();
+
+
+        Toast.makeText(CourseSelectActivity.this, username, Toast.LENGTH_SHORT).show();
+
     }
 
 }
