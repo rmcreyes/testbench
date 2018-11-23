@@ -135,7 +135,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 Log.d("BELHTDFG","ExecutionException");
             }
             if(course_json != null) {
-                Toast.makeText(CourseSelectActivity.this, course_json, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(CourseSelectActivity.this, course_json, Toast.LENGTH_SHORT).show();
             }
 
         }

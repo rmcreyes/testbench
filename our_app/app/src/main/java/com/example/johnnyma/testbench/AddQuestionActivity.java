@@ -3,6 +3,9 @@ package com.example.johnnyma.testbench;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -10,6 +13,8 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.security.Key;
 
 public class AddQuestionActivity extends AppCompatActivity {
 
@@ -36,6 +41,26 @@ public class AddQuestionActivity extends AppCompatActivity {
         wrongAnswer1 = findViewById(R.id.wrongAnswer1Input);
         wrongAnswer2 = findViewById(R.id.wrongAnswer2Input);
         wrongAnswer3 = findViewById(R.id.wrongAnswer3Input);
+
+        question.addTextChangedListener(new TextWatcher() {
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            public void afterTextChanged(Editable s) {
+                for(int i = s.length(); i > 0; i--) {
+
+                    if(s.subSequence(i-1, i).toString().equals("\n"))
+                        s.replace(i-1, i, "");
+                }
+            }
+        });
+
     }
 
     public void submitQuestionButton(View view){

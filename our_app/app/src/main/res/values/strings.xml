@@ -5,4 +5,29 @@
 
     <string name="facebook_app_id">988080468031187</string>
     <string name="fb_login_protocol_scheme">fb988080468031187</string>
+
+
+    <string-array name="planets_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
+
+    <string-array name="filter_array">
+        <item>All</item>
+        <item>Verified</item>
+        <item>Reported</item>
+        <item>Unchecked</item>
+    </string-array>
+
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
