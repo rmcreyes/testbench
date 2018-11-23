@@ -8,4 +8,9 @@
     <color name="UBCBlue">#002859</color>
     <color name="crimson">#f93535</color>
     <color name="colorCoursetag">#e6e6e6</color>
+    <color name="colorButtonWrongAnswer">#c12727</color>
+    <color name="colorTextWrongAnswer">#491212</color>
+    <color name="colorButtonRightAnswer">#8FFF79</color>
+    <color name="colorTextRightAnswer">#0f2711</color>
+
 </resources>

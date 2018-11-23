@@ -42,7 +42,7 @@ public class StartDialog extends AppCompatDialogFragment {
         username_opponent = view.findViewById(R.id.user_name);
         username_opponent.setText(opponentUserName);
         rank_opponent = view.findViewById(R.id.rank_field);
-        rank_opponent.setText("Rank " + opponentRank);
+        rank_opponent.setText("Rank " + Integer.toString(opponentRank));
         avatar_opponent = view.findViewById(R.id.avatar);
         switch(opponentRank % 6) {
             case 0: avatar_opponent.setImageResource(R.drawable.penguin_avatar);

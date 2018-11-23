@@ -4,11 +4,10 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -59,6 +58,7 @@ public class GameplayActivity extends AppCompatActivity {
     int currentQuestion = 1;
     boolean answered = false;
     int answer_time = 0;
+    boolean turn_ended = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class GameplayActivity extends AppCompatActivity {
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
-        player_avatar = starting_intent.getIntExtra("player_name", 0);
+        player_avatar = starting_intent.getIntExtra("player_rank", 0);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
 
@@ -140,7 +140,16 @@ public class GameplayActivity extends AppCompatActivity {
 
 
     protected void randomizeAnswers(Question q){
-        ArrayList<Integer> answers = new ArrayList<>();
+        incorrect1 = findViewById(R.id.answer_1);
+        incorrect1.setText(q.incorrectAnswer1);
+        incorrect2 = findViewById(R.id.answer_2);
+        incorrect2.setText(q.incorrectAnswer2);
+        incorrect3 = findViewById(R.id.answer_3);
+        incorrect3.setText(q.incorrectAnswer3);
+        correct = findViewById(R.id.answer_4);
+        correct.setText(q.correctAnswer);
+
+       /* ArrayList<Integer> answers = new ArrayList<>();
         Random random = new Random();
         int rand;
         while (answers.size() < 4) {
@@ -157,8 +166,10 @@ public class GameplayActivity extends AppCompatActivity {
                 break;
             case 2:
                 incorrect1 = findViewById(R.id.answer_3);
+                break;
             case 3:
                 incorrect1 = findViewById(R.id.answer_4);
+                break;
         }
         incorrect1.setText(q.incorrectAnswer1);
         switch (answers.indexOf(2)) {
@@ -170,8 +181,10 @@ public class GameplayActivity extends AppCompatActivity {
                 break;
             case 2:
                 incorrect2 = findViewById(R.id.answer_3);
+                break;
             case 3:
                 incorrect2 = findViewById(R.id.answer_4);
+                break;
         }
         incorrect2.setText(q.incorrectAnswer2);
         switch (answers.indexOf(3)) {
@@ -183,8 +196,10 @@ public class GameplayActivity extends AppCompatActivity {
                 break;
             case 2:
                 incorrect3 = findViewById(R.id.answer_3);
+                break;
             case 3:
                 incorrect3 = findViewById(R.id.answer_4);
+                break;
         }
         incorrect3.setText(q.incorrectAnswer3);
         switch (answers.indexOf(4)) {
@@ -196,24 +211,28 @@ public class GameplayActivity extends AppCompatActivity {
                 break;
             case 2:
                 correct = findViewById(R.id.answer_3);
+                break;
             case 3:
                 correct = findViewById(R.id.answer_4);
+                break;
         }
-        correct.setText(q.correctAnswer);
+        correct.setText(q.correctAnswer);*/
     }
 
     protected void endTurn(){
-        socket.on("turn_over", turnOver);
+        Log.d("in endturn", "in endturn");
+        if (!turn_ended)
+            socket.on("turn_over", turnOver);
     }
 
     protected void waitForQuestion() {
         // set fragment
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        Bundle args = new Bundle();
-        args.putString("message", "Get Ready for \n  Question"+ currentQuestion +"!");
-        loadingQuestionFragment = new LoadingQuestionFragment();
-        loadingQuestionFragment.setArguments(args);
-        fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        Bundle args = new Bundle();
+//        args.putString("message", "Get Ready for \n  Question"+ currentQuestion +"!");
+//        loadingQuestionFragment = new LoadingQuestionFragment();
+//        loadingQuestionFragment.setArguments(args);
+//        fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
         questionHeader.setText("Question " + currentQuestion + " of 7");
         if (currentQuestion > 7)
             endGame();
@@ -225,9 +244,11 @@ public class GameplayActivity extends AppCompatActivity {
         }
     }
     protected void playQuestion() {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.remove(loadingQuestionFragment).commit();
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        fragmentTransaction.remove(loadingQuestionFragment).commit();
         answered = false;
+        Log.d("playQuestion", "in playQuestion");
+
         body.setText(questions.get(currentQuestion - 1).body);
         // randomly assign questions to question buttons
         randomizeAnswers(questions.get(currentQuestion - 1));
@@ -242,12 +263,14 @@ public class GameplayActivity extends AppCompatActivity {
                     answered = true;
                     // add to event answer time
                     socket.emit("answer_wrong");
-                    incorrect1.setBackgroundColor(0xd69191);
-                    incorrect1.setTextColor(0x880000);
+                    Log.d("answer 1 pressed", "here");
+                    incorrect1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
+                    incorrect1.setTextColor(Color.parseColor("#491212"));
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            Log.d("run", "about to call endturn");
                             endTurn();
                         }
                     }, 1000);
@@ -263,8 +286,9 @@ public class GameplayActivity extends AppCompatActivity {
                     answered = true;
                     // add to event answer time
                     socket.emit("answer_wrong");
-                    incorrect2.setBackgroundColor(0xd69191);
-                    incorrect2.setTextColor(0x880000);
+                    incorrect2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
+
+                    incorrect2.setTextColor(Color.parseColor("#491212"));
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -284,8 +308,8 @@ public class GameplayActivity extends AppCompatActivity {
                     answered = true;
                     // add to event answer time
                     socket.emit("answer_wrong");
-                    incorrect3.setBackgroundColor(0xd69191);
-                    incorrect3.setTextColor(0x880000);
+                    incorrect3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
+                    incorrect3.setTextColor(Color.parseColor("#491212"));
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -303,8 +327,9 @@ public class GameplayActivity extends AppCompatActivity {
                 if (!answered) {
                     answer_time += System.currentTimeMillis() - time;
                     answered = true;
-                    correct.setBackgroundColor(0x885f89);
-                    correct.setTextColor(0x29722f);
+                    correct.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
+
+                    correct.setTextColor(Color.parseColor("#0f2711"));
                     int score = calculateScore((int) System.currentTimeMillis() - time);
                     socket.emit("answer_right", score);
 
@@ -319,11 +344,14 @@ public class GameplayActivity extends AppCompatActivity {
                 }
             }
         });
+
         socket.on("turn_over", turnOver);
+
         while (System.currentTimeMillis() - time < 10000);
         socket.emit("answer_wrong");
         answer_time += 10000;
         endTurn();
+
         // update score based on contents attached to event
     }
 
@@ -353,8 +381,13 @@ public class GameplayActivity extends AppCompatActivity {
                 public void run() {
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
-                        player_score = scores.getInt(player_name);
-                        opponent_score = scores.getInt(opponent_name);
+                        if (scores.getBoolean("correct")) {
+                            if (scores.getString("user").equals(player_name)) {
+                                player_score += scores.getInt("pts_incr");
+                            } else {
+                                opponent_score += scores.getInt("ptrs_incr");
+                            }
+                        }
                     } catch (JSONException e) {
                         return;
                     }
@@ -400,15 +433,15 @@ public class GameplayActivity extends AppCompatActivity {
 
         public Question(JSONObject questionJSON) {
             try {
-                id = questionJSON.getString("id");
+                id = questionJSON.getString("_id");
                 body = questionJSON.getString("question_text");
                 correctAnswer = questionJSON.getString("correct_answer");
                 incorrectAnswer1 = questionJSON.getString("incorrect_answer_1");
                 incorrectAnswer2 = questionJSON.getString("incorrect_answer_2");
                 incorrectAnswer3 = questionJSON.getString("incorrect_answer_3");
-                String endorsed = questionJSON.getString("professor_endorsed");
-                profEndorsed = endorsed.equals("1") ? true : false;
+                profEndorsed = questionJSON.getBoolean("verified");
             } catch (JSONException e) {
+                Log.d("in question constructor", "json exception");
                 return;
             }
         }
