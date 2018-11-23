@@ -1,14 +1,17 @@
 package com.example.johnnyma.testbench;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,7 +52,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
     private TextView course_ranking_txt;
     private TextView correctness_rate_txt;
     private TextView avg_response_time_txt;
-    private ProgressDialog progress_dialog;
     private String leaderboard_http;
     private JSONArray leaderboard_json;
     private TextView first_place;
@@ -84,11 +86,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         View v = inflater.inflate(R.layout.dialog_selected_course, null);
         builder.setView(v);
 
-        progress_dialog = new ProgressDialog(getContext());
-        progress_dialog.setMessage("Recieving data...");
-        progress_dialog.show();
-
-
         leaderboard_layout = v.findViewById(R.id.leaderboard_layout);
         stats_layout = v.findViewById(R.id.stats_layout);
         course_text = v.findViewById(R.id.course_text);
@@ -110,23 +107,23 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
 
         leaderboard_json = null;
 
-        String json_stat_http = null;
-        String json_ranking_http = null;
-        try {
-            json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, s_course.substring(0,4), s_course.substring(4,7)).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        String json_stat_http = getArguments().getString("json_stat_http");
+        String json_ranking_http = getArguments().getString("json_ranking_http");
+        // try {
+        //     json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, s_course.substring(0,4), s_course.substring(4,7)).get();
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // } catch (ExecutionException e) {
+        //     e.printStackTrace();
+        // }
 
-        try {
-            json_ranking_http = new OkHttpTask().execute(OkHttpTask.GET_RANK, s_course.substring(0,4), s_course.substring(4,7)).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        // try {
+        //     json_ranking_http = new OkHttpTask().execute(OkHttpTask.GET_RANK, s_course.substring(0,4), s_course.substring(4,7)).get();
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // } catch (ExecutionException e) {
+        //     e.printStackTrace();
+        // }
 
         try {
             JSONArray json_stat = new JSONArray(json_stat_http);
@@ -242,43 +239,46 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         });
 
         prof_btn = v.findViewById(R.id.prof_btn);
-        prof_btn.setVisibility(View.GONE);
+        if(getArguments().getBoolean("is_prof_of"))
+            prof_btn.setVisibility(View.VISIBLE);
+        else
+            prof_btn.setVisibility(View.GONE);
 
-        try {
-            String prof_courses_json = new OkHttpTask().execute(OkHttpTask.GET_PROF_COURSES).get();
-            try {
-                JSONArray jsonArray = new JSONArray(prof_courses_json);
+        // try {
+        //     String prof_courses_json = new OkHttpTask().execute(OkHttpTask.GET_PROF_COURSES).get();
+        //     try {
+        //         JSONArray jsonArray = new JSONArray(prof_courses_json);
 
 
-                for(int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+        //         for(int i = 0; i < jsonArray.length(); i++) {
+        //             JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                    String course_subject = jsonObject.getString("course_subject");
-                    int course_number = jsonObject.getInt("course_number");
+        //             String course_subject = jsonObject.getString("course_subject");
+        //             int course_number = jsonObject.getInt("course_number");
 
-                    if((course_subject + course_number).equals(s_course)) {
-                        prof_btn.setVisibility(View.VISIBLE);
-                        prof_btn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                listener.chooseCourseView(CourseActionDefs.REVIEW_QUESTIONS, s_course, 0);
-                                dismiss();
-                            }
-                        });
-                        break;
-                    }
+        //             if((course_subject + course_number).equals(s_course)) {
+        //                 prof_btn.setVisibility(View.VISIBLE);
+        //                 prof_btn.setOnClickListener(new View.OnClickListener() {
+        //                     @Override
+        //                     public void onClick(View view) {
+        //                         listener.chooseCourseView(CourseActionDefs.REVIEW_QUESTIONS, s_course, 0);
+        //                         dismiss();
+        //                     }
+        //                 });
+        //                 break;
+        //             }
 
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        //         }
+        //     } catch (JSONException e) {
+        //         e.printStackTrace();
+        //     }
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // } catch (ExecutionException e) {
+        //     e.printStackTrace();
+        // }
 
-        progress_dialog.dismiss();
+
         return builder.create();
     }
 
