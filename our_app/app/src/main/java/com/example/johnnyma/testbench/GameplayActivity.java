@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -79,6 +80,8 @@ public class GameplayActivity extends AppCompatActivity  {
     int player_rank;
     int opponent_rank;
     int num_false = 0;
+    int correct_loc;
+    int correctlyAnswered = 0;
     String round_winner = "";
 
     //emoji stuff
@@ -107,8 +110,8 @@ public class GameplayActivity extends AppCompatActivity  {
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
-        player_avatar = starting_intent.getIntExtra("player_rank", 0);
-        player_rank = starting_intent.getIntExtra("player_rank", 0);
+        player_avatar = starting_intent.getIntExtra("player_rank", 1);
+        player_rank = starting_intent.getIntExtra("player_rank", 1);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
 
@@ -116,8 +119,8 @@ public class GameplayActivity extends AppCompatActivity  {
         opponentName = findViewById(R.id.opponent_name);
         opponentName.setText(opponent_name);
 
-        opponent_avatar = starting_intent.getIntExtra("opponent_rank", 0);
-        opponent_rank = starting_intent.getIntExtra("opponent_rank", 0);
+        opponent_avatar = starting_intent.getIntExtra("opponent_rank", 1);
+        opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
         opponentAvatar = findViewById(R.id.opponent_avatar);
         setOpponentAvatar();
 
@@ -161,16 +164,22 @@ public class GameplayActivity extends AppCompatActivity  {
         switch(player_avatar % 6) {
             case 0:
                 playerAvatar.setImageResource(R.drawable.penguin_avatar);
+                break;
             case 1:
                 playerAvatar.setImageResource(R.drawable.mountain_avatar);
+                break;
             case 2:
                 playerAvatar.setImageResource(R.drawable.rocket_avatar);
+                break;
             case 3:
                 playerAvatar.setImageResource(R.drawable.frog_avatar);
+                break;
             case 4:
                 playerAvatar.setImageResource(R.drawable.thunderbird_avatar);
+                break;
             case 5:
                 playerAvatar.setImageResource(R.drawable.cupcake_avatar);
+                break;
         }
     }
 
@@ -178,97 +187,64 @@ public class GameplayActivity extends AppCompatActivity  {
         switch(opponent_avatar % 6) {
             case 0:
                 opponentAvatar.setImageResource(R.drawable.penguin_avatar);
+                break;
             case 1:
                 opponentAvatar.setImageResource(R.drawable.mountain_avatar);
+                break;
             case 2:
                 opponentAvatar.setImageResource(R.drawable.rocket_avatar);
+                break;
             case 3:
                 opponentAvatar.setImageResource(R.drawable.frog_avatar);
+                break;
             case 4:
                 opponentAvatar.setImageResource(R.drawable.thunderbird_avatar);
+                break;
             case 5:
                 opponentAvatar.setImageResource(R.drawable.cupcake_avatar);
+                break;
         }
     }
 
 
     protected void randomizeAnswers(Question q){
-        answer1.setText(q.getIncorrectAnswer1());
-        answer1.setText(q.getIncorrectAnswer2());
-        answer4.setText(q.getIncorrectAnswer3());
-        answer4.setText(q.getCorrectAnswer());
-
-       /* ArrayList<Integer> answers = new ArrayList<>();
         Random random = new Random();
-        int rand;
-        while (answers.size() < 4) {
-            rand = random.nextInt() % 4 + 1;
-            if(answers.contains(rand))
-                answers.add(rand);
+        int rand = random.nextInt(4) + 1;
+        switch (rand) {
+            case 1: {
+                answer1.setText(q.getCorrectAnswer());
+                correct_loc = 1;
+                answer2.setText(q.getIncorrectAnswer1());
+                answer3.setText(q.getIncorrectAnswer2());
+                answer4.setText(q.getIncorrectAnswer3());
+                break;
+            }
+            case 2: {
+                answer2.setText(q.getCorrectAnswer());
+                correct_loc = 2;
+                answer1.setText(q.getIncorrectAnswer1());
+                answer3.setText(q.getIncorrectAnswer2());
+                answer4.setText(q.getIncorrectAnswer3());
+                break;
+            }
+            case 3: {
+                answer3.setText(q.getCorrectAnswer());
+                correct_loc = 3;
+                answer1.setText(q.getIncorrectAnswer1());
+                answer2.setText(q.getIncorrectAnswer2());
+                answer4.setText(q.getIncorrectAnswer3());
+                break;
+            }
+            case 4: {
+                answer4.setText(q.getCorrectAnswer());
+                correct_loc = 4;
+                answer1.setText(q.getIncorrectAnswer1());
+                answer2.setText(q.getIncorrectAnswer2());
+                answer3.setText(q.getIncorrectAnswer3());
+                break;
+            }
         }
-        switch (answers.indexOf(1)) {
-            case 0:
-                incorrect1 = findViewById(R.id.answer_1);
-                break;
-            case 1:
-                incorrect1 = findViewById(R.id.answer_2);
-                break;
-            case 2:
-                incorrect1 = findViewById(R.id.answer_3);
-                break;
-            case 3:
-                incorrect1 = findViewById(R.id.answer_4);
-                break;
-        }
-        incorrect1.setText(q.incorrectAnswer1);
-        switch (answers.indexOf(2)) {
-            case 0:
-                incorrect2 = findViewById(R.id.answer_1);
-                break;
-            case 1:
-                incorrect2 = findViewById(R.id.answer_2);
-                break;
-            case 2:
-                incorrect2 = findViewById(R.id.answer_3);
-                break;
-            case 3:
-                incorrect2 = findViewById(R.id.answer_4);
-                break;
-        }
-        incorrect2.setText(q.incorrectAnswer2);
-        switch (answers.indexOf(3)) {
-            case 0:
-                incorrect3 = findViewById(R.id.answer_1);
-                break;
-            case 1:
-                incorrect3 = findViewById(R.id.answer_2);
-                break;
-            case 2:
-                incorrect3 = findViewById(R.id.answer_3);
-                break;
-            case 3:
-                incorrect3 = findViewById(R.id.answer_4);
-                break;
-        }
-        incorrect3.setText(q.incorrectAnswer3);
-        switch (answers.indexOf(4)) {
-            case 0:
-                correct = findViewById(R.id.answer_1);
-                break;
-            case 1:
-                correct = findViewById(R.id.answer_2);
-                break;
-            case 2:
-                correct = findViewById(R.id.answer_3);
-                break;
-            case 3:
-                correct = findViewById(R.id.answer_4);
-                break;
-        }
-        correct.setText(q.correctAnswer);*/
     }
-
-
 
     protected void waitForQuestion() {
         num_false = 0;
@@ -278,7 +254,8 @@ public class GameplayActivity extends AppCompatActivity  {
             endGame();
         } else {
             args.putString("next_q_msg", "Get Ready for \n  Question " + currentQuestion + "!");
-            args.putString("round_win_msg", round_winner);
+            args.putString("round_winner", round_winner);
+            args.putInt("winner_avatar", round_winner.equals(player_name) ? player_avatar : opponent_avatar);
         }
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -329,10 +306,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
-                    socket.emit("on_answer", "ANSWER_WRONG", 0);
-                    Log.d("answer 1 pressed", "here");
-                    answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
-                    answer1.setTextColor(Color.parseColor("#491212"));
+                    answerChosen(answer1, 1, (int)System.currentTimeMillis() - time);
                 }
             }
         });
@@ -343,9 +317,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
-                    socket.emit("on_answer", "ANSWER_WRONG", 0);
-                    answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
-                    answer2.setTextColor(Color.parseColor("#491212"));
+                    answerChosen(answer2, 2, (int)System.currentTimeMillis() - time);
 
                 }
             }
@@ -357,10 +329,8 @@ public class GameplayActivity extends AppCompatActivity  {
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
-                    // add to event answer time
-                    socket.emit("on_answer", "ANSWER_WRONG", 0);
-                    answer3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
-                    answer3.setTextColor(Color.parseColor("#491212"));
+                    answerChosen(answer3, 3, (int)System.currentTimeMillis() - time);
+
                 }
 
             }
@@ -372,29 +342,39 @@ public class GameplayActivity extends AppCompatActivity  {
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
-                    answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
-
-                    answer4.setTextColor(Color.parseColor("#0f2711"));
-                    int score = calculateScore((int) System.currentTimeMillis() - time);
-                    socket.emit("on_answer", "ANSWER_RIGHT", score);
-                    Log.d("answer right", "answer right");
-
+                    answerChosen(answer4, 4, (int) System.currentTimeMillis() - time);
                 }
             }
         });
+        final int timedQuestion = currentQuestion;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (!answered && !turn_ended && timedQuestion == currentQuestion) {
+                    socket.emit("on_answer", "ANSWER_WRONG", 0);
+                    answer_time += 10000;
+                    answered = true;
+                }
+            }
+        }, 10000);
 
-        while (System.currentTimeMillis() - time < 10000) {
-            Log.d("time since start", Integer.toString((int)System.currentTimeMillis() - time));
-        }
-        Log.d("timed out", "timeout" + currentQuestion);
-        //socket.emit("on_answer", "ANSWER_WRONG", 0);
-        answer_time += 10000;
-
-
-        // update score based on contents attached to event
     }
 
+    protected void answerChosen(Button answer, int num, int time) {
+        if (num == correct_loc) {
+            socket.emit("on_answer", "ANSWER_RIGHT", calculateScore(time));
+            answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
+            answer.setTextColor(Color.parseColor("#0f2711"));
+            int score = calculateScore(time);
+        } else {
+            socket.emit("on_answer", "ANSWER_WRONG", 0);
+            answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
+            answer.setTextColor(Color.parseColor("#491212"));
+        }
+    }
     protected void endGame(){
+        Log.d("response time (ms)", Integer.toString(answer_time));
+        Log.d("number correct", Integer.toString(correctlyAnswered));
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
         scoreIntent.putExtra("opponent_score",opponent_score);
@@ -405,9 +385,10 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("player_avatar",player_avatar);
         scoreIntent.putExtra("opponent_avatar",opponent_avatar);
         scoreIntent.putExtra("course_subject", course.substring(0,4));
-        scoreIntent.putExtra("course_number", course.substring(4,7));
+        scoreIntent.putExtra("course_number", Integer.parseInt(course.substring(4,7)));
+        scoreIntent.putExtra("response_time", answer_time/1000.0);
+        scoreIntent.putExtra("num_correct", correctlyAnswered);
         startActivity(scoreIntent);
-        //finish();
     }
 
     protected void parseQuestions(String questionsString) {
@@ -426,23 +407,20 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener turnOver = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            Log.d("turnOver", "in turnover: " + currentQuestion);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable(){
                 @Override
                 public void run() {
-                    Log.d("fuckkkk", "i'm running now");
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
-                        Log.d("this is the bool: ", Boolean.toString(scores.getBoolean("correct")));
                         if (scores.getBoolean("correct")) {
-                            Log.d("fuckkkk", "turn is actually over");
                             if (scores.getString("user").equals(player_name)) {
                                 player_score += scores.getInt("points");
-                                round_winner = player_name +" won \nlast round!";
+                                correctlyAnswered++;
+                                round_winner = player_name;
                             } else {
                                 opponent_score += scores.getInt("points");
-                                round_winner = opponent_name +" won \nlast round!";
+                                round_winner = opponent_name;
                             }
                             turn_ended = true;
                             playerScore.setText("Score: " + player_score);
@@ -458,7 +436,7 @@ public class GameplayActivity extends AppCompatActivity  {
                             if (num_false > 1) {
                                 turn_ended = true;
                                 currentQuestion++;
-                                round_winner = "Nobody won \nlast round!";
+                                round_winner = "no winner";
                                 if (currentQuestion > 7) {
                                     endGame();
                                 } else {
@@ -578,31 +556,7 @@ public class GameplayActivity extends AppCompatActivity  {
     protected int calculateScore(int answerTime){
         return (int)((10000.0 - answerTime) / 10000.0 * 50.0 + 50) + (questions.get(currentQuestion - 1).isVerified() ? 50 : 0);
     }
-//
-//    private class Question {
-//        String id;
-//        String body;
-//        String correctAnswer;
-//        String incorrectAnswer1;
-//        String incorrectAnswer2;
-//        String incorrectAnswer3;
-//        boolean profEndorsed;
-//
-//        public Question(JSONObject questionJSON) {
-//            try {
-//                id = questionJSON.getString("_id");
-//                body = questionJSON.getString("question_text");
-//                correctAnswer = questionJSON.getString("correct_answer");
-//                incorrectAnswer1 = questionJSON.getString("incorrect_answer_1");
-//                incorrectAnswer2 = questionJSON.getString("incorrect_answer_2");
-//                incorrectAnswer3 = questionJSON.getString("incorrect_answer_3");
-//                profEndorsed = questionJSON.getBoolean("verified");
-//            } catch (JSONException e) {
-//                Log.d("in question constructor", "json exception");
-//                return;
-//            }
-//        }
-//    }
+
 
     /*
         USED DURING ONCREATE
