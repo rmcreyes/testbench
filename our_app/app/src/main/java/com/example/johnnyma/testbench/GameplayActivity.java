@@ -11,14 +11,10 @@ import android.os.Looper;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-<<<<<<< HEAD
 import android.util.Log;
-=======
 import android.view.Gravity;
 import android.view.LayoutInflater;
->>>>>>> f8c79469a6f1a658febf64709fda3a55f449dc42
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -37,9 +33,7 @@ import java.util.TimerTask;
  */
 
 
-<<<<<<< HEAD
-public class GameplayActivity extends AppCompatActivity {
-=======
+
 public class GameplayActivity extends AppCompatActivity  {
 
     //emoji encondings
@@ -51,7 +45,6 @@ public class GameplayActivity extends AppCompatActivity  {
     public static final int EMOJI_HEART = 5;
     public static final int EMOJI_CRYLAUGH = 6;
 
->>>>>>> f8c79469a6f1a658febf64709fda3a55f449dc42
     Socket socket; // socket handle
     // handles for all layout elements
     Button answer1;
@@ -82,6 +75,9 @@ public class GameplayActivity extends AppCompatActivity  {
     boolean answered = false;
     boolean turn_ended = false;
     boolean loading = false;
+    int player_rank;
+    int opponent_rank;
+    int num_false = 0;
 
     //emoji stuff
     ImageView emoji_bigthink;
@@ -101,19 +97,16 @@ public class GameplayActivity extends AppCompatActivity  {
         Intent starting_intent = getIntent();
 
         course = starting_intent.getStringExtra("course");
-<<<<<<< HEAD
+
         courseHeader = findViewById(R.id.course_header);
-        courseHeader.setText(course);
-=======
-        courseHeader = findViewById(R.id.course);
         courseHeader.setText(course.substring(0,4)+ " " + course.substring(4, 7));
->>>>>>> f8c79469a6f1a658febf64709fda3a55f449dc42
 
         player_name = starting_intent.getStringExtra("player_name");
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
         player_avatar = starting_intent.getIntExtra("player_rank", 0);
+        player_rank = starting_intent.getIntExtra("player_rank", 0);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
 
@@ -122,6 +115,7 @@ public class GameplayActivity extends AppCompatActivity  {
         opponentName.setText(opponent_name);
 
         opponent_avatar = starting_intent.getIntExtra("opponent_rank", 0);
+        opponent_rank = starting_intent.getIntExtra("opponent_rank", 0);
         opponentAvatar = findViewById(R.id.opponent_avatar);
         setOpponentAvatar();
 
@@ -138,13 +132,11 @@ public class GameplayActivity extends AppCompatActivity  {
 
         questionHeader = findViewById(R.id.question_num);
 
-<<<<<<< HEAD
         answer1 = findViewById(R.id.answer_1);
         answer2 = findViewById(R.id.answer_2);
         answer3 = findViewById(R.id.answer_3);
         answer4 = findViewById(R.id.answer_4);
         parseQuestions(starting_intent.getStringExtra("questions"));
-=======
         //set emoji views and onclick listners for emojis
         emoji_ok = (ImageView) findViewById(R.id.ok_emoji2);
         emoji_poop = (ImageView) findViewById(R.id.ok_emoji);
@@ -154,10 +146,10 @@ public class GameplayActivity extends AppCompatActivity  {
         emoji_crylaugh = (ImageView) findViewById(R.id.crylaugh_emoji);
         emoji_heart = (ImageView) findViewById(R.id.heart_emoji);
         setEmojiListeners();
-        socket.on("broadcast_emoji", popupEmoji);
->>>>>>> f8c79469a6f1a658febf64709fda3a55f449dc42
 
         socket = SocketHandler.getSocket();
+
+        socket.on("broadcast_emoji", popupEmoji);
         socket.on("turn_over", turnOver);
         socket.on("start_question", readyQuestion);
         waitForQuestion();
@@ -276,6 +268,7 @@ public class GameplayActivity extends AppCompatActivity  {
 
 
     protected void waitForQuestion() {
+        num_false = 0;
         resetButtonColors();
         Bundle args = new Bundle();
         args.putString("message", "Get Ready for \n  Question "+ currentQuestion +"!");
@@ -285,7 +278,12 @@ public class GameplayActivity extends AppCompatActivity  {
         loadingQuestionFragment.setArguments(args);
         ft.add(R.id.fragment_container, loadingQuestionFragment, "loading_question");
         ft.commit();
-        socket.emit("ready_next");
+        if(currentQuestion < 8) {
+            questionHeader.setText("Question " + currentQuestion + " of 7");
+            socket.emit("ready_next");
+        } else {
+            endGame();
+        }
         // TODO: find a better way to do this
         Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
     }
@@ -321,8 +319,8 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (!answered && !turn_ended) {
-                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
+                    answer_time += System.currentTimeMillis() - time;
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     Log.d("answer 1 pressed", "here");
                     answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
@@ -335,8 +333,8 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (!answered && !turn_ended) {
-                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
+                    answer_time += System.currentTimeMillis() - time;
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
 
@@ -351,8 +349,8 @@ public class GameplayActivity extends AppCompatActivity  {
             public void onClick(View view) {
 
                 if (!answered && !turn_ended) {
-                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
+                    answer_time += System.currentTimeMillis() - time;
                     // add to event answer time
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
@@ -366,8 +364,8 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if (!answered && !turn_ended) {
-                    answer_time += System.currentTimeMillis() - time;
                     answered = true;
+                    answer_time += System.currentTimeMillis() - time;
                     answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
 
                     answer4.setTextColor(Color.parseColor("#0f2711"));
@@ -391,7 +389,6 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     protected void endGame(){
-
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
         scoreIntent.putExtra("opponent_score",opponent_score);
@@ -404,7 +401,6 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("course_subject", course.substring(0,4));
         scoreIntent.putExtra("course_number", course.substring(4,7));
         startActivity(scoreIntent);
-
         finish();
     }
 
@@ -432,7 +428,9 @@ public class GameplayActivity extends AppCompatActivity  {
                     Log.d("fuckkkk", "i'm running now");
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
-                        if (scores.getBoolean("correct") || (!scores.getBoolean("correct") && answered)) {
+                        Log.d("this is the bool: ", Boolean.toString(scores.getBoolean("correct")));
+                        if (scores.getBoolean("correct")) {
+                            Log.d("fuckkkk", "turn is actually over");
                             if (scores.getString("user").equals(player_name)) {
                                 player_score += scores.getInt("points");
                             } else {
@@ -444,6 +442,14 @@ public class GameplayActivity extends AppCompatActivity  {
                             currentQuestion++;
                             if (currentQuestion > 7) endGame();
                             waitForQuestion();
+                        } else {
+                            num_false++;
+                            if (num_false > 1) {
+                                turn_ended = true;
+                                currentQuestion++;
+                                if (currentQuestion > 7) endGame();
+                                waitForQuestion();
+                            }
                         }
                     } catch (JSONException e) {
                         Log.d("fuck","json exception in turnover");
@@ -478,7 +484,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 public void run() {
                     try {
                         JSONArray questions = new JSONArray((String) args[0]);
-                        parseQuestions(questions);
+                        parseQuestions(questions.toString());
                     } catch (JSONException e) {
                         return;
                     }

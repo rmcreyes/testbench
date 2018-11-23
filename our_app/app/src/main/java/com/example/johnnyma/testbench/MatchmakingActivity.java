@@ -84,7 +84,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
 
         //handler.removeCallback(runnable);
-        stopService(new Intent(this, matchmakingService.class));
+        stopService(new Intent(this, MatchmakingService.class));
 
         finish();
 

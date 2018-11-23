@@ -50,7 +50,7 @@ public class SplashActivity extends AppCompatActivity {
                         if(JWT_Json != null) {
                             JSONObject jwt_raw = new JSONObject(JWT_Json);
                             GlobalTokens.JWT_KEY = jwt_raw.getString("token");
-                            Toast.makeText(SplashActivity.this, "JWT KEY: " + GlobalTokens.JWT_KEY, Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(SplashActivity.this, "JWT KEY: " + GlobalTokens.JWT_KEY, Toast.LENGTH_SHORT).show();
                             Log.d("BELHTDFG","JWT KEY: " + GlobalTokens.JWT_KEY);
                             // retrieve relevant Facebook account information for use in the main activity,
                             // and send it in the intent
@@ -58,7 +58,7 @@ public class SplashActivity extends AppCompatActivity {
                             String profile_pic_url = profile_pic.toString();
                             String email = object.getString("email");
                             String name = object.getString("first_name");
-                            Toast.makeText(SplashActivity.this, email, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(SplashActivity.this, email, Toast.LENGTH_SHORT).show();
 
                             // testing use of HTTP requests with OkHttpTask
                             String toToast;
@@ -69,9 +69,9 @@ public class SplashActivity extends AppCompatActivity {
                             } catch (ExecutionException e) {
                                 toToast = null;
                             }
-                            if(toToast != null)
+                            /*if(toToast != null)
                                 Toast.makeText(SplashActivity.this, toToast, Toast.LENGTH_SHORT).show();
-
+*/
                             Intent intent = new Intent(SplashActivity.this, CourseSelectActivity.class);
                             intent.putExtra("profile_pic_url", profile_pic_url);
                             intent.putExtra("email", email);

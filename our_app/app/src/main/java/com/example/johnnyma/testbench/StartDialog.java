@@ -32,7 +32,7 @@ public class StartDialog extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         String opponentUserName = getArguments().getString("opponent_username");
-        int opponentRank = getArguments().getInt("opponent_rank");
+        int opponentRank = Integer.parseInt(getArguments().getString("opponent_rank"));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_start_game, null);
