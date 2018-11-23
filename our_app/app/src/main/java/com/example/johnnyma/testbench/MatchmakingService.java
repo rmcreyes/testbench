@@ -22,10 +22,10 @@ import java.util.Random;
 public class MatchmakingService extends Service {
     private String name;
     private int rank;
-    public String opponentUsername;
-    public int opponentRank;
-    JSONArray questions;
-    public Socket mSocket;
+    private String opponentUsername;
+    private int opponentRank;
+    private JSONArray questions;
+    private Socket mSocket;
     {
         try {
             mSocket = IO.socket("http://40.78.64.46:3300/");
@@ -49,10 +49,10 @@ public class MatchmakingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         mSocket.connect();
         courseID = intent.getStringExtra(MatchmakingActivity.TAG);
+        rank = intent.getIntExtra("rank",1);
         name = intent.getStringExtra("name");
         Random rand = new Random();
 
-        rank = rand.nextInt(100) + 1;
 
         Toast.makeText(MatchmakingService.this, "name: " + name + "\n rank: " + rank, Toast.LENGTH_LONG).show();
         queueForGame();
@@ -76,7 +76,15 @@ public class MatchmakingService extends Service {
         }
     }
 
-
+    protected String getOpponentUsername() {
+        return opponentUsername;
+    }
+    protected int getOpponentRank() {
+        return opponentRank;
+    }
+    protected JSONArray getQuestions() {
+        return questions;
+    }
     public boolean isMatchFound(){
         return match_found;
     }

@@ -20,9 +20,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     private boolean is_bound = false;
     private int timeout = 0; //timeout counter used in Runnable runnable
     private Handler handler = new Handler();
-    private String usernamePlayer;
+    private String playerUsername;
     // these must be stored/obtained somewhere,
-    private int playerRank = 99;
+    private int playerRank;
     private Socket socket;
     private String opponentUsername;
     private int opponentRank;
@@ -30,8 +30,8 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         @Override
         public void run() {
             if(my_service.isMatchFound()){
-                opponentUsername = my_service.opponentUsername;
-                opponentRank = my_service.opponentRank;
+                opponentUsername = my_service.getOpponentUsername();
+                opponentRank = my_service.getOpponentRank();
                 showStartDialog();
                 //exit match making activity and stop service
                 //TODO Dont just stop it, destroy it
@@ -56,14 +56,16 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         setContentView(R.layout.activity_matchmaking);
         Intent starting_intent = getIntent();
         courseID = starting_intent.getStringExtra(CourseSelectActivity.TAG).replaceAll("\\s+","").toUpperCase();
-        usernamePlayer = starting_intent.getStringExtra("name");
+        playerUsername = starting_intent.getStringExtra("name");
+        playerRank = starting_intent.getIntExtra("rank", 1);
 
         socket = SocketHandler.getSocket();
 
         //start the service
         Intent service_intent = new Intent(this, MatchmakingService.class);
         service_intent.putExtra(TAG, this.courseID);
-        service_intent.putExtra("name", usernamePlayer);
+        service_intent.putExtra("name", playerUsername);
+        service_intent.putExtra("rank", playerRank);
         startService(service_intent);
         boolean bounded = bindService(service_intent, my_connection, Context.BIND_AUTO_CREATE);
 
@@ -121,12 +123,12 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             Toast.makeText(getApplicationContext(), "start pressed", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MatchmakingActivity.this, GameplayActivity.class);
             intent.putExtra("course", courseID);
-            intent.putExtra("player_name", usernamePlayer);
+            intent.putExtra("player_name", playerUsername);
             intent.putExtra("player_rank", playerRank);
             intent.putExtra("opponent_name", opponentUsername);
             intent.putExtra("opponent_name", opponentUsername);
             intent.putExtra("opponent_rank", opponentRank);
-            intent.putExtra("questions", my_service.questions.toString());
+            intent.putExtra("questions", my_service.getQuestions().toString());
             // add intent extras necessary for game
             startActivity(intent);
         } else {
