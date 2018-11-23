@@ -11,11 +11,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +48,7 @@ public class GameplayActivity extends AppCompatActivity {
     // all questions
     ArrayList<Question> questions;
 
+    LoadingQuestionFragment loadingQuestionFragment;
     String course;
     int player_score;
     int opponent_score;
@@ -60,8 +59,6 @@ public class GameplayActivity extends AppCompatActivity {
     int currentQuestion = 1;
     boolean answered = false;
     int answer_time = 0;
-    private PopupWindow loadingPopup;
-    private LayoutInflater loadingLayoutInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,9 +209,9 @@ public class GameplayActivity extends AppCompatActivity {
     protected void waitForQuestion() {
         // set fragment
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
         Bundle args = new Bundle();
         args.putString("message", "Get Ready for \n  Question"+ currentQuestion +"!");
+        loadingQuestionFragment = new LoadingQuestionFragment();
         loadingQuestionFragment.setArguments(args);
         fragmentTransaction.add(R.id.fragment_container, loadingQuestionFragment).commit();
         questionHeader.setText("Question " + currentQuestion + " of 7");
@@ -228,13 +225,10 @@ public class GameplayActivity extends AppCompatActivity {
         }
     }
     protected void playQuestion() {
-        FragmentTransaction fragmentTransaction;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fragmentManager.findFragmentById(R.id.fragment_container);
-        fragmentTransaction = fragmentManager.beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.remove(loadingQuestionFragment).commit();
         answered = false;
-        body.setText(questions.get(currentQuestion).body);
+        body.setText(questions.get(currentQuestion - 1).body);
         // randomly assign questions to question buttons
         randomizeAnswers(questions.get(currentQuestion - 1));
 
