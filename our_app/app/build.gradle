@@ -4,13 +4,16 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.example.johnnyma.testbench"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+
         // TODO testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
+
     buildTypes {
         release {
             minifyEnabled false
