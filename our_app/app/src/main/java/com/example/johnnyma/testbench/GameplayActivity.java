@@ -74,10 +74,10 @@ public class GameplayActivity extends AppCompatActivity  {
     int answer_time = 0;
     boolean answered = false;
     boolean turn_ended = false;
-    boolean loading = false;
     int player_rank;
     int opponent_rank;
     int num_false = 0;
+    String round_winner;
 
     //emoji stuff
     ImageView emoji_bigthink;
@@ -138,13 +138,13 @@ public class GameplayActivity extends AppCompatActivity  {
         answer4 = findViewById(R.id.answer_4);
         parseQuestions(starting_intent.getStringExtra("questions"));
         //set emoji views and onclick listners for emojis
-        emoji_ok = (ImageView) findViewById(R.id.ok_emoji2);
-        emoji_poop = (ImageView) findViewById(R.id.ok_emoji);
-        emoji_bigthink = (ImageView) findViewById(R.id.bigthink_emoji);
-        emoji_fire = (ImageView) findViewById(R.id.ok_emoji3);
-        emoji_hunnit = (ImageView) findViewById(R.id.hunnit_emoji2);
-        emoji_crylaugh = (ImageView) findViewById(R.id.crylaugh_emoji);
-        emoji_heart = (ImageView) findViewById(R.id.heart_emoji);
+        emoji_ok = findViewById(R.id.ok_emoji2);
+        emoji_poop = findViewById(R.id.ok_emoji);
+        emoji_bigthink = findViewById(R.id.bigthink_emoji);
+        emoji_fire = findViewById(R.id.ok_emoji3);
+        emoji_hunnit = findViewById(R.id.hunnit_emoji2);
+        emoji_crylaugh = findViewById(R.id.crylaugh_emoji);
+        emoji_heart = findViewById(R.id.heart_emoji);
         setEmojiListeners();
 
         socket = SocketHandler.getSocket();
@@ -271,7 +271,11 @@ public class GameplayActivity extends AppCompatActivity  {
         num_false = 0;
         resetButtonColors();
         Bundle args = new Bundle();
-        args.putString("message", "Get Ready for \n  Question "+ currentQuestion +"!");
+        if (currentQuestion > 7) {
+            endGame();
+        } else {
+            args.putString("message", "Get Ready for \n  Question " + currentQuestion + "!");
+        }
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
@@ -337,7 +341,6 @@ public class GameplayActivity extends AppCompatActivity  {
                     answer_time += System.currentTimeMillis() - time;
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
-
                     answer2.setTextColor(Color.parseColor("#491212"));
 
                 }
@@ -401,7 +404,7 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("course_subject", course.substring(0,4));
         scoreIntent.putExtra("course_number", course.substring(4,7));
         startActivity(scoreIntent);
-        finish();
+        //finish();
     }
 
     protected void parseQuestions(String questionsString) {
@@ -433,22 +436,31 @@ public class GameplayActivity extends AppCompatActivity  {
                             Log.d("fuckkkk", "turn is actually over");
                             if (scores.getString("user").equals(player_name)) {
                                 player_score += scores.getInt("points");
+                                round_winner = player_name +" won \nlast round!";
                             } else {
                                 opponent_score += scores.getInt("points");
+                                round_winner = opponent_name +" won \nlast round!";
                             }
                             turn_ended = true;
                             playerScore.setText("Score: " + player_score);
                             opponentScore.setText("Score: " + opponent_score);
                             currentQuestion++;
-                            if (currentQuestion > 7) endGame();
-                            waitForQuestion();
+                            if (currentQuestion > 7) {
+                                endGame();
+                            } else {
+                                waitForQuestion();
+                            }
                         } else {
                             num_false++;
                             if (num_false > 1) {
                                 turn_ended = true;
                                 currentQuestion++;
-                                if (currentQuestion > 7) endGame();
-                                waitForQuestion();
+                                round_winner = "Nobody won \nlast round!";
+                                if (currentQuestion > 7) {
+                                    endGame();
+                                } else {
+                                    waitForQuestion();
+                                }
                             }
                         }
                     } catch (JSONException e) {
@@ -464,15 +476,17 @@ public class GameplayActivity extends AppCompatActivity  {
         @Override
         public void call(final Object... args){
             Log.d("readyQuestion", "in readyQuestion");
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable(){
+
+            new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    Log.d("readyQuestion", "about to play question");
                     playQuestion();
                 }
-            });
+            }, 1000);
         }
     };
+
 
 
     public Emitter.Listener getQuestions = new Emitter.Listener(){
