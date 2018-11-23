@@ -42,8 +42,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/playerAvatar"
-        app:layout_constraintTop_toBottomOf="@+id/win_or_lose"
-        app:srcCompat="@drawable/cupcake_avatar" />
+        app:layout_constraintTop_toBottomOf="@+id/win_or_lose" />
 
     <ImageView
         android:id="@+id/playerAvatar"
@@ -54,8 +53,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/opponentAvatar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/win_or_lose"
-        app:srcCompat="@drawable/cupcake_avatar" />
+        app:layout_constraintTop_toBottomOf="@+id/win_or_lose" />
 
     <TextView
         android:id="@+id/playerName"

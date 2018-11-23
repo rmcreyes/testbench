@@ -3,9 +3,11 @@ package com.example.johnnyma.testbench;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ScoreActivity extends AppCompatActivity {
 
@@ -102,11 +104,11 @@ public class ScoreActivity extends AppCompatActivity {
             win_or_lose.setText("TIE");
         }
 
-
     }
 
 
     protected void setPlayerAvatar(){
+        Log.i("avatar p", Integer.toString(player_avatar));
         switch(player_avatar) {
             case 0:
                 playerAvatar.setImageResource(R.drawable.penguin_avatar);
@@ -124,6 +126,7 @@ public class ScoreActivity extends AppCompatActivity {
     }
 
     protected void setOpponentAvatar(){
+        Log.i("avatar o", Integer.toString(opponent_avatar));
         switch(opponent_avatar) {
             case 0:
                 opponentAvatar.setImageResource(R.drawable.penguin_avatar);
