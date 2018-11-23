@@ -131,7 +131,7 @@ public class CourseAdapter extends BaseAdapter {
             });
 
             Button btn2 = new Button(c);
-            btn2.setText(course_codes.get(0));
+            btn2.setText(course_codes.get(1));
             btn2.setTextSize(btn2.getTextSize() * 0.225f);
             btn2.setTypeface(null, Typeface.BOLD);
 
