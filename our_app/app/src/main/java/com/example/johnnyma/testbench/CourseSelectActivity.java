@@ -71,6 +71,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_select);
 
+        CourseSelectLock.lock = new Object();
 
         CourseListView = findViewById(R.id.list_view);
         profile_btn = findViewById(R.id.profile_btn);
@@ -260,7 +261,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
      * @param course - course whose action is to be enacted
      */
     @Override
-    public void chooseCourseView(int action, String course,int rank) {
+    public void chooseCourseView(int action, String course, int rank) {
         switch (action) {
             case CourseActionDefs.BATTLE:
                 //Toast.makeText(this, "BATTLE " + course, Toast.LENGTH_SHORT).show();
@@ -275,6 +276,12 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 q_intent.putExtra("course",course);
                 startActivity(q_intent);
                 break;
+
+            case CourseActionDefs.REVIEW_QUESTIONS:
+                Intent r_intent = new Intent(this, ProfessorActivity.class);
+                startActivity(r_intent);
+                break;
+
 
             default: break;
         }

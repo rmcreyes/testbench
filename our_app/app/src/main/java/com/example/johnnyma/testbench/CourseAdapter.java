@@ -1,9 +1,12 @@
 package com.example.johnnyma.testbench;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -11,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -20,10 +24,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Adapter used to set up the list view in CourseSelectActivity.
@@ -35,11 +44,20 @@ public class CourseAdapter extends BaseAdapter {
     Map<String, List<String>> Courses;
     FragmentManager fm;
 
+    private ProgressDialog progressDialog;
+
+    private String json_stat_http;
+    private String json_ranking_http;
+    private boolean is_prof_of;
+
+    private CourseSelectLock courseSelectLock;
+
     public CourseAdapter(Context c, Map<String, List<String>> courses, FragmentManager fm) {
         this.c = c;
         Courses = courses;
         mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.fm = fm;
+        this.courseSelectLock = courseSelectLock;
     }
 
     @Override
@@ -102,9 +120,9 @@ public class CourseAdapter extends BaseAdapter {
             btn.setLayoutParams(params);
 
             btn.setMaxHeight(0);
-            //btn.setBackgroundTint(R.color.colorAccent);
+
             btn.setBackgroundTintList(c.getResources().getColorStateList(R.color.colorAccent, null));
-                    //getColorStateList(R.color.colorAccent));
+
 
             course_grid.addView(btn, index);
 
@@ -112,7 +130,12 @@ public class CourseAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     // opens a dialog associated with the text of the button
-                    openDialog(s_course_header + ((Button) view).getText().toString());
+                    synchronized (CourseSelectLock.lock) {
+                        if (!CourseSelectLock.pressed) {
+                            CourseSelectLock.pressed = true;
+                            openDialog(s_course_header + ((Button) view).getText().toString());
+                        }
+                    }
                 }
             });
         }
@@ -128,11 +151,142 @@ public class CourseAdapter extends BaseAdapter {
      * associated with the button used to open the dialog
      * @param s_course - course name of the dialog's course
      */
-    public void openDialog(String s_course){
-        SelectedCourseDialog selectedCourseDialog = new SelectedCourseDialog();
-        Bundle args = new Bundle();
-        args.putString("course", s_course);
-        selectedCourseDialog.setArguments(args);
-        selectedCourseDialog.show(fm, "selected course dialog");
+    public void openDialog(final String s_course){
+        final SelectedCourseDialog selectedCourseDialog = new SelectedCourseDialog();
+        Toast.makeText(c, "make dialog", Toast.LENGTH_SHORT).show();
+        progressDialog = new ProgressDialog(c);
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
+
+//        Thread thread = new Thread(){
+//            @Override
+//            public void run() {
+//                boolean success = makeHttpRequests(s_course);
+//
+//                if(success) {
+//                    Bundle args = new Bundle();
+//                    args.putString("course", s_course);
+//                    args.putString("json_stat_http", json_stat_http);
+//                    args.putString("json_ranking_http", json_ranking_http);
+//                    args.putBoolean("is_prof_of", is_prof_of);
+//                    selectedCourseDialog.setArguments(args);
+//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                    progressDialog.dismiss();
+//                    selectedCourseDialog.show(fm, "selected course dialog");
+//                }
+//                else {
+//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                    progressDialog.dismiss();
+//                }
+//            }
+//        };
+//        thread.start();
+
+        boolean success = makeHttpRequests(s_course);
+
+        if(success) {
+            Bundle args = new Bundle();
+            args.putString("course", s_course);
+            args.putString("json_stat_http", json_stat_http);
+            args.putString("json_ranking_http", json_ranking_http);
+            args.putBoolean("is_prof_of", is_prof_of);
+            selectedCourseDialog.setArguments(args);
+            progressDialog.dismiss();
+            Toast.makeText(c, "dialog dismiss", Toast.LENGTH_SHORT).show();
+            selectedCourseDialog.show(fm, "selected course dialog");
+        }
+        else {
+            progressDialog.dismiss();
+            Toast.makeText(c, "Unable to connect to server. Try again later", Toast.LENGTH_SHORT).show();
+        }
+
+//        final Handler handler = new Handler();
+//        handler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                boolean success = makeHttpRequests(s_course);
+//
+//                if(success) {
+//                    Bundle args = new Bundle();
+//                    args.putString("course", s_course);
+//                    args.putString("json_stat_http", json_stat_http);
+//                    args.putString("json_ranking_http", json_ranking_http);
+//                    args.putBoolean("is_prof_of", is_prof_of);
+//                    selectedCourseDialog.setArguments(args);
+//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                    progressDialog.dismiss();
+//                    Toast.makeText(c, "dialog dismiss", Toast.LENGTH_SHORT).show();
+//                    selectedCourseDialog.show(fm, "selected course dialog");
+//                }
+//                else {
+//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                    progressDialog.dismiss();
+//                    Toast.makeText(c, "Unable to connect to server. Try again later", Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
+//        });
+
+        
+    }
+
+    public boolean makeHttpRequests(String s_course) {
+        json_stat_http = null;
+        json_ranking_http = null;
+        is_prof_of = false;
+
+        boolean success = true;
+
+        try {
+            json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, s_course.substring(0,4), s_course.substring(4,7)).get();
+        } catch (InterruptedException e) {
+            success = false;
+            return success;
+        } catch (ExecutionException e) {
+            success = false;
+            return success;
+        }
+
+        try {
+            json_ranking_http = new OkHttpTask().execute(OkHttpTask.GET_RANK, s_course.substring(0,4), s_course.substring(4,7)).get();
+        } catch (InterruptedException e) {
+            success = false;
+            return success;
+        } catch (ExecutionException e) {
+            success = false;
+            return success;
+        }
+
+        try {
+            String prof_courses_json = new OkHttpTask().execute(OkHttpTask.GET_PROF_COURSES).get();
+            try {
+                JSONArray jsonArray = new JSONArray(prof_courses_json);
+
+
+                for(int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                    String course_subject = jsonObject.getString("course_subject");
+                    int course_number = jsonObject.getInt("course_number");
+
+                    if((course_subject + course_number).equals(s_course)) {
+                        is_prof_of = true;
+                        break;
+                    }
+
+                }
+            } catch (JSONException e) {
+                success = false;
+                return success;
+            }
+        } catch (InterruptedException e) {
+            success = false;
+            return success;
+        } catch (ExecutionException e) {
+            success = false;
+            return success;
+        }
+
+        return success;
     }
 }
