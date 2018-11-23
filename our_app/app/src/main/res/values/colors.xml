@@ -28,6 +28,8 @@
     <color name="colorButtonRightAnswer">#8FFF79</color>
     <color name="colorTextRightAnswer">#0f2711</color>
 
+    <color name="matchmakingBackground">#1b1d21</color>
+
 
 
 </resources>
