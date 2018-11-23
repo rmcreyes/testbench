@@ -9,9 +9,13 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.johnnyma.testbench.MatchmakingService.LocalBinder;
 import com.github.nkzawa.socketio.client.Socket;
+
+import pl.droidsonroids.gif.GifImageView;
 
 public class MatchmakingActivity extends AppCompatActivity implements StartDialog.StartDialogListener {
     public static final String TAG = "MatchmakingActivity"; //tag for sending info through intents
@@ -21,6 +25,12 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     private int timeout = 0; //timeout counter used in Runnable runnable
     private Handler handler = new Handler();
     private String usernamePlayer;
+
+    private TextView textview;
+    private GifImageView loading_gif;
+    private Button cancel_btn;
+
+
     // these must be stored/obtained somewhere,
     private int playerRank = 99;
     private Socket socket;
@@ -32,6 +42,11 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             if(my_service.isMatchFound()){
                 opponentUsername = my_service.opponentUsername;
                 opponentRank = my_service.opponentRank;
+
+                textview.setVisibility(View.INVISIBLE);
+                loading_gif.setVisibility(View.INVISIBLE);
+                cancel_btn.setVisibility(View.INVISIBLE);
+
                 showStartDialog();
                 //exit match making activity and stop service
                 //TODO Dont just stop it, destroy it
@@ -59,6 +74,10 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         usernamePlayer = starting_intent.getStringExtra("name");
 
         socket = SocketHandler.getSocket();
+
+        textview = findViewById(R.id.textview);
+        loading_gif = findViewById(R.id.loading_gif);
+        cancel_btn = findViewById(R.id.cancelButton);
 
         //start the service
         Intent service_intent = new Intent(this, MatchmakingService.class);
