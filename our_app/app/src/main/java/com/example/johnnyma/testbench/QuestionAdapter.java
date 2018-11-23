@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -44,6 +45,14 @@ public class QuestionAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = mInflater.inflate(R.layout.detail_question, null);
 
+        LinearLayout top_half = (LinearLayout) v.findViewById(R.id.top_half);
+        LinearLayout bottom_half = (LinearLayout) v.findViewById(R.id.bottom_half);
+
+
+            v.setBackgroundTintList(c.getResources().getColorStateList(R.color.tophalfQuestion, null));
+            top_half.setBackgroundTintList(c.getResources().getColorStateList(R.color.tophalfQuestion, null));
+            bottom_half.setBackgroundTintList(c.getResources().getColorStateList(R.color.bottomHalfQuestion, null));
+
         TextView question_text = (TextView) v.findViewById(R.id.question);
         TextView answer_text = (TextView) v.findViewById(R.id.answer);
 
@@ -69,7 +78,7 @@ public class QuestionAdapter extends BaseAdapter {
         ratings.add(rate5);
 
         int rating = question.getRating();
-        ratings.get(rating - 1).setTextColor(ContextCompat.getColor(c, R.color.colorAccent));
+        ratings.get(rating - 1).setTextColor(ContextCompat.getColor(c, R.color.answerColor));
 
         if(!question.isVerified())
             verified_question.setVisibility(View.INVISIBLE);

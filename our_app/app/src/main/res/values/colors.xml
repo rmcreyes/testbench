@@ -10,4 +10,8 @@
     <color name="colorCoursetag">#e6e6e6</color>
 
     <color name="webworkGreen">#29722f</color>
+
+    <color name="tophalfQuestion">#4e4e4e</color>
+    <color name="bottomHalfQuestion">#303030</color>
+    <color name="answerColor">#e7d75b</color>
 </resources>

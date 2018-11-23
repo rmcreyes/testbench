@@ -160,7 +160,7 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
 
                 case UNCHECKED:
                     for(Question q : allQuestions)
-                        if(!q.isReported() || !q.isVerified())
+                        if(!q.isReported() && !q.isVerified())
                             shownQuestions.add(q);
                     break;
 
