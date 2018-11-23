@@ -266,6 +266,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             case CourseActionDefs.BATTLE:
                 //Toast.makeText(this, "BATTLE " + course, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MatchmakingActivity.class);
+                intent.putExtra("rank",rank);
                 intent.putExtra(TAG, course);
                 intent.putExtra("name", user_name);
                 startActivity(intent);

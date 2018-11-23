@@ -129,6 +129,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         } catch (JSONException e) {
             //stats object is not found
             stats_layout.setVisibility(View.GONE);
+            rank = 1;
         }
 
 

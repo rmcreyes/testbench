@@ -31,6 +31,6 @@ public class LoadingQuestionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         loadingText = view.findViewById(R.id.loading_text);
-        loadingText.setText(getArguments().getString("message"));
+        loadingText.setText(getArguments().getString("next_q_msg"));
     }
 }

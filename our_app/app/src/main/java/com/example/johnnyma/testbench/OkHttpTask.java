@@ -45,7 +45,9 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
     public static final String SET_USER_REPORTED_STATUS = "SET_USER_REPORTED_STATUS";
     public static final String SET_QUESTION_REPORTED_STATUS = "SET_QUESTION_REPORTED_STATUS";
     public static final String SET_QUESTION_VERIFIED_STATUS = "SET_QUESTION_VERIFIED_STATUS";
-    public static final String GET_PROF_COURSES = "GET_PROF_QUESTIONS";
+
+    public static final String GET_PROF_COURSES = "GET_PROF_COURSES";
+
     public static final String GET_COURSE_QUESTIONS = "GET_COURSE_QUESTIONS";
     public static final String IP = "http://40.78.64.46:3300";
     public static final MediaType JSON
@@ -60,6 +62,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
             Response response = client.newCall(request).execute();
             if(response.code() !=200) {
                 Log.d("BELHTDFG","error: "+ Integer.toString(response.code()));
+                Log.d("BELHTDFG","error message: "+ response.body().string());
                 return Integer.toString(response.code());
             }
             else
@@ -192,6 +195,9 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 try {
                     reqBody.put("course_subject", strings[1]);
                     reqBody.put("course_number", strings[2]);
+                    reqBody.put("add_correctness_rate", Double.parseDouble(strings[3]));
+                    reqBody.put("add_response_time", Double.parseDouble(strings[4]));
+                    reqBody.put("level_progress", strings[5]);
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -206,8 +212,8 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 try {
                     reqBody.put("course_subject", strings[1]);
                     reqBody.put("course_number", strings[2]);
-                    reqBody.put("add_correctness_rate", strings[3]);
-                    reqBody.put("add_response_time", strings[4]);
+                    reqBody.put("add_correctness_rate", Double.parseDouble(strings[3]));
+                    reqBody.put("add_response_time", Double.parseDouble(strings[4]));
                     reqBody.put("level_progress", strings[5]);
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
