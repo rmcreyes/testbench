@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,7 +77,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         fab = findViewById(R.id.fab);
         name = findViewById(R.id.name);
         profile_pic = findViewById(R.id.profile_pic);
-
         intent = getIntent();
         extras = intent.getExtras();
 
@@ -173,7 +173,14 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             }
         });
 
-        profile_pic.setOnClickListener(new View.OnClickListener() {
+//        profile_pic.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+
+        profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
@@ -189,13 +196,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 userprofile.putExtra("email", email);
                 userprofile.putExtra("profile_pic_url", profile_pic_url);
                 startActivity(userprofile);
-            }
-        });
-
-        profile_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(CourseSelectActivity.this, "profile button", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -260,7 +260,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
      * @param course - course whose action is to be enacted
      */
     @Override
-    public void chooseCourseView(int action, String course) {
+    public void chooseCourseView(int action, String course,int rank) {
         switch (action) {
             case CourseActionDefs.BATTLE:
                 //Toast.makeText(this, "BATTLE " + course, Toast.LENGTH_SHORT).show();
@@ -274,9 +274,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 q_intent.putExtra("course",course);
                 startActivity(q_intent);
                 break;
-            case CourseActionDefs.GET_STATS:
-                Toast.makeText(this, "GET STATS " + course, Toast.LENGTH_SHORT).show();
-                break;
+
             default: break;
         }
 
