@@ -45,12 +45,30 @@ public class StartDialog extends AppCompatDialogFragment {
         rank_opponent.setText("Rank " + Integer.toString(opponentRank));
         avatar_opponent = view.findViewById(R.id.avatar);
         switch(opponentRank % 6) {
-            case 0: avatar_opponent.setImageResource(R.drawable.penguin_avatar);
-            case 1: avatar_opponent.setImageResource(R.drawable.mountain_avatar);
-            case 2: avatar_opponent.setImageResource(R.drawable.rocket_avatar);
-            case 3: avatar_opponent.setImageResource(R.drawable.frog_avatar);
-            case 4: avatar_opponent.setImageResource(R.drawable.thunderbird_avatar);
-            case 5: avatar_opponent.setImageResource(R.drawable.cupcake_avatar);
+            case 0: {
+                avatar_opponent.setImageResource(R.drawable.penguin_avatar);
+                break;
+            }
+            case 1: {
+                avatar_opponent.setImageResource(R.drawable.mountain_avatar);
+                break;
+            }
+            case 2: {
+                avatar_opponent.setImageResource(R.drawable.rocket_avatar);
+                break;
+            }
+            case 3: {
+                avatar_opponent.setImageResource(R.drawable.frog_avatar);
+                break;
+            }
+            case 4: {
+                avatar_opponent.setImageResource(R.drawable.thunderbird_avatar);
+                break;
+            }
+            case 5: {
+                avatar_opponent.setImageResource(R.drawable.cupcake_avatar);
+                break;
+            }
         }
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
