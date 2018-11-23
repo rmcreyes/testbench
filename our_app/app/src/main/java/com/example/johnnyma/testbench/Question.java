@@ -1,6 +1,8 @@
 package com.example.johnnyma.testbench;
 
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,8 +21,9 @@ public class Question {
     private String json_string;
 
     public Question(JSONObject questionJSON) {
+        Log.d("question constructor", questionJSON.toString());
         try {
-            id = questionJSON.getString("id");
+            id = questionJSON.getString("_id");
             body = questionJSON.getString("question_text");
             correctAnswer = questionJSON.getString("correct_answer");
             incorrectAnswer1 = questionJSON.getString("incorrect_answer_1");

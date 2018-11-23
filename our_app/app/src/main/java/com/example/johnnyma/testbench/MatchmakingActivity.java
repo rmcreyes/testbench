@@ -131,14 +131,14 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             startActivity(intent);
         } else {
             //cancel
-            socket.disconnect();
-            Intent intent = new Intent(MatchmakingActivity.this, CourseSelectActivity.class);
-            startActivity(intent);
+            stopService(new Intent(this, MatchmakingService.class));
+            finish();
         }
     }
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
+        stopService(new Intent(this, MatchmakingService.class));
+        finish();
     }
 }

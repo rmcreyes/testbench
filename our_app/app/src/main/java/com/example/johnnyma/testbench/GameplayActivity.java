@@ -3,6 +3,7 @@ package com.example.johnnyma.testbench;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -77,7 +79,7 @@ public class GameplayActivity extends AppCompatActivity  {
     int player_rank;
     int opponent_rank;
     int num_false = 0;
-    String round_winner;
+    String round_winner = "";
 
     //emoji stuff
     ImageView emoji_bigthink;
@@ -152,6 +154,7 @@ public class GameplayActivity extends AppCompatActivity  {
         socket.on("broadcast_emoji", popupEmoji);
         socket.on("turn_over", turnOver);
         socket.on("start_question", readyQuestion);
+        socket.on("broadcast_leave", opponentLeft);
         waitForQuestion();
     }
     protected void setPlayerAvatar(){
@@ -190,10 +193,10 @@ public class GameplayActivity extends AppCompatActivity  {
 
 
     protected void randomizeAnswers(Question q){
-        answer1.setText(q.incorrectAnswer1);
-        answer1.setText(q.incorrectAnswer2);
-        answer4.setText(q.incorrectAnswer3);
-        answer4.setText(q.correctAnswer);
+        answer1.setText(q.getIncorrectAnswer1());
+        answer1.setText(q.getIncorrectAnswer2());
+        answer4.setText(q.getIncorrectAnswer3());
+        answer4.setText(q.getCorrectAnswer());
 
        /* ArrayList<Integer> answers = new ArrayList<>();
         Random random = new Random();
@@ -274,7 +277,8 @@ public class GameplayActivity extends AppCompatActivity  {
         if (currentQuestion > 7) {
             endGame();
         } else {
-            args.putString("message", "Get Ready for \n  Question " + currentQuestion + "!");
+            args.putString("next_q_msg", "Get Ready for \n  Question " + currentQuestion + "!");
+            args.putString("round_win_msg", round_winner);
         }
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -313,7 +317,7 @@ public class GameplayActivity extends AppCompatActivity  {
         turn_ended = false;
         Log.d("playQuestion", "in playQuestion");
 
-        body.setText(questions.get(currentQuestion - 1).body);
+        body.setText(questions.get(currentQuestion - 1).getBody());
         // randomly assign questions to question buttons
         randomizeAnswers(questions.get(currentQuestion - 1));
 
@@ -350,7 +354,6 @@ public class GameplayActivity extends AppCompatActivity  {
         answer3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (!answered && !turn_ended) {
                     answered = true;
                     answer_time += System.currentTimeMillis() - time;
@@ -486,7 +489,22 @@ public class GameplayActivity extends AppCompatActivity  {
             }, 1000);
         }
     };
-
+    public Emitter.Listener opponentLeft = new Emitter.Listener(){
+        @Override
+        public void call(final Object... args){
+            AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
+            builder.setMessage("You opponent disconnected. You will be brought back to the main page.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(GameplayActivity.this, CourseSelectActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    };
 
 
     public Emitter.Listener getQuestions = new Emitter.Listener(){
@@ -558,33 +576,33 @@ public class GameplayActivity extends AppCompatActivity  {
 
 
     protected int calculateScore(int answerTime){
-        return (int)((10000.0 - answerTime) / 10000.0 * 50.0 + 50);
+        return (int)((10000.0 - answerTime) / 10000.0 * 50.0 + 50) + (questions.get(currentQuestion - 1).isVerified() ? 50 : 0);
     }
-
-    private class Question {
-        String id;
-        String body;
-        String correctAnswer;
-        String incorrectAnswer1;
-        String incorrectAnswer2;
-        String incorrectAnswer3;
-        boolean profEndorsed;
-
-        public Question(JSONObject questionJSON) {
-            try {
-                id = questionJSON.getString("_id");
-                body = questionJSON.getString("question_text");
-                correctAnswer = questionJSON.getString("correct_answer");
-                incorrectAnswer1 = questionJSON.getString("incorrect_answer_1");
-                incorrectAnswer2 = questionJSON.getString("incorrect_answer_2");
-                incorrectAnswer3 = questionJSON.getString("incorrect_answer_3");
-                profEndorsed = questionJSON.getBoolean("verified");
-            } catch (JSONException e) {
-                Log.d("in question constructor", "json exception");
-                return;
-            }
-        }
-    }
+//
+//    private class Question {
+//        String id;
+//        String body;
+//        String correctAnswer;
+//        String incorrectAnswer1;
+//        String incorrectAnswer2;
+//        String incorrectAnswer3;
+//        boolean profEndorsed;
+//
+//        public Question(JSONObject questionJSON) {
+//            try {
+//                id = questionJSON.getString("_id");
+//                body = questionJSON.getString("question_text");
+//                correctAnswer = questionJSON.getString("correct_answer");
+//                incorrectAnswer1 = questionJSON.getString("incorrect_answer_1");
+//                incorrectAnswer2 = questionJSON.getString("incorrect_answer_2");
+//                incorrectAnswer3 = questionJSON.getString("incorrect_answer_3");
+//                profEndorsed = questionJSON.getBoolean("verified");
+//            } catch (JSONException e) {
+//                Log.d("in question constructor", "json exception");
+//                return;
+//            }
+//        }
+//    }
 
     /*
         USED DURING ONCREATE
@@ -645,4 +663,29 @@ public class GameplayActivity extends AppCompatActivity  {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
+        builder.setMessage("Are you sure you want to exit the game?")
+                .setCancelable(true)
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        socket.emit("leave_early");
+                        Intent intent = new Intent(GameplayActivity.this, CourseSelectActivity.class);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
+
 }
