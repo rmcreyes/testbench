@@ -51,6 +51,7 @@
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".AddQuestionActivity" />
+
         <activity android:name=".ProfessorActivity">
              <intent-filter>
              <action android:name="android.intent.action.MAIN" />
@@ -59,6 +60,9 @@
              <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
         </activity>
+
+        <activity android:name=".ScoreActivity"></activity>
+
     </application>
 
 </manifest>

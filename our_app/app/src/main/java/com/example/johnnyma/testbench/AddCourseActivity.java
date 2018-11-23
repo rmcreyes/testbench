@@ -15,7 +15,7 @@ public class AddCourseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_course);
     }
 
-    /* TODO
+    /*
     Dummy function for adding courses. You would add a something like this to the
     onclicklistener for the list of courses we get from server.
      */

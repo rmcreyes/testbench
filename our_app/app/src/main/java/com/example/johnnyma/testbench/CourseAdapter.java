@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +72,7 @@ public class CourseAdapter extends BaseAdapter {
 
         // for list view element i, set the course header to be the ith string
         // in the keyset
-        String s_course_header = courseList.get(i);
+        final String s_course_header = courseList.get(i);
         course_header.setText(s_course_header);
         // retrieve the list of course codes pertaining to the course header
         List<String> course_codes = Courses.get(s_course_header);
@@ -88,7 +90,7 @@ public class CourseAdapter extends BaseAdapter {
             params.setMargins(0, 30, 0, 40);
             DisplayMetrics dm = c.getResources().getDisplayMetrics();
             params.width = dm.widthPixels / 5;
-            //params.height = 150;
+
             if(index % 3 == 0)
 //                params.setGravity(Gravity.START);
                 params.setGravity(Gravity.CENTER);
@@ -110,7 +112,7 @@ public class CourseAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     // opens a dialog associated with the text of the button
-                    openDialog(((Button) view).getText().toString());
+                    openDialog(s_course_header + ((Button) view).getText().toString());
                 }
             });
         }
