@@ -16,6 +16,7 @@ public class Question {
     private int rating;
     private boolean verified;
     private boolean reported;
+    private String json_string;
 
     public Question(JSONObject questionJSON) {
         try {
@@ -28,6 +29,7 @@ public class Question {
             rating = questionJSON.getInt("rating");
             verified = questionJSON.getBoolean("verified");
             reported = questionJSON.getBoolean("reported");
+            json_string = questionJSON.toString();
         } catch (JSONException e) {
             return;
         }
@@ -69,5 +71,5 @@ public class Question {
         return reported;
     }
 
-
+    public String getJSONString() {return json_string;}
 }

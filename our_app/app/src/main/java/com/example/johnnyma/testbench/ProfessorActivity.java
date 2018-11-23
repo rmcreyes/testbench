@@ -1,5 +1,7 @@
 package com.example.johnnyma.testbench;
 
+import android.app.ProgressDialog;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -19,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class ProfessorActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ProfessorActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, ProfReviewDialog.ProfReviewDialogListener {
 
     private Toolbar toolbar;
     private ListView QuestionListView;
@@ -32,6 +36,10 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
     private static final int VERIFIED = 1;
     private static final int REPORTED = 2;
     private static final int UNCHECKED = 3;
+
+    private ProgressDialog progressDialog;
+
+    private int current_filter;
 
 
     @Override
@@ -92,6 +100,11 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
         QuestionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ProfReviewDialog profReviewDialog = new ProfReviewDialog();
+                Bundle args = new Bundle();
+                args.putString("question", shownQuestions.get(i).getJSONString());
+                profReviewDialog.setArguments(args);
+                profReviewDialog.show(getSupportFragmentManager(), "prof review");
                 Toast.makeText(ProfessorActivity.this, shownQuestions.get(i).getCorrectAnswer(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -105,21 +118,25 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
         switch(filter) {
             case "All" :
                 setShownQuestions(ALL);
+                current_filter = ALL;
                 Toast.makeText(this, "ALL", Toast.LENGTH_SHORT).show();
                 break;
 
             case "Verified" :
                 setShownQuestions(VERIFIED);
+                current_filter = VERIFIED;
                 Toast.makeText(this, "VERIFIED", Toast.LENGTH_SHORT).show();
                 break;
 
             case "Reported" :
                 setShownQuestions(REPORTED);
+                current_filter = REPORTED;
                 Toast.makeText(this, "REPORTED", Toast.LENGTH_SHORT).show();
                 break;
 
             case "Unchecked" :
                 setShownQuestions(UNCHECKED);
+                current_filter = UNCHECKED;
                 Toast.makeText(this, "UNCHECKED", Toast.LENGTH_SHORT).show();
                 break;
 
@@ -232,5 +249,22 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
             Toast.makeText(this, "json exception", Toast.LENGTH_SHORT).show();
             return;
         }
+    }
+
+    @Override
+    public void responseCollected(boolean submittedOrDeleted) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
+
+        getQuestions();
+        setShownQuestions(current_filter);
+
+        progressDialog.dismiss();
+
+        if(submittedOrDeleted)
+            Toast.makeText(this, "Your response has been submitted!", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "The question has been deleted!", Toast.LENGTH_SHORT).show();
     }
 }

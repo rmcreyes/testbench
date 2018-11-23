@@ -9,6 +9,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +47,6 @@ public class QuestionAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = mInflater.inflate(R.layout.detail_question, null);
-
-        LinearLayout top_half = (LinearLayout) v.findViewById(R.id.top_half);
-        LinearLayout bottom_half = (LinearLayout) v.findViewById(R.id.bottom_half);
-
-
-            v.setBackgroundTintList(c.getResources().getColorStateList(R.color.tophalfQuestion, null));
-            top_half.setBackgroundTintList(c.getResources().getColorStateList(R.color.tophalfQuestion, null));
-            bottom_half.setBackgroundTintList(c.getResources().getColorStateList(R.color.bottomHalfQuestion, null));
 
         TextView question_text = (TextView) v.findViewById(R.id.question);
         TextView answer_text = (TextView) v.findViewById(R.id.answer);
