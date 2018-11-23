@@ -332,7 +332,18 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     protected void endGame(){
-        //TODO go to show score screen activity
+        Intent scoreIntent = new Intent(this, ScoreActivity.class);
+        scoreIntent.putExtra("player_score",player_score);
+        scoreIntent.putExtra("opponent_score",opponent_score);
+        scoreIntent.putExtra("player_name",player_name);
+        scoreIntent.putExtra("opponent_name",opponent_name);
+        scoreIntent.putExtra("player_rank",player_rank);
+        scoreIntent.putExtra("opponent_rank",opponent_rank);
+        scoreIntent.putExtra("player_avatar",player_avatar);
+        scoreIntent.putExtra("opponent_avatar",opponent_avatar);
+        scoreIntent.putExtra("course_subject", course.substring(0,4));
+        scoreIntent.putExtra("course_number", course.substring(4,7));
+        startActivity(scoreIntent);
         finish();
     }
 
