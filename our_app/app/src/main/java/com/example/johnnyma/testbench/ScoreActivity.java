@@ -52,20 +52,20 @@ public class ScoreActivity extends AppCompatActivity {
         extras = starting_intent.getExtras();
 
         if(extras.containsKey("player_score")){
-            player_score = Integer.parseInt(starting_intent.getStringExtra("player_score"));
+            player_score = starting_intent.getIntExtra("player_score",999);
             playerScore.setText("Score: " + player_score);
         }
         if(extras.containsKey("opponent_score")){
-            opponent_score = Integer.parseInt(starting_intent.getStringExtra("opponent_score"));
+            opponent_score =  starting_intent.getIntExtra("opponent_score",999);
             opponentScore.setText("Score: " + opponent_score);
         }
 
         if(extras.containsKey("player_rank")){
-            player_rank = Integer.parseInt(starting_intent.getStringExtra("player_rank"));
+            player_rank =  starting_intent.getIntExtra("player_rank",999);
             playerRank.setText("Rank: " + player_rank);
         }
         if(extras.containsKey("opponent_rank")){
-            opponent_rank = Integer.parseInt(starting_intent.getStringExtra("opponent_rank"));
+            opponent_rank = starting_intent.getIntExtra("opponent_rank",999);
             opponentRank.setText("Rank: " + opponent_rank);
         }
 
@@ -79,11 +79,11 @@ public class ScoreActivity extends AppCompatActivity {
         }
 
         if(extras.containsKey("player_avatar")){
-            player_avatar = Integer.parseInt(starting_intent.getStringExtra("player_avatar"));
+            player_avatar = starting_intent.getIntExtra("player_avatar",999);
             setPlayerAvatar();
         }
         if(extras.containsKey("opponent_avatar")){
-            opponent_avatar = Integer.parseInt(starting_intent.getStringExtra("opponent_avatar"));
+            opponent_avatar = starting_intent.getIntExtra("opponent_avatar",999);
             setOpponentAvatar();
         }
 
@@ -112,16 +112,22 @@ public class ScoreActivity extends AppCompatActivity {
         switch(player_avatar) {
             case 0:
                 playerAvatar.setImageResource(R.drawable.penguin_avatar);
+                break;
             case 1:
                 playerAvatar.setImageResource(R.drawable.mountain_avatar);
+                break;
             case 2:
                 playerAvatar.setImageResource(R.drawable.rocket_avatar);
+                break;
             case 3:
                 playerAvatar.setImageResource(R.drawable.frog_avatar);
+                break;
             case 4:
                 playerAvatar.setImageResource(R.drawable.thunderbird_avatar);
+                break;
             case 5:
                 playerAvatar.setImageResource(R.drawable.cupcake_avatar);
+                break;
         }
     }
 
@@ -130,16 +136,22 @@ public class ScoreActivity extends AppCompatActivity {
         switch(opponent_avatar) {
             case 0:
                 opponentAvatar.setImageResource(R.drawable.penguin_avatar);
+                break;
             case 1:
                 opponentAvatar.setImageResource(R.drawable.mountain_avatar);
+                break;
             case 2:
                 opponentAvatar.setImageResource(R.drawable.rocket_avatar);
+                break;
             case 3:
                 opponentAvatar.setImageResource(R.drawable.frog_avatar);
+                break;
             case 4:
                 opponentAvatar.setImageResource(R.drawable.thunderbird_avatar);
+                break;
             case 5:
                 opponentAvatar.setImageResource(R.drawable.cupcake_avatar);
+                break;
         }
     }
 

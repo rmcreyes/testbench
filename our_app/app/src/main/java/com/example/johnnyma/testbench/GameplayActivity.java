@@ -354,15 +354,17 @@ public class GameplayActivity extends AppCompatActivity  {
                 }
             }
         });
-        // do this shit better
-        while (System.currentTimeMillis() - time < 10000) {
-            Log.d("time since start", Integer.toString((int)System.currentTimeMillis() - time));
-        }
-        Log.d("timed out", "timeout" + currentQuestion);
-        //socket.emit("on_answer", "ANSWER_WRONG", 0);
-        //answer_time += 10000;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (!answered && !turn_ended) {
+                    socket.emit("on_answer", "ANSWER_WRONG", 0);
+                    answer_time += 10000;
+                    answered = true;
+                }
+            }
+        }, 10000);
 
-        // update score based on contents attached to event
     }
 
     protected void answerChosen(Button answer, int num, int time) {
@@ -378,6 +380,8 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
     protected void endGame(){
+        Log.d("response time (ms)", Integer.toString(answer_time));
+        Log.d("number correct", Integer.toString(correctlyAnswered));
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
         scoreIntent.putExtra("opponent_score",opponent_score);
@@ -389,8 +393,9 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("opponent_avatar",opponent_avatar);
         scoreIntent.putExtra("course_subject", course.substring(0,4));
         scoreIntent.putExtra("course_number", course.substring(4,7));
+        scoreIntent.putExtra("response_time", answer_time/1000.0);
+        scoreIntent.putExtra("num_correct", correctlyAnswered);
         startActivity(scoreIntent);
-        //finish();
     }
 
     protected void parseQuestions(String questionsString) {
@@ -438,7 +443,7 @@ public class GameplayActivity extends AppCompatActivity  {
                             if (num_false > 1) {
                                 turn_ended = true;
                                 currentQuestion++;
-                                round_winner = "Nobody won \nlast round!";
+                                round_winner = "no winner";
                                 if (currentQuestion > 7) {
                                     endGame();
                                 } else {

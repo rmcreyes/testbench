@@ -36,30 +36,37 @@ public class LoadingQuestionFragment extends Fragment {
         loadingText = view.findViewById(R.id.next_q_msg);
         loadingText.setText(getArguments().getString("next_q_msg"));
         roundWinnerText = view.findViewById(R.id.round_winner);
-        roundWinnerText.setText(getArguments().getString("round_winner"));
+        String round_winner = getArguments().getString("round_winner");
+        roundWinnerText.setText(round_winner);
         winText = view.findViewById(R.id.win_msg);
-        winText.setText("won last round!");
+        winText.setText(round_winner.equals("") ? "" : "won last round!");
         winnerAvatar = view.findViewById(R.id.winner_avatar);
-        int avatar = getArguments().getInt("winner_avatar", 0);
-        switch(avatar % 6) {
-            case 0:
-                winnerAvatar.setImageResource(R.drawable.penguin_avatar);
-                break;
-            case 1:
-                winnerAvatar.setImageResource(R.drawable.mountain_avatar);
-                break;
-            case 2:
-                winnerAvatar.setImageResource(R.drawable.rocket_avatar);
-                break;
-            case 3:
-                winnerAvatar.setImageResource(R.drawable.frog_avatar);
-                break;
-            case 4:
-                winnerAvatar.setImageResource(R.drawable.thunderbird_avatar);
-                break;
-            case 5:
-                winnerAvatar.setImageResource(R.drawable.cupcake_avatar);
-                break;
+        if (round_winner.equals("")) {
+            winnerAvatar.setImageResource(R.drawable.bigthink_emoji);
+        } else if (round_winner.equals("no winner")) {
+            winnerAvatar.setImageResource(R.drawable.red_x);
+        } else {
+            int avatar = getArguments().getInt("winner_avatar", 0);
+            switch (avatar % 6) {
+                case 0:
+                    winnerAvatar.setImageResource(R.drawable.penguin_avatar);
+                    break;
+                case 1:
+                    winnerAvatar.setImageResource(R.drawable.mountain_avatar);
+                    break;
+                case 2:
+                    winnerAvatar.setImageResource(R.drawable.rocket_avatar);
+                    break;
+                case 3:
+                    winnerAvatar.setImageResource(R.drawable.frog_avatar);
+                    break;
+                case 4:
+                    winnerAvatar.setImageResource(R.drawable.thunderbird_avatar);
+                    break;
+                case 5:
+                    winnerAvatar.setImageResource(R.drawable.cupcake_avatar);
+                    break;
+            }
         }
     }
 }
