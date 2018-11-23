@@ -325,6 +325,8 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                         .addHeader("Authorization", GlobalTokens.JWT_KEY)
                         .put(body);
 
+                break;
+
             case ADD_QUESTION:
                 try{
                     reqBody.put("question_text", strings[1]);

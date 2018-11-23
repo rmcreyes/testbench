@@ -271,6 +271,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 intent.putExtra("name", user_name);
                 startActivity(intent);
                 break;
+
             case CourseActionDefs.ADD_QUESTION:
                 Intent q_intent = new Intent(this, AddQuestionActivity.class);
                 q_intent.putExtra("course",course);
@@ -279,6 +280,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
             case CourseActionDefs.REVIEW_QUESTIONS:
                 Intent r_intent = new Intent(this, ProfessorActivity.class);
+                r_intent.putExtra("course", course);
                 startActivity(r_intent);
                 break;
 

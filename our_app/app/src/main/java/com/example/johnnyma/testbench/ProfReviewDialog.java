@@ -5,15 +5,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
 
 public class ProfReviewDialog extends AppCompatDialogFragment {
 
@@ -55,6 +59,7 @@ public class ProfReviewDialog extends AppCompatDialogFragment {
 
         String s_question = getArguments().getString("question");
         try {
+            Log.e("question", s_question);
             question = new Question(new JSONObject(s_question));
 
             question_body = v.findViewById(R.id.question_body);
@@ -81,6 +86,28 @@ public class ProfReviewDialog extends AppCompatDialogFragment {
             submit_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    boolean verify = verified_checkbox.isChecked();
+                    boolean report = reported_checkbox.isChecked();
+
+                    String verify_response, report_response;
+
+                    try {
+                        if(question.isVerified() != verify)
+                            verify_response = new OkHttpTask()
+                                    .execute(OkHttpTask.SET_QUESTION_VERIFIED_STATUS, question.getId(),
+                                            Boolean.toString(verify)).get();
+
+                        if(question.isReported() != report)
+                            report_response = new OkHttpTask()
+                                    .execute(OkHttpTask.SET_QUESTION_REPORTED_STATUS, question.getId(),
+                                            Boolean.toString(report)).get();
+                    } catch (InterruptedException e) {
+                        Toast.makeText(getContext(), "Failed to send review", Toast.LENGTH_SHORT).show();
+                        dismiss();
+                    } catch (ExecutionException e) {
+                        Toast.makeText(getContext(), "Failed to send review", Toast.LENGTH_SHORT).show();
+                        dismiss();
+                    }
                     listener.responseCollected(true);
                     dismiss();
                 }
@@ -89,6 +116,19 @@ public class ProfReviewDialog extends AppCompatDialogFragment {
             delete_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    String delete_response;
+
+                    try {
+                        delete_response = new OkHttpTask()
+                                .execute(OkHttpTask.DELETE_QUESTION, question.getId()).get();
+                    } catch(ExecutionException e) {
+                        Toast.makeText(getContext(), "Failed to delete question", Toast.LENGTH_SHORT).show();
+                        dismiss();
+                    } catch(InterruptedException e) {
+                        Toast.makeText(getContext(), "Failed to delete question", Toast.LENGTH_SHORT).show();
+                        dismiss();
+                    }
+
                     listener.responseCollected(false);
                     dismiss();
                 }
