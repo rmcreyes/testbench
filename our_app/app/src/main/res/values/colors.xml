@@ -8,4 +8,10 @@
     <color name="UBCBlue">#002859</color>
     <color name="crimson">#f93535</color>
     <color name="colorCoursetag">#e6e6e6</color>
+    <color name="colorButtonWrongAnswer">#c12727</color>
+
+    <color name="gold">#e1ca00</color>
+    <color name="silver">#d7d7d7</color>
+    <color name="bronze">#c4ad59</color>
+    <color name="leaderboard_bg">#666666</color>
 </resources>
