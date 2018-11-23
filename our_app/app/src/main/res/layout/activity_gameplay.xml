@@ -5,16 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="400dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:translationZ="99dp"
+        app:layout_constraintBottom_toTopOf="@+id/hunnit_emoji2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/question_num_cardview"></FrameLayout>
+
     <Button
         android:id="@+id/answer_4"
         android:layout_width="332dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
         android:background="@color/colorPrimary"
         android:text="seventeen"
         android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/answer_3" />
@@ -84,7 +100,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/question_num_cardview"
+        app:layout_constraintTop_toTopOf="@+id/fragment_container"
         app:layout_constraintVertical_bias="0.0">
 
         <android.support.constraint.ConstraintLayout
@@ -135,11 +151,12 @@
                 android:id="@+id/player_score"
                 android:layout_width="81dp"
                 android:layout_height="21dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="22dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginTop="8dp"
                 android:text="Score: 571"
                 android:textSize="15dp"
+                android:gravity="right"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/player_avatar"
@@ -161,12 +178,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/opponent_name" />
 
             <TextView
-                android:id="@+id/opponent_name"
+                android:id="@+id/player_name"
+                android:gravity="right"
                 android:layout_width="115dp"
                 android:layout_height="19dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginTop="8dp"
-                android:text="RobinReyes6969"
+                android:text="Robin"
                 android:textSize="15dp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/player_avatar"
@@ -246,7 +264,7 @@
                 app:layout_constraintVertical_bias="0.428" />
 
             <TextView
-                android:id="@+id/course"
+                android:id="@+id/course_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -265,92 +283,72 @@
         android:id="@+id/ok_emoji"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/ok_emoji2"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/poop_emoji" />
 
     <ImageView
         android:id="@+id/ok_emoji3"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/ok_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/fire_emoji" />
 
     <ImageView
         android:id="@+id/ok_emoji2"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/hunnit_emoji2"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ok_emoji" />
 
     <ImageView
         android:id="@+id/hunnit_emoji2"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/heart_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/hunnit_emoji" />
 
     <ImageView
         android:id="@+id/heart_emoji"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/crylaugh_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/heart_emoji" />
 
     <ImageView
         android:id="@+id/crylaugh_emoji"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toEndOf="@+id/bigthink_emoji"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/crylaugh_emoji" />
 
     <ImageView
         android:id="@+id/bigthink_emoji"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginBottom="6dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toTopOf="@+id/card_view_score"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/answer_4"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/bigthink_emoji" />
 </android.support.constraint.ConstraintLayout>

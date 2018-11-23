@@ -12,23 +12,23 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.Random;
 
-public class matchmakingService extends Service {
+public class MatchmakingService extends Service {
     private String name;
     private int rank;
-    private int pic;
     public String opponentUsername;
     public int opponentRank;
-    public int opponentPic;
+    JSONArray questions;
     public Socket mSocket;
     {
-        try{
-            mSocket = IO.socket("http://104.42.209.62:3300/");
+        try {
+            mSocket = IO.socket("http://40.78.64.46:3300/");
             SocketHandler.setSocket(mSocket);
         } catch (URISyntaxException e){}
     }
@@ -54,7 +54,7 @@ public class matchmakingService extends Service {
 
         rank = rand.nextInt(100) + 1;
 
-        Toast.makeText(matchmakingService.this, "name: " + name + "\n rank: " + rank, Toast.LENGTH_LONG).show();
+        Toast.makeText(MatchmakingService.this, "name: " + name + "\n rank: " + rank, Toast.LENGTH_LONG).show();
         queueForGame();
 
         mSocket.on("game_made", onGameMade);
@@ -70,9 +70,9 @@ public class matchmakingService extends Service {
 
     //binder
     public class LocalBinder extends Binder {
-        matchmakingService getService() {
+        MatchmakingService getService() {
             // Return this instance of LocalService so clients can call public methods
-            return matchmakingService.this;
+            return MatchmakingService.this;
         }
     }
 
@@ -89,9 +89,9 @@ public class matchmakingService extends Service {
         JSONObject info = new JSONObject();
         try {
             info.put("username", name);
-            info.put("course", courseID);
+            info.put("course_subject",  courseID.substring(0, 4));
+            info.put("course_number", Integer.valueOf(courseID.substring(4)));
             info.put("rank", rank);
-            info.put("pic", "0");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -102,9 +102,9 @@ public class matchmakingService extends Service {
         JSONObject info = new JSONObject();
         try {
             info.put("username", name);
-            info.put("course", courseID);
+            info.put("course_subject",  courseID.substring(0, 4));
+            info.put("course_number", Integer.valueOf(courseID.substring(4)));
             info.put("rank", rank);
-            info.put("pic", "0");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -118,6 +118,11 @@ public class matchmakingService extends Service {
             handler.post(new Runnable(){
                 @Override
                 public void run() {
+                    try {
+                        questions = new JSONArray((String) args[0]);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     sendJSONOpponent();
                 }
             });
@@ -133,14 +138,10 @@ public class matchmakingService extends Service {
             handler.post(new Runnable(){
                 @Override
                 public void run(){
-                    String username;
-                    String rank;
-                    String pic;
                     try {
                         JSONObject data = new JSONObject((String) args[0]);
                         opponentUsername = data.getString("username");
                         opponentRank = Integer.parseInt(data.getString("rank"));
-                        opponentPic = Integer.parseInt(data.getString("pic"));
                     } catch (JSONException e) {
                         return;
                     }
