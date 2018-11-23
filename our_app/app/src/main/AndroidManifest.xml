@@ -50,7 +50,8 @@
         <activity android:name=".EmailActivity" />
         <activity android:name=".UserProfileActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".AddQuestionActivity"></activity>
+        <activity android:name=".AddQuestionActivity" />
+        <activity android:name=".ScoreActivity"></activity>
     </application>
 
 </manifest>
