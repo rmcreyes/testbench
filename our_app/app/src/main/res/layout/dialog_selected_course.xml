@@ -22,63 +22,85 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/battle_btn"
-        android:layout_width="270dp"
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:fontFamily="sans-serif-condensed"
-        android:text="BATTLE"
-        android:textAlignment="center"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/course_text" />
-
-    <LinearLayout
-        android:id="@+id/IH"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/battle_btn">
+        app:layout_constraintTop_toBottomOf="@+id/course_text">
 
         <Button
-            android:id="@+id/add_question_btn"
-            android:layout_width="wrap_content"
+            android:id="@+id/battle_btn"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:backgroundTint="@color/colorAccent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/colorPrimary"
             android:fontFamily="sans-serif-condensed"
-            android:text="ADD QUESTION"
+            android:text="BATTLE"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="64dp" />
 
         <Button
-            android:id="@+id/stats_btn"
+            android:id="@+id/prof_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:text="review questions"
+            android:backgroundTint="@color/reviewQuestionsBtn"/>
+
+        <LinearLayout
+            android:id="@+id/IH"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:backgroundTint="@color/colorAccent"
-            android:fontFamily="sans-serif-condensed"
-            android:text="VIEW LEADERBOARD"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="72dp" />
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.505"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/add_question_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="@color/colorAccent"
+                android:fontFamily="sans-serif-condensed"
+                android:text="ADD QUESTION"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:layout_editor_absoluteY="64dp" />
+
+            <Button
+                android:id="@+id/stats_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:backgroundTint="@color/colorAccent"
+                android:fontFamily="sans-serif-condensed"
+                android:text="VIEW LEADERBOARD"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="72dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/stats_layout"
         android:layout_width="266dp"
-        android:layout_height="wrap_content"
+        android:layout_height="140dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="19dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/customborder"
         android:orientation="vertical"
@@ -86,7 +108,7 @@
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IH">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout6">
 
         <LinearLayout
             android:id="@+id/rank_layout"

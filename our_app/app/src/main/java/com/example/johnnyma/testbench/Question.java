@@ -20,7 +20,7 @@ public class Question {
 
     public Question(JSONObject questionJSON) {
         try {
-            id = questionJSON.getString("id");
+            id = questionJSON.getString("_id");
             body = questionJSON.getString("question_text");
             correctAnswer = questionJSON.getString("correct_answer");
             incorrectAnswer1 = questionJSON.getString("incorrect_answer_1");

@@ -1,8 +1,7 @@
 package com.example.johnnyma.testbench;
-
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -13,11 +12,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +29,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
     private Button battle_btn;
     private Button add_question_btn;
     private Button stats_btn;
+    private Button prof_btn;
     private SelectedCourseDialogListener listener;
     private LinearLayout leaderboard_layout;
     private LinearLayout stats_layout;
@@ -47,7 +45,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
     private TextView course_ranking_txt;
     private TextView correctness_rate_txt;
     private TextView avg_response_time_txt;
-    private ProgressDialog progress_dialog;
     private String leaderboard_http;
     private JSONArray leaderboard_json;
     private TextView first_place;
@@ -82,7 +79,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         View v = inflater.inflate(R.layout.dialog_selected_course, null);
         builder.setView(v);
 
-
         leaderboard_layout = v.findViewById(R.id.leaderboard_layout);
         stats_layout = v.findViewById(R.id.stats_layout);
         course_text = v.findViewById(R.id.course_text);
@@ -103,26 +99,9 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         third_place_layout = v.findViewById(R.id.third_place_layout);
 
         leaderboard_json = null;
-        progress_dialog = new ProgressDialog(getContext());
-        progress_dialog.setMessage("Recieving data...");
-        progress_dialog.show();
-        String json_stat_http = null;
-        String json_ranking_http = null;
-        try {
-            json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, s_course.substring(0,4), s_course.substring(4,7)).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
 
-        try {
-            json_ranking_http = new OkHttpTask().execute(OkHttpTask.GET_RANK, s_course.substring(0,4), s_course.substring(4,7)).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        String json_stat_http = getArguments().getString("json_stat_http");
+        String json_ranking_http = getArguments().getString("json_ranking_http");
 
         try {
             JSONArray json_stat = new JSONArray(json_stat_http);
@@ -234,13 +213,32 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
                     stats_btn.setText("VIEW LEADERBOARD");
                 }
 
-
-                //dismiss();
             }
         });
 
-        progress_dialog.dismiss();
+        prof_btn = v.findViewById(R.id.prof_btn);
+        if(getArguments().getBoolean("is_prof_of")) {
+            prof_btn.setVisibility(View.VISIBLE);
+            prof_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.chooseCourseView(CourseActionDefs.REVIEW_QUESTIONS, s_course, 0);
+                }
+            });
+        }
+        else
+            prof_btn.setVisibility(View.GONE);
+
+
         return builder.create();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        synchronized (CourseSelectLock.lock) {
+            CourseSelectLock.pressed = false;
+        }
     }
 
     public interface SelectedCourseDialogListener {
