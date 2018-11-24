@@ -11,7 +11,10 @@ import androidx.test.espresso.Espresso;
 import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.*;
 
 /**
@@ -34,18 +37,24 @@ public class ScoreActivityTest {
             scoreIntent.putExtra("opponent_avatar","3");
             scoreIntent.putExtra("course_subject", "CPEN");
             scoreIntent.putExtra("course_number", "341");
+            scoreIntent.putExtra("response_time", "0.324");
+            scoreIntent.putExtra("num_correct", "5");
             return scoreIntent;
         }
     };
 
+    //TODO uncomment out when score activity fixed
     @Test
     public void setupTest(){
-        try{
-            Thread.sleep(10000);
-        } catch (Exception e){
-
-        }
-        Espresso.onView(withId(R.id.done)).perform(click());
+        //check that you won and everything displayed is correct
+        //Espresso.onView(withText("WON!")).check(matches(isDisplayed()));
+        float response_time = (float)0.324/7;
+        float num_correct = (float) 5/7;
+        //Espresso.onView(withText(response_time + "s")).check(matches(isDisplayed()));
+        //Espresso.onView(withText(num_correct + "%")).check(matches(isDisplayed()));
+        Espresso.onView(withText("Mgee")).check(matches(isDisplayed()));
+        Espresso.onView(withText("Jackie Chan")).check(matches(isDisplayed()));
+        //Espresso.onView(withId(R.id.button2)).perform(click());
     }
 
     @Before

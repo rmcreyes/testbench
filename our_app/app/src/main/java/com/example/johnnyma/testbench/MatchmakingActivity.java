@@ -55,10 +55,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
 
                 showStartDialog();
-                //exit match making activity and stop service
-                //TODO Dont just stop it, destroy it
-                //stopService(new Intent(getApplicationContext(),MatchmakingService.class));
-                //finish();
             }
             else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
                 stopService(new Intent(getApplicationContext(),MatchmakingService.class));
@@ -95,27 +91,13 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         startService(service_intent);
         boolean bounded = bindService(service_intent, my_connection, Context.BIND_AUTO_CREATE);
 
-        //check if service is bound
-        //String meme = Boolean.toString(bounded);
-        //Toast.makeText(this, meme, Toast.LENGTH_LONG).show();
-
         //make a handler to run and check if match has been found
         handler.postDelayed(runnable, 500);
     }
 
-    //cancel match TODO
     public void cancelButton(View view){
-        //Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
-
-        //my_service.setFound();
-        //stop the handler and stop the service
-
-
-        //handler.removeCallback(runnable);
         stopService(new Intent(this, MatchmakingService.class));
-
         finish();
-
     }
 
     private ServiceConnection my_connection = new ServiceConnection() {
