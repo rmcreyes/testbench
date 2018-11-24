@@ -253,8 +253,7 @@ public class ScoreActivity extends AppCompatActivity {
     }
 
     public void done(View view){
-        Intent intent = new Intent(ScoreActivity.this, CourseSelectActivity.class);
-        startActivity(intent);
+        finish();
     }
 
     protected int updateStat(float correctness_rate,float response_time,int level_progress,
