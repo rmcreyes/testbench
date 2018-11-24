@@ -328,6 +328,7 @@ public class GameplayActivity extends AppCompatActivity  {
 
         if(currentQuestion < 8) {
             questionHeader.setText("Question " + currentQuestion + " of 7");
+            Log.d("wait for question", "emitting ready next");
             socket.emit("ready_next");
         } else {
             endGame();
@@ -391,6 +392,7 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
     protected void endGame(){
+        socket.disconnect();
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
         scoreIntent.putExtra("opponent_score",opponent_score);
@@ -405,6 +407,7 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("response_time", answer_time/1000.0);
         scoreIntent.putExtra("num_correct", correctlyAnswered);
         scoreIntent.putExtra("questions", getIntent().getStringExtra("questions"));
+        finish();
         startActivity(scoreIntent);
     }
 
@@ -488,6 +491,7 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            socket.disconnect();
             AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
             builder.setMessage("You opponent disconnected. You will be brought back to the main page.")
                     .setCancelable(false)
