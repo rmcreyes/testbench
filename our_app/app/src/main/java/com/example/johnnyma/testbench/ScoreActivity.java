@@ -1,17 +1,31 @@
 package com.example.johnnyma.testbench;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.provider.CalendarContract;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ScoreActivity extends AppCompatActivity {
@@ -55,6 +69,77 @@ public class ScoreActivity extends AppCompatActivity {
     private int TOTAL_QUESTIONS = 7;
     private boolean won_game;
     private int level_progress =0;
+
+    //rating buttons
+    private Button rating_1_0;
+    private Button rating_1_1;
+    private Button rating_1_2;
+    private Button rating_1_3;
+    private Button rating_1_4;
+    private Button rating_1_5;
+
+    private Button rating_2_0;
+    private Button rating_2_1;
+    private Button rating_2_2;
+    private Button rating_2_3;
+    private Button rating_2_4;
+    private Button rating_2_5;
+
+    private Button rating_3_0;
+    private Button rating_3_1;
+    private Button rating_3_2;
+    private Button rating_3_3;
+    private Button rating_3_4;
+    private Button rating_3_5;
+
+    private Button rating_4_0;
+    private Button rating_4_1;
+    private Button rating_4_2;
+    private Button rating_4_3;
+    private Button rating_4_4;
+    private Button rating_4_5;
+
+    private Button rating_5_0;
+    private Button rating_5_1;
+    private Button rating_5_2;
+    private Button rating_5_3;
+    private Button rating_5_4;
+    private Button rating_5_5;
+
+    private Button rating_6_0;
+    private Button rating_6_1;
+    private Button rating_6_2;
+    private Button rating_6_3;
+    private Button rating_6_4;
+    private Button rating_6_5;
+
+    private Button rating_7_0;
+    private Button rating_7_1;
+    private Button rating_7_2;
+    private Button rating_7_3;
+    private Button rating_7_4;
+    private Button rating_7_5;
+
+    private Button submit_btn;
+
+    //report buttons
+    private Button report_q1;
+    private Button report_q2;
+    private Button report_q3;
+    private Button report_q4;
+    private Button report_q5;
+    private Button report_q6;
+    private Button report_q7;
+
+    private JSONArray json_arr;
+    private ArrayList<ArrayList<Button>> question_button_arrays;
+    private HashMap<Integer,Button> selected_button;
+    private HashMap<Button,Integer> all_buttons;
+    private HashMap<Button,Integer> report_buttons;
+
+    private int ques_arr = 0;
+    private int button_elem = 0;
+    private Button curr_btn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +155,185 @@ public class ScoreActivity extends AppCompatActivity {
         avg_reponse_time_txt = findViewById(R.id.avg_reponse_time);
         correctness_rate_txt = findViewById(R.id.correctness_rate);
 
+        submit_btn = findViewById(R.id.submit_btn);
+        //report buttons
 
 
+        report_q1 = findViewById(R.id.report_q1);
+        report_q2 = findViewById(R.id.report_q2);
+        report_q3 = findViewById(R.id.report_q3);
+        report_q4 = findViewById(R.id.report_q4);
+        report_q5 = findViewById(R.id.report_q5);
+        report_q6 = findViewById(R.id.report_q6);
+        report_q7 = findViewById(R.id.report_q7);
+
+
+
+        //match buttons
+        rating_1_0 = findViewById(R.id.rating_1_0);
+        rating_1_1 = findViewById(R.id.rating_1_1);
+        rating_1_2 = findViewById(R.id.rating_1_2);
+        rating_1_3 = findViewById(R.id.rating_1_3);
+        rating_1_4 = findViewById(R.id.rating_1_4);
+        rating_1_5 = findViewById(R.id.rating_1_5);
+        ArrayList<Button> question_button_1 = new ArrayList<Button>
+                (Arrays.asList(rating_1_0,rating_1_1,rating_1_2,rating_1_3,rating_1_4,rating_1_5));
+
+        rating_2_0 = findViewById(R.id.rating_2_0);
+        rating_2_1 = findViewById(R.id.rating_2_1);
+        rating_2_2 = findViewById(R.id.rating_2_2);
+        rating_2_3 = findViewById(R.id.rating_2_3);
+        rating_2_4 = findViewById(R.id.rating_2_4);
+        rating_2_5 = findViewById(R.id.rating_2_5);
+        ArrayList<Button> question_button_2 = new ArrayList<Button>
+                (Arrays.asList(rating_2_0,rating_2_1,rating_2_2,rating_2_3,rating_2_4,rating_2_5));
+
+        rating_3_0 = findViewById(R.id.rating_3_0);
+        rating_3_1 = findViewById(R.id.rating_3_1);
+        rating_3_2 = findViewById(R.id.rating_3_2);
+        rating_3_3 = findViewById(R.id.rating_3_3);
+        rating_3_4 = findViewById(R.id.rating_3_4);
+        rating_3_5 = findViewById(R.id.rating_3_5);
+        ArrayList<Button> question_button_3 = new ArrayList<Button>
+                (Arrays.asList(rating_3_0,rating_3_1,rating_3_2,rating_3_3,rating_3_4,rating_3_5));
+
+        rating_4_0 = findViewById(R.id.rating_4_0);
+        rating_4_1 = findViewById(R.id.rating_4_1);
+        rating_4_2 = findViewById(R.id.rating_4_2);
+        rating_4_3 = findViewById(R.id.rating_4_3);
+        rating_4_4 = findViewById(R.id.rating_4_4);
+        rating_4_5 = findViewById(R.id.rating_4_5);
+        ArrayList<Button> question_button_4 = new ArrayList<Button>
+                (Arrays.asList(rating_4_0,rating_4_1,rating_4_2,rating_4_3,rating_4_4,rating_4_5));
+
+        rating_5_0 = findViewById(R.id.rating_5_0);
+        rating_5_1 = findViewById(R.id.rating_5_1);
+        rating_5_2 = findViewById(R.id.rating_5_2);
+        rating_5_3 = findViewById(R.id.rating_5_3);
+        rating_5_4 = findViewById(R.id.rating_5_4);
+        rating_5_5 = findViewById(R.id.rating_5_5);
+        ArrayList<Button> question_button_5 = new ArrayList<Button>
+                (Arrays.asList(rating_5_0,rating_5_1,rating_5_2,rating_5_3,rating_5_4,rating_5_5));
+
+        rating_6_0 = findViewById(R.id.rating_6_0);
+        rating_6_1 = findViewById(R.id.rating_6_1);
+        rating_6_2 = findViewById(R.id.rating_6_2);
+        rating_6_3 = findViewById(R.id.rating_6_3);
+        rating_6_4 = findViewById(R.id.rating_6_4);
+        rating_6_5 = findViewById(R.id.rating_6_5);
+        ArrayList<Button> question_button_6 = new ArrayList<Button>
+                (Arrays.asList(rating_6_0,rating_6_1,rating_6_2,rating_6_3,rating_6_4,rating_6_5));
+
+        rating_7_0 = findViewById(R.id.rating_7_0);
+        rating_7_1 = findViewById(R.id.rating_7_1);
+        rating_7_2 = findViewById(R.id.rating_7_2);
+        rating_7_3 = findViewById(R.id.rating_7_3);
+        rating_7_4 = findViewById(R.id.rating_7_4);
+        rating_7_5 = findViewById(R.id.rating_7_5);
+        ArrayList<Button> question_button_7 = new ArrayList<Button>
+                (Arrays.asList(rating_7_0,rating_7_1,rating_7_2,rating_7_3,rating_7_4,rating_7_5));
+
+        question_button_arrays = new ArrayList<ArrayList<Button>>
+                (Arrays.asList(question_button_1,question_button_2,question_button_3,question_button_4,
+                        question_button_5,question_button_6,question_button_7));
+
+
+        all_buttons = new HashMap<Button,Integer>();
+        report_buttons = new HashMap<Button,Integer>();
+
+        //make hashmap to show which question the button pertains to
+        report_buttons.put(report_q1,1);
+        report_buttons.put(report_q2,2);
+        report_buttons.put(report_q3,3);
+        report_buttons.put(report_q4,4);
+        report_buttons.put(report_q5,5);
+        report_buttons.put(report_q6,6);
+        report_buttons.put(report_q7,7);
+
+        selected_button = new HashMap<Integer,Button>();
+
+//        for(int i = 0; i < 5; i++) {
+//            selected_button.put(i,null);
+//        }
+        for(ques_arr = 0 ; ques_arr < question_button_arrays.size(); ques_arr++) {
+            for(button_elem = 0; button_elem < question_button_arrays.get(ques_arr).size(); button_elem++) {
+               curr_btn =  question_button_arrays.get(ques_arr).get(button_elem);
+//                curr_btn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        int question_num = Integer.parseInt(((Button) view).getText().toString());
+//                        Button prev_selection = selected_button.get(question_num);
+//                        if(prev_selection != null) {
+//                            Log.d("BELHTDFG","entered selection");
+//                            prev_selection.setBackgroundTintList(ScoreActivity.this.getResources().getColorStateList(getOriginalColor(prev_selection), null));
+//                        }
+//
+//                        Log.d("BELHTDFG","button_elem: "+ button_elem);
+//                        ((Button) view).setBackgroundTintList(ScoreActivity.this.getResources().getColorStateList(R.color.colorAccent, null));
+//                        selected_button.put(question_num,((Button) view));
+//
+//                    }
+//                });
+
+                all_buttons.put(curr_btn,ques_arr);
+            }
+        }
+        for (Map.Entry<Button, Integer> entry : report_buttons.entrySet())
+        {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
+            entry.getKey().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    promptReport(report_buttons.get(((Button) view)),"yeet yeet?");
+                }
+            });
+        }
+        for (Map.Entry<Button, Integer> entry : all_buttons.entrySet())
+        {
+            entry.getKey().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //int rating_num = Integer.parseInt(((Button) view).getText().toString());
+                    int question_num = all_buttons.get(((Button) view));
+                    Button prev_selection = selected_button.get(question_num);
+                    if(prev_selection != null) {
+                        Log.d("BELHTDFG","entered selection");
+                        prev_selection.setBackgroundTintList(ScoreActivity.this.getResources().getColorStateList(getOriginalColor(prev_selection), null));
+                    }
+
+                    Log.d("BELHTDFG","button_elem: "+ button_elem);
+                    ((Button) view).setBackgroundTintList(ScoreActivity.this.getResources().getColorStateList(R.color.colorAccent, null));
+                    selected_button.put(question_num,((Button) view));
+
+                }
+            });
+        }
+
+        submit_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (Map.Entry<Integer, Button> entry : selected_button.entrySet())
+                {
+                    String q_id = null;
+                    System.out.println(entry.getKey() + "/" + entry.getValue());
+                    try {
+                        q_id=json_arr.getJSONObject(Integer.parseInt(entry.getValue().getText().toString())).getString("_id");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        new OkHttpTask().execute(OkHttpTask.GET_USER_COURSES, q_id,entry.getValue().toString()).get();
+                    } catch (InterruptedException e) {
+                        Log.d("BELHTDFG","InterruptedException");
+                    } catch (ExecutionException e) {
+                        Log.d("BELHTDFG","ExecutionException");
+                    }
+                }
+                Snackbar.make(findViewById(android.R.id.content), "Thanks! Your feedback has been recorded.", Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        });
         Intent starting_intent = getIntent();
         extras = starting_intent.getExtras();
 
@@ -166,7 +428,7 @@ public class ScoreActivity extends AppCompatActivity {
 
 
         avg_reponse_time_txt.setText(new_response_time + "s");
-        correctness_rate_txt.setText(new_num_correct + "%");
+        correctness_rate_txt.setText(new_num_correct * 100 + "%");
 
         //if the stat does not exist, make a new one
 
@@ -252,6 +514,26 @@ public class ScoreActivity extends AppCompatActivity {
         }
     }
 
+    protected int getOriginalColor(Button button){
+        int contents = Integer.parseInt(button.getText().toString());
+
+        Log.d("BELHTDFG","button num: "+ contents);
+        switch(contents) {
+            case 0:
+                return R.color.blueshade0;
+            case 1:
+                return R.color.blueshade1;
+            case 2:
+                return R.color.blueshade2;
+            case 3:
+                return R.color.blueshade3;
+            case 4:
+                return R.color.blueshade4;
+            case 5:
+                return R.color.blueshade5;
+        }
+        return 0;
+    }
     public void done(View view){
         finish();
     }
@@ -274,6 +556,8 @@ public class ScoreActivity extends AppCompatActivity {
         {
             return Integer.parseInt(json_stat_http);
         }
+
+
         return 0;
     }
 
@@ -294,5 +578,26 @@ public class ScoreActivity extends AppCompatActivity {
 
     }
 
+    private void promptReport(int question_num,String question_txt)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ScoreActivity.this);
+        builder.setMessage("Are you sure you want to report Question " + question_num + " ("
+                            + question_txt + ")?")
+                .setCancelable(true)
+                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent_prof = new Intent(ScoreActivity.this, EmailActivity.class);
+                        startActivity(intent_prof);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
 }
