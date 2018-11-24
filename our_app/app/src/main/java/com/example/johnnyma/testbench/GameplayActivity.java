@@ -98,6 +98,7 @@ public class GameplayActivity extends AppCompatActivity  {
     ImageView emoji_ok;
     private PopupWindow emojiPopup;
     private LayoutInflater layoutInflater;
+    private boolean emoji_displayed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -562,6 +563,10 @@ public class GameplayActivity extends AppCompatActivity  {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    if(emoji_displayed){
+                        return;
+                    }
+                    emoji_displayed = true;
                     layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                     View container = layoutInflater.inflate(R.layout.layout_emoji, null);
                     ImageView emojiImage = container.findViewById(R.id.emoji);
@@ -589,13 +594,14 @@ public class GameplayActivity extends AppCompatActivity  {
                             break;
                     }
 
-                    emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 500, 500); //TODO change location
+                    emojiPopup = new PopupWindow(container, 200, 200, false);
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 500, 500); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             emojiPopup.dismiss();
+                            emoji_displayed = false;
                         }
                     }, 2000);
                 }
