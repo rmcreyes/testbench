@@ -95,6 +95,7 @@ public class GameplayActivity extends AppCompatActivity  {
     ImageView emoji_ok;
     private PopupWindow emojiPopup;
     private LayoutInflater layoutInflater;
+    private boolean emoji_displayed = false;
 
     private FrameLayout fragment_container;
 
@@ -505,6 +506,10 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener popupEmoji = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+            if(emoji_displayed){
+                return;
+            }
+            emoji_displayed = true;
             final Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
@@ -537,12 +542,13 @@ public class GameplayActivity extends AppCompatActivity  {
                     }
 
                     emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 500, 500); //TODO change location
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 500, 500); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             emojiPopup.dismiss();
+                            emoji_displayed = false;
                         }
                     }, 2000);
                 }
