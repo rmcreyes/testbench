@@ -246,9 +246,7 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
 
-    protected void waitForQuestion() {
-        num_false = 0;
-        resetButtonColors();
+    public void startTransition() {
         Bundle args = new Bundle();
         if (currentQuestion > 7) {
             endGame();
@@ -263,6 +261,24 @@ public class GameplayActivity extends AppCompatActivity  {
         loadingQuestionFragment.setArguments(args);
         ft.add(R.id.fragment_container, loadingQuestionFragment, "loading_question");
         ft.commit();
+    }
+
+    public void endTransition() {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fm.findFragmentByTag("loading_question");
+        ft.remove(loadingQuestionFragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.commit();
+    }
+
+    protected void waitForQuestion() {
+        num_false = 0;
+        resetButtonColors();
+
+        startTransition();
+
         if(currentQuestion < 8) {
             questionHeader.setText("Question " + currentQuestion + " of 7");
             socket.emit("ready_next");
@@ -282,14 +298,9 @@ public class GameplayActivity extends AppCompatActivity  {
         answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
         answer4.setTextColor(Color.parseColor("#ffffff"));
     }
-    protected void playQuestion() {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
 
-        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fm.findFragmentByTag("loading_question");
-        ft.remove(loadingQuestionFragment);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        ft.commit();
+    protected void playQuestion() {
+        endTransition();
         answered = false;
         turn_ended = false;
         Log.d("playQuestion", "in playQuestion");
