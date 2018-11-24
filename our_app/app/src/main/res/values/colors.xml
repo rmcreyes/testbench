@@ -34,6 +34,12 @@
 
     <color name="reviewQuestionBox">#181717</color>
 
+    <color name="blueshade0">#0c1833</color>
+    <color name="blueshade1">#12244b</color>
+    <color name="blueshade2">#162c5c</color>
+    <color name="blueshade3">#21438f</color>
+    <color name="blueshade4">#2b56b4</color>
+    <color name="blueshade5">#2564ed</color>
 
 
 </resources>
