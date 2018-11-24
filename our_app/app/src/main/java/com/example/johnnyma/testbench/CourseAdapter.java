@@ -106,7 +106,7 @@ public class CourseAdapter extends BaseAdapter {
             DisplayMetrics dm1 = c.getResources().getDisplayMetrics();
             params1.width = dm1.widthPixels / 5;
 
-            params1.setGravity(Gravity.START);
+            params1.setGravity(Gravity.CENTER);
 
             btn1.setLayoutParams(params1);
 
@@ -168,6 +168,8 @@ public class CourseAdapter extends BaseAdapter {
             GridLayout.LayoutParams params3 = new GridLayout.LayoutParams();
             params3.setMargins(0, 30, 0, 40);
             params3.setGravity(Gravity.CENTER_VERTICAL);
+            DisplayMetrics dm3= c.getResources().getDisplayMetrics();
+            params3.width = dm3.widthPixels / 5;
             btn3.setLayoutParams(params3);
             course_grid.addView(btn3, 2);
             btn3.setVisibility(View.INVISIBLE);

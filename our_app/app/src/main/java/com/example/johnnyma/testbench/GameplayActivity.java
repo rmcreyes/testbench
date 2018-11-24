@@ -9,15 +9,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -75,14 +76,16 @@ public class GameplayActivity extends AppCompatActivity  {
     int opponent_avatar;
     int currentQuestion = 1;
     int answer_time = 0;
-    boolean answered = false;
-    boolean turn_ended = false;
+
+    boolean buttonsEnabled = false;
+    private Object lock = new Object();
     int player_rank;
     int opponent_rank;
     int num_false = 0;
     int correct_loc;
     int correctlyAnswered = 0;
     String round_winner = "";
+    long cur_q_time = 0;
 
     //emoji stuff
     ImageView emoji_bigthink;
@@ -94,14 +97,24 @@ public class GameplayActivity extends AppCompatActivity  {
     ImageView emoji_ok;
     private PopupWindow emojiPopup;
     private LayoutInflater layoutInflater;
+    private boolean emoji_displayed = false;
+
+    private FrameLayout fragment_container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        currentQuestion = 1;
+        answer_time = 0;
+        num_false = 0;
+        correctlyAnswered = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gameplay);
         Intent starting_intent = getIntent();
 
         course = starting_intent.getStringExtra("course");
+
+        fragment_container = findViewById(R.id.fragment_container);
+        fragment_container.setVisibility(View.INVISIBLE);
 
         courseHeader = findViewById(R.id.course_header);
         courseHeader.setText(course.substring(0,4)+ " " + course.substring(4, 7));
@@ -110,7 +123,7 @@ public class GameplayActivity extends AppCompatActivity  {
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
-        player_avatar = starting_intent.getIntExtra("player_rank", 1);
+        player_avatar = starting_intent.getIntExtra("player_avatar", 1);
         player_rank = starting_intent.getIntExtra("player_rank", 1);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
@@ -119,7 +132,7 @@ public class GameplayActivity extends AppCompatActivity  {
         opponentName = findViewById(R.id.opponent_name);
         opponentName.setText(opponent_name);
 
-        opponent_avatar = starting_intent.getIntExtra("opponent_rank", 1);
+        opponent_avatar = starting_intent.getIntExtra("opponent_avatar", 1);
         opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
         opponentAvatar = findViewById(R.id.opponent_avatar);
         setOpponentAvatar();
@@ -158,8 +171,73 @@ public class GameplayActivity extends AppCompatActivity  {
         socket.on("turn_over", turnOver);
         socket.on("start_question", readyQuestion);
         socket.on("broadcast_leave", opponentLeft);
+        setButtonListeners();
         waitForQuestion();
     }
+    private void enableButtons(){
+        synchronized(lock) {
+            buttonsEnabled = true;
+        }
+    }
+    private void disableButtons() {
+        synchronized (lock) {
+            buttonsEnabled = false;
+        }
+    }
+    private boolean buttonsEnabled() {
+        synchronized(lock) {
+            return buttonsEnabled;
+        }
+    }
+    private void setButtonListeners(){
+        answer1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (buttonsEnabled()) {
+                    disableButtons();
+                    answer_time += System.currentTimeMillis() - cur_q_time;
+                    answerChosen(answer1, 1, System.currentTimeMillis() - cur_q_time);
+                }
+            }
+        });
+
+        answer2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (buttonsEnabled()) {
+                    disableButtons();
+                    answer_time += System.currentTimeMillis() - cur_q_time;
+                    answerChosen(answer2, 2, System.currentTimeMillis() - cur_q_time);
+
+                }
+            }
+        });
+
+        answer3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (buttonsEnabled()) {
+                    disableButtons();
+                    answer_time += System.currentTimeMillis() - cur_q_time;
+                    answerChosen(answer3, 3, System.currentTimeMillis() - cur_q_time);
+
+                }
+
+            }
+        });
+
+        answer4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (buttonsEnabled()) {
+                    disableButtons();
+                    answer_time += System.currentTimeMillis() - cur_q_time;
+                    answerChosen(answer4, 4, System.currentTimeMillis() - cur_q_time);
+                }
+            }
+        });
+    }
+
     protected void setPlayerAvatar(){
         switch(player_avatar % 6) {
             case 0:
@@ -246,25 +324,27 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
 
+    public void startTransition() {
+        fragment_container.setVisibility(View.VISIBLE);
+        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+        fragment_container.startAnimation(slideUp);
+    }
+
+    public void endTransition() {
+        Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
+        fragment_container.startAnimation(slideDown);
+        fragment_container.setVisibility(View.INVISIBLE);
+    }
+
     protected void waitForQuestion() {
         num_false = 0;
         resetButtonColors();
-        Bundle args = new Bundle();
-        if (currentQuestion > 7) {
-            endGame();
-        } else {
-            args.putString("next_q_msg", "Get Ready for \n  Question " + currentQuestion + "!");
-            args.putString("round_winner", round_winner);
-            args.putInt("winner_avatar", round_winner.equals(player_name) ? player_avatar : opponent_avatar);
-        }
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
-        loadingQuestionFragment.setArguments(args);
-        ft.add(R.id.fragment_container, loadingQuestionFragment, "loading_question");
-        ft.commit();
+
+        startTransition();
+
         if(currentQuestion < 8) {
             questionHeader.setText("Question " + currentQuestion + " of 7");
+            Log.d("wait for question", "emitting ready next");
             socket.emit("ready_next");
         } else {
             endGame();
@@ -282,90 +362,45 @@ public class GameplayActivity extends AppCompatActivity  {
         answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
         answer4.setTextColor(Color.parseColor("#ffffff"));
     }
+
     protected void playQuestion() {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-
-        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fm.findFragmentByTag("loading_question");
-        ft.remove(loadingQuestionFragment);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        ft.commit();
-        answered = false;
-        turn_ended = false;
+        endTransition();
+        enableButtons();
         Log.d("playQuestion", "in playQuestion");
-
+        if (currentQuestion > 7) currentQuestion = 1;
         body.setText(questions.get(currentQuestion - 1).getBody());
         // randomly assign questions to question buttons
         randomizeAnswers(questions.get(currentQuestion - 1));
 
         // start timer
-        final int time = (int)System.currentTimeMillis();
-        answer1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!answered && !turn_ended) {
-                    answered = true;
-                    answer_time += System.currentTimeMillis() - time;
-                    answerChosen(answer1, 1, (int)System.currentTimeMillis() - time);
-                }
-            }
-        });
+        cur_q_time = System.currentTimeMillis();
 
-        answer2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!answered && !turn_ended) {
-                    answered = true;
-                    answer_time += System.currentTimeMillis() - time;
-                    answerChosen(answer2, 2, (int)System.currentTimeMillis() - time);
-
-                }
-            }
-        });
-
-        answer3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!answered && !turn_ended) {
-                    answered = true;
-                    answer_time += System.currentTimeMillis() - time;
-                    answerChosen(answer3, 3, (int)System.currentTimeMillis() - time);
-
-                }
-
-            }
-        });
-
-        answer4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!answered && !turn_ended) {
-                    answered = true;
-                    answer_time += System.currentTimeMillis() - time;
-                    answerChosen(answer4, 4, (int) System.currentTimeMillis() - time);
-                }
-            }
-        });
         final int timedQuestion = currentQuestion;
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (!answered && !turn_ended && timedQuestion == currentQuestion) {
+                if (buttonsEnabled() && timedQuestion == currentQuestion) {
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer_time += 10000;
-                    answered = true;
+                    disableButtons();
                 }
             }
         }, 10000);
 
     }
-
-    protected void answerChosen(Button answer, int num, int time) {
+    protected void yellowHighlightCorrect() {
+        switch(correct_loc) {
+            case 1: answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
+            case 2: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
+            case 3: answer3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
+            case 4: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
+        }
+    }
+    protected void answerChosen(Button answer, int num, long time) {
         if (num == correct_loc) {
-            socket.emit("on_answer", "ANSWER_RIGHT", calculateScore(time));
+            socket.emit("on_answer", "ANSWER_RIGHT", calculateScore((int)time));
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
             answer.setTextColor(Color.parseColor("#0f2711"));
-            int score = calculateScore(time);
         } else {
             socket.emit("on_answer", "ANSWER_WRONG", 0);
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
@@ -373,8 +408,7 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
     protected void endGame(){
-        Log.d("response time (ms)", Integer.toString(answer_time));
-        Log.d("number correct", Integer.toString(correctlyAnswered));
+        socket.disconnect();
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
         scoreIntent.putExtra("opponent_score",opponent_score);
@@ -388,6 +422,8 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("course_number", Integer.parseInt(course.substring(4,7)));
         scoreIntent.putExtra("response_time", answer_time/1000.0);
         scoreIntent.putExtra("num_correct", correctlyAnswered);
+        scoreIntent.putExtra("questions", getIntent().getStringExtra("questions"));
+        finish();
         startActivity(scoreIntent);
     }
 
@@ -421,8 +457,9 @@ public class GameplayActivity extends AppCompatActivity  {
                             } else {
                                 opponent_score += scores.getInt("points");
                                 round_winner = opponent_name;
+                                yellowHighlightCorrect();
                             }
-                            turn_ended = true;
+                            disableButtons();
                             playerScore.setText("Score: " + player_score);
                             opponentScore.setText("Score: " + opponent_score);
                             currentQuestion++;
@@ -434,7 +471,7 @@ public class GameplayActivity extends AppCompatActivity  {
                         } else {
                             num_false++;
                             if (num_false > 1) {
-                                turn_ended = true;
+                                disableButtons();
                                 currentQuestion++;
                                 round_winner = "no winner";
                                 if (currentQuestion > 7) {
@@ -475,8 +512,8 @@ public class GameplayActivity extends AppCompatActivity  {
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent(GameplayActivity.this, CourseSelectActivity.class);
-                            startActivity(intent);
+                            socket.disconnect();
+                            finish();
                         }
                     });
             AlertDialog alert = builder.create();
@@ -484,29 +521,13 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     };
 
-
-    public Emitter.Listener getQuestions = new Emitter.Listener(){
-        @Override
-        public void call(final Object... args){
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable(){
-                @Override
-                public void run() {
-                    try {
-                        JSONArray questions = new JSONArray((String) args[0]);
-                        parseQuestions(questions.toString());
-                    } catch (JSONException e) {
-                        return;
-                    }
-                }
-            });
-        }
-    };
-
-
     public Emitter.Listener popupEmoji = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+            if(emoji_displayed){
+                return;
+            }
+            emoji_displayed = true;
             final Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
@@ -539,12 +560,13 @@ public class GameplayActivity extends AppCompatActivity  {
                     }
 
                     emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 500, 500); //TODO change location
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 500, 500); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             emojiPopup.dismiss();
+                            emoji_displayed = false;
                         }
                     }, 2000);
                 }

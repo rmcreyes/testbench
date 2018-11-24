@@ -492,7 +492,7 @@ public class ScoreActivity extends AppCompatActivity {
 
     protected void setAvatar(ImageView avatar,int avatar_val){
         Log.i("avatar o", Integer.toString(opponent_avatar));
-        switch(avatar_val) {
+        switch(avatar_val % 6) {
             case 0:
                 avatar.setImageResource(R.drawable.penguin_avatar);
                 break;
@@ -535,8 +535,7 @@ public class ScoreActivity extends AppCompatActivity {
         return 0;
     }
     public void done(View view){
-        Intent intent = new Intent(ScoreActivity.this, CourseSelectActivity.class);
-        startActivity(intent);
+        finish();
     }
 
     protected int updateStat(float correctness_rate,float response_time,int level_progress,
