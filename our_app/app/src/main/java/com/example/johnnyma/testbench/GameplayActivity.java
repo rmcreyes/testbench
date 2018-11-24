@@ -17,7 +17,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -95,6 +98,8 @@ public class GameplayActivity extends AppCompatActivity  {
     private PopupWindow emojiPopup;
     private LayoutInflater layoutInflater;
 
+    private FrameLayout fragment_container;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +107,9 @@ public class GameplayActivity extends AppCompatActivity  {
         Intent starting_intent = getIntent();
 
         course = starting_intent.getStringExtra("course");
+
+        fragment_container = findViewById(R.id.fragment_container);
+        fragment_container.setVisibility(View.INVISIBLE);
 
         courseHeader = findViewById(R.id.course_header);
         courseHeader.setText(course.substring(0,4)+ " " + course.substring(4, 7));
@@ -247,30 +255,36 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     public void startTransition() {
-        Bundle args = new Bundle();
-        if (currentQuestion > 7) {
-            endGame();
-        } else {
-            args.putString("next_q_msg", "Get Ready for \n  Question " + currentQuestion + "!");
-            args.putString("round_winner", round_winner);
-            args.putInt("winner_avatar", round_winner.equals(player_name) ? player_avatar : opponent_avatar);
-        }
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
-        loadingQuestionFragment.setArguments(args);
-        ft.add(R.id.fragment_container, loadingQuestionFragment, "loading_question");
-        ft.commit();
+//        Bundle args = new Bundle();
+//        if (currentQuestion > 7) {
+//            endGame();
+//        } else {
+//            args.putString("next_q_msg", "Get Ready for \n  Question " + currentQuestion + "!");
+//            args.putString("round_winner", round_winner);
+//            args.putInt("winner_avatar", round_winner.equals(player_name) ? player_avatar : opponent_avatar);
+//        }
+//        FragmentManager fm = getSupportFragmentManager();
+//        FragmentTransaction ft = fm.beginTransaction();
+//        LoadingQuestionFragment loadingQuestionFragment = new LoadingQuestionFragment();
+//        loadingQuestionFragment.setArguments(args);
+//        ft.add(R.id.fragment_container, loadingQuestionFragment, "loading_question");
+//        ft.commit();
+        fragment_container.setVisibility(View.VISIBLE);
+        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+        fragment_container.startAnimation(slideUp);
     }
 
     public void endTransition() {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-
-        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fm.findFragmentByTag("loading_question");
-        ft.remove(loadingQuestionFragment);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        ft.commit();
+//        FragmentManager fm = getSupportFragmentManager();
+//        FragmentTransaction ft = fm.beginTransaction();
+//
+//        LoadingQuestionFragment loadingQuestionFragment = (LoadingQuestionFragment) fm.findFragmentByTag("loading_question");
+//        ft.remove(loadingQuestionFragment);
+//        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+//        ft.commit();
+        Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
+        fragment_container.startAnimation(slideDown);
+        fragment_container.setVisibility(View.INVISIBLE);
     }
 
     protected void waitForQuestion() {

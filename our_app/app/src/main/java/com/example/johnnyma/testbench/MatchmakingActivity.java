@@ -29,7 +29,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
 
     private TextView textview;
-    private GifImageView loading_gif;
+//    private GifImageView loading_gif;
     private Button cancel_btn;
 
 
@@ -50,7 +50,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
 
                 textview.setVisibility(View.INVISIBLE);
-                loading_gif.setVisibility(View.INVISIBLE);
+//                loading_gif.setVisibility(View.INVISIBLE);
                 cancel_btn.setVisibility(View.INVISIBLE);
 
 
@@ -84,7 +84,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         socket = SocketHandler.getSocket();
 
         textview = findViewById(R.id.textview);
-        loading_gif = findViewById(R.id.loading_gif);
+//        loading_gif = findViewById(R.id.loading_gif);
         cancel_btn = findViewById(R.id.cancelButton);
 
         //start the service
