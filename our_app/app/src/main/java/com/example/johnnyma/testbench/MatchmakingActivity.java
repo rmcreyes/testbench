@@ -1,8 +1,10 @@
 package com.example.johnnyma.testbench;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -89,6 +91,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
         socket.on("game_made", onGameMade);
         socket.on("get_json_opponent", getJSONOpponent);
+        socket.on("broadcast_leave", opponentLeft);
         handler.postDelayed(runnable, 500);
     }
 
@@ -205,5 +208,21 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         socket.disconnect();
         finish();
     }
+    public Emitter.Listener opponentLeft = new Emitter.Listener(){
+        @Override
+        public void call(final Object... args){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MatchmakingActivity.this);
+            builder.setMessage("You opponent disconnected. You will be brought back to the main page.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            socket.disconnect();
+                            finish();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    };
 
 }

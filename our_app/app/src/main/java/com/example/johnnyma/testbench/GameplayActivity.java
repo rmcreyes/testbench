@@ -76,7 +76,9 @@ public class GameplayActivity extends AppCompatActivity  {
     int opponent_avatar;
     int currentQuestion = 1;
     int answer_time = 0;
+
     boolean buttonsEnabled = false;
+    private Object lock = new Object();
     int player_rank;
     int opponent_rank;
     int num_false = 0;
@@ -100,6 +102,10 @@ public class GameplayActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        currentQuestion = 1;
+        answer_time = 0;
+        num_false = 0;
+        correctlyAnswered = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gameplay);
         Intent starting_intent = getIntent();
@@ -168,16 +174,25 @@ public class GameplayActivity extends AppCompatActivity  {
         waitForQuestion();
     }
     private void enableButtons(){
-        buttonsEnabled = true;
+        synchronized(lock) {
+            buttonsEnabled = true;
+        }
     }
     private void disableButtons() {
-        buttonsEnabled = false;
+        synchronized (lock) {
+            buttonsEnabled = false;
+        }
+    }
+    private boolean buttonsEnabled() {
+        synchronized(lock) {
+            return buttonsEnabled;
+        }
     }
     private void setButtonListeners(){
         answer1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (buttonsEnabled) {
+                if (buttonsEnabled()) {
                     disableButtons();
                     answer_time += System.currentTimeMillis() - cur_q_time;
                     answerChosen(answer1, 1, System.currentTimeMillis() - cur_q_time);
@@ -188,7 +203,7 @@ public class GameplayActivity extends AppCompatActivity  {
         answer2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (buttonsEnabled) {
+                if (buttonsEnabled()) {
                     disableButtons();
                     answer_time += System.currentTimeMillis() - cur_q_time;
                     answerChosen(answer2, 2, System.currentTimeMillis() - cur_q_time);
@@ -200,7 +215,7 @@ public class GameplayActivity extends AppCompatActivity  {
         answer3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (buttonsEnabled) {
+                if (buttonsEnabled()) {
                     disableButtons();
                     answer_time += System.currentTimeMillis() - cur_q_time;
                     answerChosen(answer3, 3, System.currentTimeMillis() - cur_q_time);
@@ -213,7 +228,7 @@ public class GameplayActivity extends AppCompatActivity  {
         answer4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (buttonsEnabled) {
+                if (buttonsEnabled()) {
                     disableButtons();
                     answer_time += System.currentTimeMillis() - cur_q_time;
                     answerChosen(answer4, 4, System.currentTimeMillis() - cur_q_time);
@@ -351,7 +366,7 @@ public class GameplayActivity extends AppCompatActivity  {
         endTransition();
         enableButtons();
         Log.d("playQuestion", "in playQuestion");
-
+        if (currentQuestion > 7) currentQuestion = 1;
         body.setText(questions.get(currentQuestion - 1).getBody());
         // randomly assign questions to question buttons
         randomizeAnswers(questions.get(currentQuestion - 1));
@@ -363,7 +378,7 @@ public class GameplayActivity extends AppCompatActivity  {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (buttonsEnabled && timedQuestion == currentQuestion) {
+                if (buttonsEnabled() && timedQuestion == currentQuestion) {
                     socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer_time += 10000;
                     disableButtons();
@@ -491,14 +506,13 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            socket.disconnect();
             AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
             builder.setMessage("You opponent disconnected. You will be brought back to the main page.")
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent(GameplayActivity.this, CourseSelectActivity.class);
-                            startActivity(intent);
+                            socket.disconnect();
+                            finish();
                         }
                     });
             AlertDialog alert = builder.create();
