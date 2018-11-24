@@ -97,6 +97,7 @@ public class GameplayActivity extends AppCompatActivity  {
     ImageView emoji_ok;
     private PopupWindow emojiPopup;
     private LayoutInflater layoutInflater;
+    private boolean emoji_displayed = false;
 
     private FrameLayout fragment_container;
 
@@ -122,7 +123,7 @@ public class GameplayActivity extends AppCompatActivity  {
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
-        player_avatar = starting_intent.getIntExtra("player_rank", 1);
+        player_avatar = starting_intent.getIntExtra("player_avatar", 1);
         player_rank = starting_intent.getIntExtra("player_rank", 1);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
@@ -131,7 +132,7 @@ public class GameplayActivity extends AppCompatActivity  {
         opponentName = findViewById(R.id.opponent_name);
         opponentName.setText(opponent_name);
 
-        opponent_avatar = starting_intent.getIntExtra("opponent_rank", 1);
+        opponent_avatar = starting_intent.getIntExtra("opponent_avatar", 1);
         opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
         opponentAvatar = findViewById(R.id.opponent_avatar);
         setOpponentAvatar();
@@ -523,6 +524,10 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener popupEmoji = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
+            if(emoji_displayed){
+                return;
+            }
+            emoji_displayed = true;
             final Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
@@ -555,12 +560,13 @@ public class GameplayActivity extends AppCompatActivity  {
                     }
 
                     emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 500, 500); //TODO change location
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 500, 500); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             emojiPopup.dismiss();
+                            emoji_displayed = false;
                         }
                     }, 2000);
                 }

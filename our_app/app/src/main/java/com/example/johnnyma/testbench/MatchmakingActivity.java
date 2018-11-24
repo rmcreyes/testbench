@@ -92,14 +92,14 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         socket.on("game_made", onGameMade);
         socket.on("get_json_opponent", getJSONOpponent);
         socket.on("broadcast_leave", opponentLeft);
+
         handler.postDelayed(runnable, 500);
     }
 
-    //cancel match TODO
     public void cancelButton(View view){
         socket.disconnect();
-        finish();
 
+        finish();
     }
 
 
