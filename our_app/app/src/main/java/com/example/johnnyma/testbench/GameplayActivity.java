@@ -38,7 +38,7 @@ import java.util.TimerTask;
 
 public class GameplayActivity extends AppCompatActivity  {
 
-    //emoji encondings
+    //emoji encodings
     public static final int EMOJI_OK = 0;
     public static final int EMOJI_BIGTHINK = 1;
     public static final int EMOJI_FIRE = 2;
@@ -437,6 +437,7 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("response_time", answer_time_total/1000.0);
         scoreIntent.putExtra("num_correct", correctlyAnswered);
         startActivity(scoreIntent);
+        finish();
     }
 
     protected void parseQuestions(String questionsString) {

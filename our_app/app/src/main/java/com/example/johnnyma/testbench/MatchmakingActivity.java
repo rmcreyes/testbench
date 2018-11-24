@@ -34,16 +34,15 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
                 opponentRank = my_service.getOpponentRank();
                 showStartDialog();
                 //exit match making activity and stop service
-                //TODO Dont just stop it, destroy it
-                //stopService(new Intent(getApplicationContext(),MatchmakingService.class));
-                //finish();
+                stopService(new Intent(getApplicationContext(),MatchmakingService.class));
+                finish();
             }
-            else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
+            else if(timeout >= 150 && !(my_service.isMatchFound())){ //if timeout > 150 then that means 15 seconds has passed
                 stopService(new Intent(getApplicationContext(),MatchmakingService.class));
                 Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
                 finish();
             }
-            else {
+            else{
                 timeout++;
                 handler.postDelayed(this, 100);
             }
@@ -77,19 +76,11 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         handler.postDelayed(runnable, 500);
     }
 
-    //cancel match TODO
+    //cancel match
     public void cancelButton(View view){
-        //Toast.makeText(this, num , Toast.LENGTH_SHORT).show();
-
-        //my_service.setFound();
-        //stop the handler and stop the service
-
-
         //handler.removeCallback(runnable);
         stopService(new Intent(this, MatchmakingService.class));
-
         finish();
-
     }
 
     private ServiceConnection my_connection = new ServiceConnection() {
