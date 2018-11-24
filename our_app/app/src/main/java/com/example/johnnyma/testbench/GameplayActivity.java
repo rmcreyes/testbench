@@ -517,6 +517,8 @@ public class GameplayActivity extends AppCompatActivity  {
                     layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                     View container = layoutInflater.inflate(R.layout.layout_emoji, null);
                     ImageView emojiImage = (ImageView) container.findViewById(R.id.emoji);
+                    ImageView avatar = (ImageView) container.findViewById(R.id.avatar);
+                    avatar.setImageDrawable(opponentAvatar.getDrawable());
                     switch((int) args[0]){
                         case EMOJI_OK:
                             emojiImage.setImageResource(R.drawable.ok_emoji);
@@ -542,7 +544,8 @@ public class GameplayActivity extends AppCompatActivity  {
                     }
 
                     emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 500, 500); //TODO change location
+                    emojiPopup.setAnimationStyle(R.style.animation);
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 500, 500); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override
