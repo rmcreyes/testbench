@@ -561,9 +561,9 @@ public class GameplayActivity extends AppCompatActivity  {
                             break;
                     }
 
-                    emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.setAnimationStyle(R.style.animation);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 500, 500); //TODO change location
+                    emojiPopup = new PopupWindow(container, 300, 300, false);
+                    emojiPopup.setAnimationStyle(R.style.custom_animation);
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 0, 0); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override

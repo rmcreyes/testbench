@@ -9,9 +9,9 @@
     </style>
 
     <!-- Animation for popup -->
-    <style name="animation" parent="android:Animation">
-        <item name="@android:windowEnterAnimation">@anim/slide_up</item>
-        <item name="@android:windowExitAnimation">@anim/slide_down</item>
+    <style name="custom_animation" parent="android:Animation">
+        <item name="@android:windowEnterAnimation">@anim/custom_up</item>
+        <item name="@android:windowExitAnimation">@anim/custom_down</item>
     </style>
 
 </resources>
