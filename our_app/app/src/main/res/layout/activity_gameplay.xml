@@ -6,40 +6,86 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/fragment_container"
-        app:cardElevation="10dp"
-        android:animateLayoutChanges="true"
+        android:id="@+id/loading_card"
         android:layout_width="0dp"
         android:layout_height="400dp"
+        android:layout_margin="20dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:animateLayoutChanges="true"
         android:elevation="10dp"
-        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
         app:cardCornerRadius="20dp"
-        android:layout_margin="20dp"
-        app:layout_goneMarginTop="20dp"
-        app:layout_goneMarginBottom="20dp"
+        app:cardElevation="10dp"
         app:layout_constraintBottom_toTopOf="@+id/hunnit_emoji2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/question_num_cardview">
+        app:layout_constraintTop_toBottomOf="@+id/question_num_cardview"
+        app:layout_goneMarginBottom="20dp"
+        app:layout_goneMarginTop="20dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/loading_text"
+                android:layout_width="237dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:text="Get ready for the next question!"
+                android:textAlignment="center"
+                android:textSize="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.505"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.913" />
+
+            <TextView
+                android:id="@+id/winner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="32dp"
-                android:textAlignment="center"
-                android:text="Get ready for the next question!"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:text="Robin"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.501"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/won_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="6dp"
+                android:textSize="20dp"
+                android:text="won the last round!"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/winner" />
+
+            <ImageView
+                android:id="@+id/loading_pic"
+                android:layout_width="165dp"
+                android:layout_height="158dp"
+                android:layout_marginBottom="24dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/loading_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.503"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/bigthink_emoji" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
@@ -55,7 +101,7 @@
         android:background="@color/colorPrimary"
         android:text="seventeen"
         android:textSize="15dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
+        app:layout_constraintBottom_toBottomOf="@+id/loading_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/answer_3" />
@@ -125,7 +171,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/fragment_container"
+        app:layout_constraintTop_toTopOf="@+id/loading_card"
         app:layout_constraintVertical_bias="0.0">
 
         <android.support.constraint.ConstraintLayout

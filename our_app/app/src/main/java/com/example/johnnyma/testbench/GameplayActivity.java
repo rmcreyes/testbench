@@ -84,8 +84,12 @@ public class GameplayActivity extends AppCompatActivity  {
     int num_false = 0;
     int correct_loc;
     int correctlyAnswered = 0;
-    String round_winner = "";
     long cur_q_time = 0;
+
+    TextView loadingText;
+    TextView roundWinnerText;
+    TextView winText;
+    ImageView winnerAvatar;
 
     //emoji stuff
     ImageView emoji_bigthink;
@@ -113,7 +117,7 @@ public class GameplayActivity extends AppCompatActivity  {
 
         course = starting_intent.getStringExtra("course");
 
-        fragment_container = findViewById(R.id.fragment_container);
+        fragment_container = findViewById(R.id.loading_card);
         fragment_container.setVisibility(View.INVISIBLE);
 
         courseHeader = findViewById(R.id.course_header);
@@ -150,6 +154,11 @@ public class GameplayActivity extends AppCompatActivity  {
 
         questionHeader = findViewById(R.id.question_num);
 
+        loadingText = findViewById(R.id.loading_text);
+        roundWinnerText = findViewById(R.id.winner);
+        winText = findViewById(R.id.won_msg);
+        winnerAvatar = findViewById(R.id.loading_pic);
+
         answer1 = findViewById(R.id.answer_1);
         answer2 = findViewById(R.id.answer_2);
         answer3 = findViewById(R.id.answer_3);
@@ -171,8 +180,54 @@ public class GameplayActivity extends AppCompatActivity  {
         socket.on("turn_over", turnOver);
         socket.on("start_question", readyQuestion);
         socket.on("broadcast_leave", opponentLeft);
+
         setButtonListeners();
+        setInitialLoadView();
         waitForQuestion();
+    }
+
+    protected void setInitialLoadView() {
+        roundWinnerText.setVisibility(View.INVISIBLE);
+        winText.setVisibility(View.INVISIBLE);
+        winnerAvatar.setImageResource(R.drawable.bigthink_emoji);
+        loadingText.setText("Get Ready for Question " + currentQuestion + "!");
+    }
+
+    protected void setInGameLoadView(){
+        roundWinnerText.setVisibility(View.VISIBLE);
+        winText.setVisibility(View.VISIBLE);
+        roundWinnerText.setText("Nobody");
+        winText.setText("won the round!");
+        winnerAvatar.setImageResource(R.drawable.bigthink_emoji);
+        loadingText.setText("Get Ready for Question " + currentQuestion + "!");
+    }
+
+    protected void setInGameLoadView(String winner, int avatar) {
+        roundWinnerText.setVisibility(View.VISIBLE);
+        winText.setVisibility(View.VISIBLE);
+        roundWinnerText.setText(winner);
+        winText.setText("won the round!");
+        switch (avatar % 6) {
+            case 0:
+                winnerAvatar.setImageResource(R.drawable.penguin_avatar);
+                break;
+            case 1:
+                winnerAvatar.setImageResource(R.drawable.mountain_avatar);
+                break;
+            case 2:
+                winnerAvatar.setImageResource(R.drawable.rocket_avatar);
+                break;
+            case 3:
+                winnerAvatar.setImageResource(R.drawable.frog_avatar);
+                break;
+            case 4:
+                winnerAvatar.setImageResource(R.drawable.thunderbird_avatar);
+                break;
+            case 5:
+                winnerAvatar.setImageResource(R.drawable.cupcake_avatar);
+                break;
+        }
+        loadingText.setText("Get Ready for \n  Question " + currentQuestion + "!");
     }
     private void enableButtons(){
         synchronized(lock) {
@@ -189,7 +244,7 @@ public class GameplayActivity extends AppCompatActivity  {
             return buttonsEnabled;
         }
     }
-    private void setButtonListeners(){
+    private void setButtonListeners() {
         answer1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -238,7 +293,7 @@ public class GameplayActivity extends AppCompatActivity  {
         });
     }
 
-    protected void setPlayerAvatar(){
+    private void setPlayerAvatar(){
         switch(player_avatar % 6) {
             case 0:
                 playerAvatar.setImageResource(R.drawable.penguin_avatar);
@@ -261,7 +316,7 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
 
-    protected void setOpponentAvatar(){
+    private void setOpponentAvatar(){
         switch(opponent_avatar % 6) {
             case 0:
                 opponentAvatar.setImageResource(R.drawable.penguin_avatar);
@@ -285,7 +340,7 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
 
-    protected void randomizeAnswers(Question q){
+    private void randomizeAnswers(Question q){
         Random random = new Random();
         int rand = random.nextInt(4) + 1;
         switch (rand) {
@@ -324,26 +379,28 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
 
-    public void startTransition() {
+    private void startTransition() {
         fragment_container.setVisibility(View.VISIBLE);
         Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         fragment_container.startAnimation(slideUp);
     }
 
-    public void endTransition() {
+    private void endTransition() {
         Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
         fragment_container.startAnimation(slideDown);
         fragment_container.setVisibility(View.INVISIBLE);
     }
 
-    protected void waitForQuestion() {
-        num_false = 0;
-        resetButtonColors();
 
+    private void waitForQuestion() {
+        yellowHighlightCorrect();
+        num_false = 0;
+
+        resetButtonColors();
         startTransition();
 
-        if(currentQuestion < 8) {
-            questionHeader.setText("Question " + currentQuestion + " of 7");
+        if(currentQuestion <= questions.size()) {
+            questionHeader.setText("Question " + currentQuestion + " of " + questions.size());
             Log.d("wait for question", "emitting ready next");
             socket.emit("ready_next");
         } else {
@@ -352,7 +409,7 @@ public class GameplayActivity extends AppCompatActivity  {
         // TODO: find a better way to do this
         Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
     }
-    protected void resetButtonColors(){
+    private void resetButtonColors(){
         answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
         answer1.setTextColor(Color.parseColor("#ffffff"));
         answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
@@ -363,11 +420,11 @@ public class GameplayActivity extends AppCompatActivity  {
         answer4.setTextColor(Color.parseColor("#ffffff"));
     }
 
-    protected void playQuestion() {
+    private void playQuestion() {
         endTransition();
         enableButtons();
         Log.d("playQuestion", "in playQuestion");
-        if (currentQuestion > 7) currentQuestion = 1;
+        if (currentQuestion > questions.size()) currentQuestion = 1;
         body.setText(questions.get(currentQuestion - 1).getBody());
         // randomly assign questions to question buttons
         randomizeAnswers(questions.get(currentQuestion - 1));
@@ -388,7 +445,7 @@ public class GameplayActivity extends AppCompatActivity  {
         }, 10000);
 
     }
-    protected void yellowHighlightCorrect() {
+    private void yellowHighlightCorrect() {
         switch(correct_loc) {
             case 1: answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
             case 2: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
@@ -396,7 +453,7 @@ public class GameplayActivity extends AppCompatActivity  {
             case 4: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
         }
     }
-    protected void answerChosen(Button answer, int num, long time) {
+    private void answerChosen(Button answer, int num, long time) {
         if (num == correct_loc) {
             socket.emit("on_answer", "ANSWER_RIGHT", calculateScore((int)time));
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonRightAnswer, null));
@@ -407,7 +464,7 @@ public class GameplayActivity extends AppCompatActivity  {
             answer.setTextColor(Color.parseColor("#491212"));
         }
     }
-    protected void endGame(){
+    private void endGame(){
         socket.disconnect();
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
@@ -427,7 +484,7 @@ public class GameplayActivity extends AppCompatActivity  {
         startActivity(scoreIntent);
     }
 
-    protected void parseQuestions(String questionsString) {
+    private void parseQuestions(String questionsString) {
         questions = new ArrayList<>();
         Log.d("Questions", questionsString);
         for (int i = 0; i < 7 ; i++) {
@@ -453,17 +510,17 @@ public class GameplayActivity extends AppCompatActivity  {
                             if (scores.getString("user").equals(player_name)) {
                                 player_score += scores.getInt("points");
                                 correctlyAnswered++;
-                                round_winner = player_name;
+                                setInGameLoadView(player_name, player_avatar);
                             } else {
                                 opponent_score += scores.getInt("points");
-                                round_winner = opponent_name;
+                                setInGameLoadView(opponent_name, opponent_avatar);
                                 yellowHighlightCorrect();
                             }
                             disableButtons();
                             playerScore.setText("Score: " + player_score);
                             opponentScore.setText("Score: " + opponent_score);
                             currentQuestion++;
-                            if (currentQuestion > 7) {
+                            if (currentQuestion > questions.size()) {
                                 endGame();
                             } else {
                                 waitForQuestion();
@@ -471,12 +528,13 @@ public class GameplayActivity extends AppCompatActivity  {
                         } else {
                             num_false++;
                             if (num_false > 1) {
+                                yellowHighlightCorrect();
                                 disableButtons();
                                 currentQuestion++;
-                                round_winner = "no winner";
-                                if (currentQuestion > 7) {
+                                if (currentQuestion > questions.size()) {
                                     endGame();
                                 } else {
+                                    setInGameLoadView();
                                     waitForQuestion();
                                 }
                             }
@@ -575,7 +633,7 @@ public class GameplayActivity extends AppCompatActivity  {
     };
 
 
-    protected int calculateScore(int answerTime){
+    private int calculateScore(int answerTime){
         return (int)((10000.0 - answerTime) / 10000.0 * 50.0 + 50) + (questions.get(currentQuestion - 1).isVerified() ? 50 : 0);
     }
 
@@ -583,7 +641,7 @@ public class GameplayActivity extends AppCompatActivity  {
     /*
         USED DURING ONCREATE
      */
-    protected void setEmojiListeners(){
+    private void setEmojiListeners(){
         emoji_ok.setClickable(true);
         emoji_ok.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -639,6 +697,8 @@ public class GameplayActivity extends AppCompatActivity  {
             }
         });
     }
+
+
 
     @Override
     public void onBackPressed() {
