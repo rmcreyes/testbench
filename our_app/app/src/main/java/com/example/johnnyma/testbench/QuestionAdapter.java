@@ -75,12 +75,9 @@ public class QuestionAdapter extends BaseAdapter {
         ratings.add(rate5);
 
         int rating = question.getRating();
-        if(rating != -1)
+        if(rating != -1 && rating <= 5)
             ratings.get(rating).setTextColor(ContextCompat.getColor(c, R.color.answerColor));
-        else {
-            for(TextView r : ratings)
-                r.setVisibility(View.INVISIBLE);
-        }
+
 
         if(!question.isVerified())
             verified_question.setVisibility(View.INVISIBLE);
