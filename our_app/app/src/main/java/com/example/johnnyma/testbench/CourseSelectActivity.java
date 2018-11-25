@@ -51,8 +51,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private TextView name;
     private ImageView profile_pic;
     private String user_json;
-    private String user_name;
-    private String screen_name;
+    private String fb_name;
     private String profile_pic_url;
     private String email;
     private String alias;
@@ -62,7 +61,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private Bundle extras;
     private boolean isProf;
     private String username;
-    private String validUsername;
 
     // each course header(eg. CPEN) is a key to a list of course codes (eg. 311, 321, 331)
     private Map<String, List<String>> Courses;
@@ -84,8 +82,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
         // coming from the LoginActivity, the intent may come with information relating to the user
         if(extras.containsKey("name")) {
-            user_name = intent.getStringExtra("name");
-            name.setText(user_name);
+            fb_name = intent.getStringExtra("name");
+            name.setText(fb_name);
         }
         else
             name.setText("error");
@@ -97,75 +95,14 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                     .into(profile_pic);
         }
 
-        if(extras.containsKey("user_json")) {
-            user_json = intent.getStringExtra("user_json");
-            //Toast.makeText(CourseSelectActivity.this, user_json, Toast.LENGTH_SHORT).show();
 
-            Log.d("BELHTDFG","user_json orig: " +user_json);
-
-            try {
-                u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
-                GlobalTokens.USER_ID = u_json.getString("_id");
-                screen_name = u_json.getString("username");
-                Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            if(extras.containsKey("email")) {
-                email = intent.getStringExtra("email");
-            }
-
-            try {
-                username = u_json.getString("username");
-            } catch (JSONException e) {
-                promptUsername();
-                //Toast.makeText(CourseSelectActivity.this, "after prompt", Toast.LENGTH_SHORT).show();
-            }
-
-
-            Log.d("BELHTDFG","user_json: " +GlobalTokens.USER_ID);
-
-
-            String course_json;
-            try {
-                course_json = new OkHttpTask().execute(OkHttpTask.GET_USER_COURSES, "").get();
-            } catch (InterruptedException e) {
-                course_json = null;
-                Log.d("BELHTDFG","InterruptedException");
-            } catch (ExecutionException e) {
-                course_json = null;
-                Log.d("BELHTDFG","ExecutionException");
-            }
-            if(course_json != null) {
-               // Toast.makeText(CourseSelectActivity.this, course_json, Toast.LENGTH_SHORT).show();
-            }
-
-        }
-        fillCourses();
-
-
-        String json_stat_http = null;
-        try {
-            json_stat_http = new OkHttpTask().execute(OkHttpTask.GET_USER_STAT, "CPEN", Integer.toString(321)).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        if(extras.containsKey("email")) {
+            email = intent.getStringExtra("email");
         }
 
+        refreshProfile();
 
-        try {
-            JSONArray json_stat = new JSONArray(json_stat_http);
-            int ye = json_stat.getJSONObject(0).getJSONArray("stats_list").getJSONObject(0).getInt("rank");
-            //Toast.makeText(CourseSelectActivity.this, "OUR INT IS:" +ye, Toast.LENGTH_SHORT).show();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        CourseAdapter courseAdapter = new CourseAdapter(this, Courses, getSupportFragmentManager());
-        CourseListView.setAdapter(courseAdapter);
+        onCourseAdded();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,18 +113,10 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             }
         });
 
-//        profile_pic.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
-
         profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    alias = u_json.getString("alias");
                     isProf = u_json.getBoolean("is_professor");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -201,6 +130,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 startActivity(userprofile);
             }
         });
+
+        Toast.makeText(this, alias, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -270,7 +201,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 Intent intent = new Intent(this, MatchmakingActivity.class);
                 intent.putExtra("rank",rank);
                 intent.putExtra(TAG, course);
-                intent.putExtra("name", screen_name);
+                intent.putExtra("name", alias);
                 startActivity(intent);
                 break;
 
@@ -385,10 +316,42 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     @Override
     protected void onResume() {
         super.onResume();
+
+        refreshProfile();
+
         if(SocketHandler.isDisconnected()) {
             SocketHandler.setDisconnected(false);
             Toast.makeText(this, "Your opponent has quit the game", Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+
+    private void refreshProfile() {
+        String user_json;
+        try {
+            user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
+        } catch (InterruptedException e) {
+            user_json = null;
+        } catch (ExecutionException e) {
+            user_json = null;
+        }
+
+        try {
+            u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
+            GlobalTokens.USER_ID = u_json.getString("_id");
+            Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
+            alias = u_json.getString("alias");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            username = u_json.getString("username");
+        } catch (JSONException e) {
+            promptUsername();
+        }
+
 
     }
 }
