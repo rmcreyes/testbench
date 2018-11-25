@@ -56,7 +56,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         public void run() {
             if(match_found){
                 textview.setVisibility(View.INVISIBLE);
-//                loading_gif.setVisibility(View.INVISIBLE);
+                loading_gif.setVisibility(View.INVISIBLE);
                 cancel_btn.setVisibility(View.INVISIBLE);
                 showStartDialog();
 
@@ -83,7 +83,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         playerRank = starting_intent.getIntExtra("rank", 1);
 
         textview = findViewById(R.id.textview);
-//        loading_gif = findViewById(R.id.loading_gif);
+        loading_gif = findViewById(R.id.loading_gif);
         cancel_btn = findViewById(R.id.cancelButton);
         SocketHandler.setSocket(socket);
         socket.connect();
@@ -131,6 +131,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             startActivity(intent);
         } else {
             //cancel
+            socket.emit("leave_early", "leave_early");
             socket.disconnect();
             finish();
         }
@@ -212,6 +213,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            SocketHandler.setDisconnected(true);
             socket.disconnect();
             finish();
         }

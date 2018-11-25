@@ -27,8 +27,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:ems="10"
+            android:ems="4"
             android:hint="Subject"
+            android:textColorHint="@android:color/darker_gray"
+            android:backgroundTint="@android:color/white"
             android:inputType="textPersonName"
             android:textAlignment="center" />
 
@@ -38,7 +40,9 @@
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:ems="10"
+            android:ems="3"
+            android:backgroundTint="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
             android:hint="Number"
             android:inputType="number"
             android:textAlignment="center" />
