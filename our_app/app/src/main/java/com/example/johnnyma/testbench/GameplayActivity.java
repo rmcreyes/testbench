@@ -75,6 +75,7 @@ public class GameplayActivity extends AppCompatActivity  {
     int opponent_score;
     String player_name;
     String opponent_name;
+    String leaderboard_name;
 
     int currentQuestion = 1;
     int answer_time = 0;
@@ -127,7 +128,9 @@ public class GameplayActivity extends AppCompatActivity  {
         fragment_container.setVisibility(View.INVISIBLE);
         courseHeader = findViewById(R.id.course_header);
         courseHeader.setText(course.substring(0,4)+ " " + course.substring(4, 7));
-        player_name = starting_intent.getStringExtra("player_name");
+        player_name = starting_intent.getStringExtra("alias");
+        leaderboard_name = starting_intent.getStringExtra("leaderboard_name");
+
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
         player_rank = starting_intent.getIntExtra("player_rank", 1);
@@ -471,6 +474,7 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("response_time", answer_time/1000.0);
         scoreIntent.putExtra("num_correct", correctlyAnswered);
         scoreIntent.putExtra("questions", getIntent().getStringExtra("questions"));
+        scoreIntent.putExtra("leaderboard_name", leaderboard_name);
         finish();
         startActivity(scoreIntent);
     }
