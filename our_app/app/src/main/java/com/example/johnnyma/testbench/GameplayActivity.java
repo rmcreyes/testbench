@@ -361,8 +361,6 @@ public class GameplayActivity extends AppCompatActivity  {
         } else {
             endGame();
         }
-        // TODO: find a better way to do this
-        Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
     }
     protected void resetButtonColors(){
         answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
@@ -392,9 +390,16 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void run() {
                 if (buttonsEnabled() && timedQuestion == currentQuestion) {
-                    socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer_time += 10000;
+                    yellowHighlightCorrect();
                     disableButtons();
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            socket.emit("on_answer", "ANSWER_WRONG", 0);
+                        }
+                    },1500);
+
                 }
             }
         }, 10000);
@@ -415,6 +420,7 @@ public class GameplayActivity extends AppCompatActivity  {
             answer.setTextColor(Color.parseColor("#0f2711"));
         } else {
             socket.emit("on_answer", "ANSWER_WRONG", 0);
+            yellowHighlightCorrect();
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
             answer.setTextColor(Color.parseColor("#491212"));
         }
@@ -469,7 +475,6 @@ public class GameplayActivity extends AppCompatActivity  {
                             } else {
                                 opponent_score += scores.getInt("points");
                                 round_winner = opponent_name;
-                                yellowHighlightCorrect();
                             }
                             disableButtons();
                             playerScore.setText("Score: " + player_score);
