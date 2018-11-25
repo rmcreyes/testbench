@@ -75,8 +75,8 @@ public class GameplayActivity extends AppCompatActivity  {
     int opponent_score;
     String player_name;
     String opponent_name;
-    int player_avatar;
-    int opponent_avatar;
+//    int player_avatar;
+//    int opponent_avatar;
     int currentQuestion = 1;
     int answer_time = 0;
 
@@ -135,7 +135,7 @@ public class GameplayActivity extends AppCompatActivity  {
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
-        player_avatar = starting_intent.getIntExtra("player_avatar", 1);
+        //player_avatar = starting_intent.getIntExtra("player_rank", 1);
         player_rank = starting_intent.getIntExtra("player_rank", 1);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
@@ -144,7 +144,7 @@ public class GameplayActivity extends AppCompatActivity  {
         opponentName = findViewById(R.id.opponent_name);
         opponentName.setText(opponent_name);
 
-        opponent_avatar = starting_intent.getIntExtra("opponent_avatar", 1);
+        //opponent_avatar = starting_intent.getIntExtra("opponent_rank", 1);
         opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
         opponentAvatar = findViewById(R.id.opponent_avatar);
         setOpponentAvatar();
@@ -251,7 +251,7 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     protected void setPlayerAvatar(){
-        switch(player_avatar % 6) {
+        switch(player_rank % 6) {
             case 0:
                 playerAvatar.setImageResource(R.drawable.penguin_avatar);
                 break;
@@ -274,7 +274,7 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     protected void setOpponentAvatar(){
-        switch(opponent_avatar % 6) {
+        switch(opponent_rank % 6) {
             case 0:
                 opponentAvatar.setImageResource(R.drawable.penguin_avatar);
                 break;
@@ -434,8 +434,8 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("opponent_name",opponent_name);
         scoreIntent.putExtra("player_rank",player_rank);
         scoreIntent.putExtra("opponent_rank",opponent_rank);
-        scoreIntent.putExtra("player_avatar",player_avatar);
-        scoreIntent.putExtra("opponent_avatar",opponent_avatar);
+//        scoreIntent.putExtra("player_avatar",player_avatar);
+//        scoreIntent.putExtra("opponent_avatar",opponent_avatar);
         scoreIntent.putExtra("course_subject", course.substring(0,4));
         scoreIntent.putExtra("course_number", Integer.parseInt(course.substring(4,7)));
         scoreIntent.putExtra("response_time", answer_time/1000.0);

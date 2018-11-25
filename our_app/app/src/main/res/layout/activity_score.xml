@@ -76,12 +76,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/win_or_lose">
+            app:layout_constraintTop_toBottomOf="@+id/ranked_up_txt">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -387,11 +387,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stats_layout" />
+                app:layout_constraintTop_toBottomOf="@+id/rate_layout" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/textView22"
+            android:id="@+id/rate_title_txt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -409,16 +409,17 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout7" />
 
 
-
         <LinearLayout
+            android:id="@+id/rate_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:gravity="center"
             android:orientation="vertical"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView22">
+            app:layout_constraintTop_toBottomOf="@+id/rate_title_txt">
 
             <TextView
                 android:id="@+id/question_text_1"
@@ -620,6 +621,7 @@
                     android:text="5"
                     android:textSize="18sp" />
             </LinearLayout>
+
             <Button
                 android:id="@+id/report_q2"
                 android:layout_width="wrap_content"
@@ -628,6 +630,7 @@
                 android:backgroundTint="?attr/colorError"
                 android:text="report"
                 android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/question_text_3"
                 android:layout_width="match_parent"
@@ -639,6 +642,7 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="italic" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -723,6 +727,7 @@
                     android:text="5"
                     android:textSize="18sp" />
             </LinearLayout>
+
             <Button
                 android:id="@+id/report_q3"
                 android:layout_width="wrap_content"
@@ -731,6 +736,7 @@
                 android:backgroundTint="?attr/colorError"
                 android:text="report"
                 android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/question_text_4"
                 android:layout_width="match_parent"
@@ -741,7 +747,7 @@
                 android:text="What is NOT a deployment method?"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -827,6 +833,7 @@
                     android:text="5"
                     android:textSize="18sp" />
             </LinearLayout>
+
             <Button
                 android:id="@+id/report_q4"
                 android:layout_width="wrap_content"
@@ -835,6 +842,7 @@
                 android:backgroundTint="?attr/colorError"
                 android:text="report"
                 android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/question_text_5"
                 android:layout_width="match_parent"
@@ -846,6 +854,7 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="italic" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -940,6 +949,7 @@
                 android:backgroundTint="?attr/colorError"
                 android:text="report"
                 android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/question_text_6"
                 android:layout_width="match_parent"
@@ -951,6 +961,7 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="italic" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -1037,7 +1048,6 @@
             </LinearLayout>
 
 
-
             <Button
                 android:id="@+id/report_q6"
                 android:layout_width="wrap_content"
@@ -1046,6 +1056,7 @@
                 android:backgroundTint="?attr/colorError"
                 android:text="report"
                 android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/question_text_7"
                 android:layout_width="match_parent"
@@ -1057,6 +1068,7 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="italic" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -1150,6 +1162,7 @@
                 android:backgroundTint="?attr/colorError"
                 android:text="report"
                 android:textSize="12sp" />
+
             <Button
                 android:id="@+id/submit_btn"
                 android:layout_width="match_parent"
@@ -1160,6 +1173,23 @@
                 android:text="submit" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/ranked_up_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="and ranked up!"
+            android:textAllCaps="true"
+            android:textAppearance="@android:style/TextAppearance.Material.Display1"
+            android:textColor="@color/colorButtonWrongAnswer"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/win_or_lose" />
 
         <!--<TextView-->
         <!--android:id="@+id/opponentName"-->
