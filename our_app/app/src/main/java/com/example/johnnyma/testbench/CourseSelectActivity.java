@@ -382,6 +382,15 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(SocketHandler.isDisconnected()) {
+            SocketHandler.setDisconnected(false);
+            Toast.makeText(this, "Your opponent has quit the game", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }
 
 

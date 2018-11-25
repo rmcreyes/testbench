@@ -101,6 +101,15 @@ public class GameplayActivity extends AppCompatActivity  {
 
     private FrameLayout fragment_container;
 
+    private Runnable show_toast = new Runnable()
+    {
+        public void run()
+        {
+            Toast.makeText(GameplayActivity.this, "My Toast message", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         currentQuestion = 1;
@@ -507,17 +516,9 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
-            builder.setMessage("You opponent disconnected. You will be brought back to the main page.")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            socket.disconnect();
-                            finish();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+            SocketHandler.setDisconnected(true);
+            socket.disconnect();
+            finish();
         }
     };
 
@@ -662,6 +663,11 @@ public class GameplayActivity extends AppCompatActivity  {
         alert.show();
     }
 
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        socket.emit("leave_early");
+        socket.disconnect();
+        finish();
+    }
 }
