@@ -96,7 +96,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/stats_layout"
+        android:id="@+id/rate_layout"
         android:layout_width="266dp"
         android:layout_height="140dp"
         android:layout_marginStart="8dp"
@@ -267,7 +267,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stats_layout">
+        app:layout_constraintTop_toBottomOf="@+id/rate_layout">
 
         <LinearLayout
             android:id="@+id/first_place_layout"
