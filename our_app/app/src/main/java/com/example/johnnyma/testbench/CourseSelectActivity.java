@@ -201,7 +201,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 Intent intent = new Intent(this, MatchmakingActivity.class);
                 intent.putExtra("rank",rank);
                 intent.putExtra(TAG, course);
-                intent.putExtra("name", alias);
+                intent.putExtra("alias", alias);
+                intent.putExtra("username", username);
                 startActivity(intent);
                 break;
 
