@@ -44,7 +44,8 @@
             android:layout_marginRight="16dp"
             android:layout_marginBottom="8dp"
             android:hint="username"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:maxLength="15" />
 
         <TextView
             android:id="@+id/error_text"

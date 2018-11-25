@@ -111,20 +111,20 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
             level_max = stats_obj.getDouble("level_max");
             average_response_time = stats_obj.getDouble("avg_response_time");
             correctness_rate = stats_obj.getDouble("correctness_rate");
-            level_progress = level_amt + "/" + level_max;
+            level_progress = level_amt + "/" + String.format("%.1f", level_max);
             if(json_ranking_http.equals("[]"))
             {
                 course_ranking = 1;
             } else {
                 JSONArray rank_json = new JSONArray(json_ranking_http);
-                course_ranking = rank_json.getJSONObject(0).getInt("current_rank");
+                course_ranking = rank_json.getJSONObject(0).getInt("current_rank")+1;
             }
 
             rank_txt.setText(Integer.toString(rank));
             level_progress_txt.setText(level_progress);
             course_ranking_txt.setText(Integer.toString(course_ranking));
-            correctness_rate_txt.setText(Double.toString(correctness_rate));
-            avg_response_time_txt.setText(Double.toString(average_response_time));
+            correctness_rate_txt.setText(String.format("%.2f", correctness_rate));
+            avg_response_time_txt.setText(String.format("%.2f", average_response_time));
 
         } catch (JSONException e) {
             //stats object is not found

@@ -1,6 +1,10 @@
 package com.example.johnnyma.testbench;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -8,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -15,6 +20,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * AsyncTask used for sending HTTP request parallel to main UI thread
@@ -53,7 +60,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
-
     @Override
     protected String doInBackground(String... strings) {
         OkHttpClient client = new OkHttpClient();
@@ -82,7 +88,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
         // build the request differently depending on the request type
         switch(request_type) {
             case GET_USER_DETAILS:
-                //Log.d("BELHTDFG","email: " + strings[1]);
                 url_builder = HttpUrl
                         .parse(IP + "/api/user/email/").newBuilder()
                         .addQueryParameter("email",strings[1]);

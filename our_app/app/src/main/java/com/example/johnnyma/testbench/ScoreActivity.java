@@ -473,8 +473,8 @@ public class ScoreActivity extends AppCompatActivity {
         }
 
 
-        avg_reponse_time_txt.setText(new_response_time + "s");
-        correctness_rate_txt.setText(new_num_correct * 100 + "%");
+        avg_reponse_time_txt.setText(String.format("%.2f", new_response_time) + "s");
+        correctness_rate_txt.setText(String.format("%.1f", new_num_correct * 100) + "%");
 
         //if the stat does not exist, make a new one
 
