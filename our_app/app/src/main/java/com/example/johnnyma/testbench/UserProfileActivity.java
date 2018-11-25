@@ -174,6 +174,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     {
                         err_text.setVisibility(View.VISIBLE);
                     } else {
+                        err_text.setVisibility(View.GONE);
                         Snackbar.make(findViewById(android.R.id.content), "Changes Successful", Snackbar.LENGTH_LONG)
                         .show();
                         edit_mode = false;
@@ -216,8 +217,8 @@ public class UserProfileActivity extends AppCompatActivity {
         alias_text.setText(alias_edittext.getText());
         alias_text.setVisibility(View.VISIBLE);
         alias_edittext.setVisibility(View.INVISIBLE);
-
-        username_text.setText(username_edittext.getText());
+        if(err_text.getVisibility() == View.GONE)
+            username_text.setText(username_edittext.getText());
         username_text.setVisibility(View.VISIBLE);
         username_edittext.setVisibility(View.INVISIBLE);
         close_settings_btn.setVisibility(View.GONE);
@@ -225,6 +226,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         submit_btn.setVisibility(View.GONE);
         logout_btn.setVisibility(View.VISIBLE);
+        err_text.setVisibility(View.GONE);
     }
     private void promptUserTypeChange()
     {
