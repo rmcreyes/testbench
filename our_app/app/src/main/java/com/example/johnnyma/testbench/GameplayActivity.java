@@ -90,6 +90,8 @@ public class GameplayActivity extends AppCompatActivity  {
     String round_winner = "";
     long cur_q_time = 0;
 
+    private boolean timed_out;
+
     //emoji stuff
     ImageView emoji_bigthink;
     ImageView emoji_crylaugh;
@@ -122,6 +124,8 @@ public class GameplayActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gameplay);
         Intent starting_intent = getIntent();
+
+
 
         course = starting_intent.getStringExtra("course");
 
@@ -358,6 +362,17 @@ public class GameplayActivity extends AppCompatActivity  {
             questionHeader.setText("Question " + currentQuestion + " of 7");
             Log.d("wait for question", "emitting ready next");
             socket.emit("ready_next");
+            timed_out = true;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    // this code will be executed after 2 seconds
+                    if(timed_out) {
+                        socket.disconnect();
+                        finish();
+                    }
+                }
+            }, 15000);
         } else {
             endGame();
         }
@@ -511,7 +526,7 @@ public class GameplayActivity extends AppCompatActivity  {
         @Override
         public void call(final Object... args){
             Log.d("readyQuestion", "in readyQuestion");
-
+            timed_out = false;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -524,6 +539,7 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            Log.i("disconnect", "fuck");
             SocketHandler.setDisconnected(true);
             socket.disconnect();
             finish();
