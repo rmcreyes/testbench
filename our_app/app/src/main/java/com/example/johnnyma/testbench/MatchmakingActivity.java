@@ -131,6 +131,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             startActivity(intent);
         } else {
             //cancel
+            socket.emit("leave_early", "leave_early");
             socket.disconnect();
             finish();
         }
@@ -212,6 +213,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            SocketHandler.setDisconnected(true);
             socket.disconnect();
             finish();
         }
