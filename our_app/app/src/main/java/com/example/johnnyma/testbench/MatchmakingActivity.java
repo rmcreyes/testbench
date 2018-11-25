@@ -30,7 +30,8 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     private int timeout = 0; //timeout counter used in Runnable runnable
     private Handler handler = new Handler();
 
-    private String playerUsername;
+    private String alias;
+    private String username;
 
 
     private TextView textview;
@@ -79,7 +80,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         setContentView(R.layout.activity_matchmaking);
         Intent starting_intent = getIntent();
         courseID = starting_intent.getStringExtra(CourseSelectActivity.TAG).replaceAll("\\s+","").toUpperCase();
-        playerUsername = starting_intent.getStringExtra("name");
+        alias = starting_intent.getStringExtra("alias");
+        username = starting_intent.getStringExtra("username");
+
         playerRank = starting_intent.getIntExtra("rank", 1);
 
         textview = findViewById(R.id.textview);
@@ -120,9 +123,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             Toast.makeText(getApplicationContext(), "start pressed", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MatchmakingActivity.this, GameplayActivity.class);
             intent.putExtra("course", courseID);
-            intent.putExtra("player_name", playerUsername);
+            intent.putExtra("alias", alias);
+            intent.putExtra("leaderboard_name", username);
             intent.putExtra("player_rank", playerRank);
-            intent.putExtra("opponent_name", opponentUsername);
             intent.putExtra("opponent_name", opponentUsername);
             intent.putExtra("opponent_rank", opponentRank);
             intent.putExtra("questions", questions.toString());
@@ -141,7 +144,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     public void queueForGame() {
         JSONObject info = new JSONObject();
         try {
-            info.put("username", playerUsername);
+            info.put("username", alias);
             info.put("course_subject",  courseID.substring(0, 4));
             info.put("course_number", Integer.valueOf(courseID.substring(4)));
             info.put("rank", playerRank);
@@ -154,7 +157,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     public void sendJSONOpponent() {
         JSONObject info = new JSONObject();
         try {
-            info.put("username", playerUsername);
+            info.put("username", alias);
             info.put("course_subject",  courseID.substring(0, 4));
             info.put("course_number", Integer.valueOf(courseID.substring(4)));
             info.put("rank", playerRank);
