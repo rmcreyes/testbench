@@ -6,6 +6,9 @@ import com.github.nkzawa.socketio.client.Socket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -100,6 +103,15 @@ public class GameplayActivity extends AppCompatActivity  {
     private boolean emoji_displayed = false;
 
     private FrameLayout fragment_container;
+
+    private Runnable show_toast = new Runnable()
+    {
+        public void run()
+        {
+            Toast.makeText(GameplayActivity.this, "My Toast message", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -349,8 +361,6 @@ public class GameplayActivity extends AppCompatActivity  {
         } else {
             endGame();
         }
-        // TODO: find a better way to do this
-        Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
     }
     protected void resetButtonColors(){
         answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
@@ -380,9 +390,16 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void run() {
                 if (buttonsEnabled() && timedQuestion == currentQuestion) {
-                    socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer_time += 10000;
+                    yellowHighlightCorrect();
                     disableButtons();
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            socket.emit("on_answer", "ANSWER_WRONG", 0);
+                        }
+                    },1500);
+
                 }
             }
         }, 10000);
@@ -403,6 +420,7 @@ public class GameplayActivity extends AppCompatActivity  {
             answer.setTextColor(Color.parseColor("#0f2711"));
         } else {
             socket.emit("on_answer", "ANSWER_WRONG", 0);
+            yellowHighlightCorrect();
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
             answer.setTextColor(Color.parseColor("#491212"));
         }
@@ -457,7 +475,6 @@ public class GameplayActivity extends AppCompatActivity  {
                             } else {
                                 opponent_score += scores.getInt("points");
                                 round_winner = opponent_name;
-                                yellowHighlightCorrect();
                             }
                             disableButtons();
                             playerScore.setText("Score: " + player_score);
@@ -507,17 +524,9 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
-            builder.setMessage("You opponent disconnected. You will be brought back to the main page.")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            socket.disconnect();
-                            finish();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+            SocketHandler.setDisconnected(true);
+            socket.disconnect();
+            finish();
         }
     };
 
@@ -535,6 +544,8 @@ public class GameplayActivity extends AppCompatActivity  {
                     layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                     View container = layoutInflater.inflate(R.layout.layout_emoji, null);
                     ImageView emojiImage = (ImageView) container.findViewById(R.id.emoji);
+                    //ImageView avatar = (ImageView) container.findViewById(R.id.avatar);
+                    //avatar.setImageDrawable(opponentAvatar.getDrawable());
                     switch((int) args[0]){
                         case EMOJI_OK:
                             emojiImage.setImageResource(R.drawable.ok_emoji);
@@ -559,8 +570,18 @@ public class GameplayActivity extends AppCompatActivity  {
                             break;
                     }
 
-                    emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 500, 500); //TODO change location
+                    emojiPopup = new PopupWindow(container, 250, 250, false);
+                    emojiPopup.setAnimationStyle(R.style.custom_animation);
+                    int[] location_opp = new int[2];
+                    try {
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                        r.play();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    opponentAvatar.getLocationOnScreen(location_opp);
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, location_opp[0], location_opp[1]); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -662,6 +683,11 @@ public class GameplayActivity extends AppCompatActivity  {
         alert.show();
     }
 
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        socket.emit("leave_early");
+        socket.disconnect();
+        finish();
+    }
 }
