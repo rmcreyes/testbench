@@ -44,6 +44,7 @@ public class Question {
             rating = (int) questionJSON.getDouble("rating");
             Log.i("rating", Integer.toString(rating));
         } catch (JSONException e) {
+            Log.i("catch_json", ":(");
             rating = -1;
             return;
         }

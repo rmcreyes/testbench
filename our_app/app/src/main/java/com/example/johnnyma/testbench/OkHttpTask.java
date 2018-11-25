@@ -42,6 +42,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
     public static final String DELETE_QUESTION = "DELETE_QUESTION";
     public static final String GET_LEADERBOARD = "GET_LEADERBOARD";
     public static final String GET_RANK = "GET_RANK";
+    public static final String GET_QUESTION_COUNT = "GET_QUESTION_COUNT";
     public static final String ADD_STAT_TO_USER = "ADD_STAT_TO_USER";
     public static final String UPDATE_USER_STAT = "UPDATE_USER_STAT";
     public static final String DELETE_STAT_FROM_USER = "DELETE_STAT_FROM_USER";
@@ -195,7 +196,15 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 builder.url(url_builder.build())
                         .addHeader("Authorization", GlobalTokens.JWT_KEY);
                 break;
-
+            case GET_QUESTION_COUNT:
+                url_builder = HttpUrl
+                        .parse(IP + "/api/questioncount/").newBuilder()
+                        .addQueryParameter("id",GlobalTokens.USER_ID)
+                        .addQueryParameter("course_subject",strings[1])
+                        .addQueryParameter("course_number",strings[2]);
+                builder.url(url_builder.build())
+                        .addHeader("Authorization", GlobalTokens.JWT_KEY);
+                break;
             case ADD_STAT_TO_USER:
                 try {
                     reqBody.put("course_subject", strings[1]);

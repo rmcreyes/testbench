@@ -337,21 +337,34 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         } catch (ExecutionException e) {
             user_json = null;
         }
+        if (user_json != null) {
+            try {
+                u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
+                GlobalTokens.USER_ID = u_json.getString("_id");
+                Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
+                alias = u_json.getString("alias");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-        try {
-            u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
-            GlobalTokens.USER_ID = u_json.getString("_id");
-            Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
-            alias = u_json.getString("alias");
-        } catch (JSONException e) {
-            e.printStackTrace();
+            try {
+                username = u_json.getString("username");
+            } catch (JSONException e) {
+                promptUsername();
+            }
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CourseSelectActivity.this);
+            builder.setMessage("No server connection. Press OK to exit.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
 
-        try {
-            username = u_json.getString("username");
-        } catch (JSONException e) {
-            promptUsername();
-        }
 
 
     }

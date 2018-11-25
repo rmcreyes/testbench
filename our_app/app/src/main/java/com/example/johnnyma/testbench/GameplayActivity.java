@@ -75,6 +75,7 @@ public class GameplayActivity extends AppCompatActivity  {
     int opponent_score;
     String player_name;
     String opponent_name;
+    String opponent_leaderboard_name;
     String leaderboard_name;
 
     int currentQuestion = 1;
@@ -131,17 +132,18 @@ public class GameplayActivity extends AppCompatActivity  {
         player_name = starting_intent.getStringExtra("alias");
         leaderboard_name = starting_intent.getStringExtra("leaderboard_name");
 
+        opponent_leaderboard_name = starting_intent.getStringExtra("opponent_leaderboard_name");
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
         player_rank = starting_intent.getIntExtra("player_rank", 1);
         playerAvatar = findViewById(R.id.player_avatar);
-        setAvatar(playerAvatar);
-        opponent_name = starting_intent.getStringExtra("opponent_name");
+        setAvatar(playerAvatar,player_rank);
+        opponent_name = starting_intent.getStringExtra("opponent_alias");
         opponentName = findViewById(R.id.opponent_name);
         opponentName.setText(opponent_name);
         opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
         opponentAvatar = findViewById(R.id.opponent_avatar);
-        setAvatar(opponentAvatar);
+        setAvatar(opponentAvatar,opponent_rank);
         player_score = 0;
         playerScore = findViewById(R.id.player_score);
         playerScore.setText("Score: " + player_score);
@@ -175,7 +177,7 @@ public class GameplayActivity extends AppCompatActivity  {
         socket.on("broadcast_leave", opponentLeft);
         setButtonListeners();
         setInitialLoadView();
-        handler.postDelayed(eventCheck, 5000);
+        //handler.postDelayed(eventCheck, 5000);
         waitForQuestion();
     }
 
@@ -184,6 +186,8 @@ public class GameplayActivity extends AppCompatActivity  {
         public void run() {
             if(System.currentTimeMillis() - time_event > 20000){
                 SocketHandler.setDisconnected(true);
+
+                Log.i("disconnect", "fuck 2");
                 socket.disconnect();
                 finish();
             } else {
@@ -296,8 +300,8 @@ public class GameplayActivity extends AppCompatActivity  {
         });
     }
 
-    private void setAvatar(ImageView avatar) {
-        switch(player_rank % 6) {
+    private void setAvatar(ImageView avatar,int rank) {
+        switch(rank % 6) {
             case 0:
                 avatar.setImageResource(R.drawable.penguin_avatar);
                 break;
@@ -377,23 +381,27 @@ public class GameplayActivity extends AppCompatActivity  {
 
         resetButtonColors();
         startTransition();
-
+        Log.d("num_questions","num questions is: " + questions.size());
         if(currentQuestion <= questions.size()) {
             questionHeader.setText("Question " + currentQuestion + " of " + questions.size());
             Log.d("wait for question", "emitting ready next");
             socket.emit("ready_next");
-            timed_out = true;
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    // this code will be executed after 2 seconds
-                    if(timed_out) {
-                        socket.disconnect();
-                        finish();
-                    }
-                }
-            }, 15000);
+//            timed_out = true;
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    // this code will be executed after 2 seconds
+//                    if(timed_out) {
+//                        Log.i("disconnect","hmm");
+//                        socket.disconnect();
+//                        finish();
+//                    }
+//                }
+//            }, 15000);
         } else {
+            Log.d("endgame","ending game 1 with current question: " + currentQuestion + " and max " + questions.size());
+
+            //socket.disconnect();
             endGame();
         }
     }
@@ -475,6 +483,9 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("num_correct", correctlyAnswered);
         scoreIntent.putExtra("questions", getIntent().getStringExtra("questions"));
         scoreIntent.putExtra("leaderboard_name", leaderboard_name);
+        scoreIntent.putExtra("opponent_leaderboard_name", opponent_leaderboard_name);
+
+        scoreIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         finish();
         startActivity(scoreIntent);
     }
@@ -516,23 +527,26 @@ public class GameplayActivity extends AppCompatActivity  {
                             playerScore.setText("Score: " + player_score);
                             opponentScore.setText("Score: " + opponent_score);
                             currentQuestion++;
-                            if (currentQuestion > questions.size()) {
-                                endGame();
-                            } else {
+                            //if (currentQuestion > questions.size()) {
+
+                                //Log.d("endgame","ending game 2");
+                                //endGame();
+                            //} else {
                                 waitForQuestion();
-                            }
+                            //}
                         } else {
                             num_false++;
                             if (num_false > 1) {
                                 yellowHighlightCorrect();
                                 disableButtons();
                                 currentQuestion++;
-                                if (currentQuestion > questions.size()) {
-                                    endGame();
-                                } else {
+                               // if (currentQuestion > questions.size()) {
+                                    //Log.d("endgame","ending game 3");
+                                    //endGame();
+                                //} else {
                                     setInGameLoadView();
                                     waitForQuestion();
-                                }
+                                //}
                             }
                         }
                     } catch (JSONException e) {
@@ -556,8 +570,10 @@ public class GameplayActivity extends AppCompatActivity  {
                 public void run() {
                     String msg = (String) args[0];
                     if(msg.equals("READY")) {
+                        Log.d("endgame","play question");
                         playQuestion();
                     } else {
+                        Log.d("endgame","re-emit");
                         socket.emit("ready_next");
                     }
 
@@ -732,11 +748,21 @@ public class GameplayActivity extends AppCompatActivity  {
         alert.show();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        socket.emit("leave_early");
-        socket.disconnect();
-        finish();
-    }
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        Log.d("endgame","ending game 2");
+//        socket.emit("leave_early");
+//        socket.disconnect();
+//        finish();
+//    }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Log.d("endgame","ending game 3");
+//        socket.emit("leave_early");
+//        socket.disconnect();
+//        finish();
+//    }
 }
