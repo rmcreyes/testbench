@@ -52,6 +52,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private ImageView profile_pic;
     private String user_json;
     private String user_name;
+    private String screen_name;
     private String profile_pic_url;
     private String email;
     private String alias;
@@ -105,6 +106,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             try {
                 u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
                 GlobalTokens.USER_ID = u_json.getString("_id");
+                screen_name = u_json.getString("username");
                 Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -268,7 +270,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 Intent intent = new Intent(this, MatchmakingActivity.class);
                 intent.putExtra("rank",rank);
                 intent.putExtra(TAG, course);
-                intent.putExtra("name", user_name);
+                intent.putExtra("name", screen_name);
                 startActivity(intent);
                 break;
 
@@ -380,6 +382,15 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(SocketHandler.isDisconnected()) {
+            SocketHandler.setDisconnected(false);
+            Toast.makeText(this, "Your opponent has quit the game", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }
 
 

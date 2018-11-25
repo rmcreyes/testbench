@@ -240,7 +240,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
 
             case UPDATE_QUESTION_RATING:
                 try {
-                    reqBody.put("new_rating", strings[2]);
+                    reqBody.put("new_rating", Integer.parseInt(strings[2]));
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

@@ -80,7 +80,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         builder.setView(v);
 
         leaderboard_layout = v.findViewById(R.id.leaderboard_layout);
-        stats_layout = v.findViewById(R.id.stats_layout);
+        stats_layout = v.findViewById(R.id.rate_layout);
         course_text = v.findViewById(R.id.course_text);
         course_text.setText(s_course.substring(0,4) + " " + s_course.substring(4,7));
         //stat fields

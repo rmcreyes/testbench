@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="38dp"
+    android:background="@color/reviewQuestionBox"
     android:id="@+id/placeSnackBar">
 
     <LinearLayout
@@ -14,8 +15,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/com_facebook_button_login_silver_background_color"
-        android:backgroundTintMode="@color/colorPrimaryDark"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,26 +22,30 @@
 
         <EditText
             android:id="@+id/subj_text"
+            android:maxLength="4"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:ems="10"
+            android:ems="4"
             android:hint="Subject"
+            android:textColorHint="@android:color/darker_gray"
+            android:backgroundTint="@android:color/white"
             android:inputType="textPersonName"
             android:textAlignment="center" />
 
         <EditText
             android:id="@+id/num_text"
+            android:maxLength="3"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:ems="10"
+            android:ems="3"
+            android:backgroundTint="@android:color/white"
+            android:textColorHint="@android:color/darker_gray"
             android:hint="Number"
             android:inputType="number"
-            android:textAlignment="center"
-            tools:layout_editor_absoluteX="109dp"
-            tools:layout_editor_absoluteY="155dp" />
+            android:textAlignment="center" />
 
 
     </LinearLayout>
@@ -55,6 +58,7 @@
         android:layout_marginTop="28dp"
         android:layout_marginEnd="8dp"
         android:text="Add a course!"
+        android:textColor="@android:color/darker_gray"
         android:textAllCaps="true"
         android:textSize="14sp"
         android:textStyle="italic"
@@ -70,6 +74,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
         android:text="submit"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />

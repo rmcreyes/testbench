@@ -6,6 +6,9 @@ import com.github.nkzawa.socketio.client.Socket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -72,6 +75,7 @@ public class GameplayActivity extends AppCompatActivity  {
     int opponent_score;
     String player_name;
     String opponent_name;
+
     int currentQuestion = 1;
     int answer_time = 0;
 
@@ -84,10 +88,12 @@ public class GameplayActivity extends AppCompatActivity  {
     int correctlyAnswered = 0;
     long cur_q_time = 0;
 
+
     TextView loadingText;
     TextView roundWinnerText;
     TextView winText;
     ImageView winnerAvatar;
+    private boolean timed_out;
 
     //emoji stuff
     ImageView emoji_bigthink;
@@ -103,6 +109,15 @@ public class GameplayActivity extends AppCompatActivity  {
 
     private FrameLayout fragment_container;
 
+    private Runnable show_toast = new Runnable()
+    {
+        public void run()
+        {
+            Toast.makeText(GameplayActivity.this, "My Toast message", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         currentQuestion = 1;
@@ -112,6 +127,8 @@ public class GameplayActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gameplay);
         Intent starting_intent = getIntent();
+
+
 
         course = starting_intent.getStringExtra("course");
 
@@ -125,6 +142,7 @@ public class GameplayActivity extends AppCompatActivity  {
         playerName = findViewById(R.id.player_name);
         playerName.setText(player_name);
 
+
         player_rank = starting_intent.getIntExtra("player_rank", 1);
         playerAvatar = findViewById(R.id.player_avatar);
         setPlayerAvatar();
@@ -132,6 +150,7 @@ public class GameplayActivity extends AppCompatActivity  {
         opponent_name = starting_intent.getStringExtra("opponent_name");
         opponentName = findViewById(R.id.opponent_name);
         opponentName.setText(opponent_name);
+
 
         opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
         opponentAvatar = findViewById(R.id.opponent_avatar);
@@ -289,6 +308,7 @@ public class GameplayActivity extends AppCompatActivity  {
         });
     }
 
+
     private void setPlayerAvatar(){
         switch(player_rank % 6) {
             case 0:
@@ -399,11 +419,20 @@ public class GameplayActivity extends AppCompatActivity  {
             questionHeader.setText("Question " + currentQuestion + " of " + questions.size());
             Log.d("wait for question", "emitting ready next");
             socket.emit("ready_next");
+            timed_out = true;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    // this code will be executed after 2 seconds
+                    if(timed_out) {
+                        socket.disconnect();
+                        finish();
+                    }
+                }
+            }, 15000);
         } else {
             endGame();
         }
-        // TODO: find a better way to do this
-        Toast.makeText(GameplayActivity.this, "shit", Toast.LENGTH_LONG).show();
     }
     private void resetButtonColors(){
         answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
@@ -433,9 +462,16 @@ public class GameplayActivity extends AppCompatActivity  {
             @Override
             public void run() {
                 if (buttonsEnabled() && timedQuestion == currentQuestion) {
-                    socket.emit("on_answer", "ANSWER_WRONG", 0);
                     answer_time += 10000;
+                    yellowHighlightCorrect();
                     disableButtons();
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            socket.emit("on_answer", "ANSWER_WRONG", 0);
+                        }
+                    },1500);
+
                 }
             }
         }, 10000);
@@ -456,6 +492,7 @@ public class GameplayActivity extends AppCompatActivity  {
             answer.setTextColor(Color.parseColor("#0f2711"));
         } else {
             socket.emit("on_answer", "ANSWER_WRONG", 0);
+            yellowHighlightCorrect();
             answer.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorButtonWrongAnswer, null));
             answer.setTextColor(Color.parseColor("#491212"));
         }
@@ -547,6 +584,7 @@ public class GameplayActivity extends AppCompatActivity  {
         @Override
         public void call(final Object... args){
             Log.d("readyQuestion", "in readyQuestion");
+            timed_out = false;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -564,17 +602,10 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
-            builder.setMessage("You opponent disconnected. You will be brought back to the main page.")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            socket.disconnect();
-                            finish();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+            Log.i("disconnect", "fuck");
+            SocketHandler.setDisconnected(true);
+            socket.disconnect();
+            finish();
         }
     };
 
@@ -592,6 +623,8 @@ public class GameplayActivity extends AppCompatActivity  {
                     layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                     View container = layoutInflater.inflate(R.layout.layout_emoji, null);
                     ImageView emojiImage = (ImageView) container.findViewById(R.id.emoji);
+                    //ImageView avatar = (ImageView) container.findViewById(R.id.avatar);
+                    //avatar.setImageDrawable(opponentAvatar.getDrawable());
                     switch((int) args[0]){
                         case EMOJI_OK:
                             emojiImage.setImageResource(R.drawable.ok_emoji);
@@ -616,8 +649,18 @@ public class GameplayActivity extends AppCompatActivity  {
                             break;
                     }
 
-                    emojiPopup = new PopupWindow(container, 100, 100, false);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.CENTER_HORIZONTAL, 500, 500); //TODO change location
+                    emojiPopup = new PopupWindow(container, 250, 250, false);
+                    emojiPopup.setAnimationStyle(R.style.custom_animation);
+                    int[] location_opp = new int[2];
+                    try {
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                        r.play();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    opponentAvatar.getLocationOnScreen(location_opp);
+                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, location_opp[0], location_opp[1]); //TODO change location
 
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -721,6 +764,11 @@ public class GameplayActivity extends AppCompatActivity  {
         alert.show();
     }
 
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        socket.emit("leave_early");
+        socket.disconnect();
+        finish();
+    }
 }

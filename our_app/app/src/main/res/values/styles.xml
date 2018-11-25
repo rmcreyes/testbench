@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Animation for popup -->
+    <style name="custom_animation" parent="android:Animation">
+        <item name="@android:windowEnterAnimation">@anim/custom_up</item>
+        <item name="@android:windowExitAnimation">@anim/custom_down</item>
+    </style>
+
 </resources>
