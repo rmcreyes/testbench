@@ -2,7 +2,7 @@ var should = require('should');
 var io = require('socket.io-client');
 
 var socketURL = 'http://40.78.64.46:3300';
-var Main = require('../index');
+// var Main = require('../index');
 
 var options = {
     transports: ['websocket'],
@@ -11,25 +11,29 @@ var options = {
 
 var player1 = {
     'username': 'Caelin',
-    'course': "CPEN321"
+    'course_subject': 'CPEN',
+    'course_number': 321
 }
 var player1_s = JSON.stringify(player1);
 
 var player2 = {
     'username': 'Johnny',
-    'course': "CPEN321"
+    'course_subject': 'CPEN',
+    'course_number': 321
 }
 var player2_s = JSON.stringify(player2);
 
 var player3 = {
     'username': 'Richard',
-    'course': "CIVL250"
+    'course_subject': 'CIVL',
+    'course_number': 250
 }
 var player3_s = JSON.stringify(player3);
 
 var player4 = {
     'username': 'Yaash',
-    'course': "CPEN321"
+    'course_subject': 'CPEN',
+    'course_number': 321
 }
 var player4_s = JSON.stringify(player4);
 
@@ -40,7 +44,8 @@ describe('Matchmaking', function() {
             client1.emit('queue_for_game', player1_s);
         });
         client1.on('game_made', function (msg) {
-            msg.should.be.oneOf(player1.username + ' ' + player2.username, player2.username + ' ' + player1.username);
+            // msg.should.be.oneOf(player1.username + ' ' + player2.username, player2.username + ' ' + player1.username);
+            JSON.parse(msg)[0].reported.should.be.oneOf(true, false);
             client1.disconnect();
         });
 
@@ -49,7 +54,7 @@ describe('Matchmaking', function() {
             client2.emit('queue_for_game', player2_s);
         });
         client2.on('game_made', function(msg) {
-            msg.should.be.oneOf(player1.username + ' ' + player2.username, player2.username + ' ' + player1.username);
+            JSON.parse(msg)[0].reported.should.be.oneOf(true, false);
             client2.disconnect();
             done();
         });

@@ -33,3 +33,7 @@ module.exports.removeCourse = (id, callback) => {
 	var query = {_id: id};
 	Course.remove(query, callback);
 }
+
+module.exports.getCourseById = (id,select, callback) => {
+	Course.findById(id, select,callback);
+}

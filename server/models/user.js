@@ -62,6 +62,22 @@ module.exports.updateUserProfile = (id, user, options, callback) => {
 	User.findOneAndUpdate(query, update, options, callback);
 }
 
+module.exports.updateProfessorStatus = (id, user, options, callback) => {
+	var query = {_id: id};
+	var update = {
+		is_professor: user.is_professor
+	}
+	User.findOneAndUpdate(query, update, options, callback);
+}
+
+module.exports.updateUserReportedStatus = (id, user, options, callback) => {
+	var query = {_id: id};
+	var update = {
+		reported: user.reported
+	}
+	User.findOneAndUpdate(query, update, options, callback);
+}
+
 module.exports.updateUsername = (id, user, options, callback) => {
 	var query = {_id: id};
 	var update = {
@@ -88,6 +104,8 @@ module.exports.addCourseToUser = (id, user, options, callback) => {
 	User.findOneAndUpdate(query, update, options, callback);
 }
 
+
+
 module.exports.addStatToUser = (id, user, options, callback) => {
 	var query = {_id: id};
 	var update = { 
@@ -95,10 +113,10 @@ module.exports.addStatToUser = (id, user, options, callback) => {
 			stats_list: {
 				course_code: user.courseID,
 				rank: 1, 
-				avg_response_time: 5, 
-				correctness_rate:5,
-				num_stat_contributions:0,
-				level_progress:0,
+				avg_response_time: user.add_response_time, 
+				correctness_rate:user.add_correctness_rate,
+				num_stat_contributions:1,
+				level_progress:user.level_progress,
 				level_max:8
 			}
 		}
@@ -165,6 +183,8 @@ module.exports.UpdateStatData = (user, callback) => {
 			}
 		}
 	}
+	
+
 	var update = {	
 		$set: {
 			'stats_list.$.correctness_rate': user.new_correctness_rate,
@@ -234,3 +254,36 @@ module.exports.returnRank = (user, callback) => {
     	}
 	]).exec(callback);
 }
+
+module.exports.addProfessorCourseToUser = (id, user, options, callback) => {
+	var query = {_id: id};
+	var update = { 
+		$addToSet: { 
+			teaching_course_list: user.courseID 
+		} 
+	}
+	User.findOneAndUpdate(query, update, options, callback);
+}
+
+module.exports.getProfessorCourse = (id, user, callback) => {
+	var query = {
+		_id: id,
+			teaching_course_list : {
+				$in: [ObjectId(user.courseID)]
+			}  
+	}
+	User.find(query,{},callback);
+}
+
+module.exports.deleteProfessorCourseFromUser = (id, user, options, callback) => {
+	var query = {_id: id};
+	var update = { 
+		$pull : { 
+			teaching_course_list : {
+				$in: [ObjectId(user.courseID)]
+			} 
+		}
+	}
+	User.findOneAndUpdate(query, update, options, callback);
+}
+
