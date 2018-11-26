@@ -1,33 +1,24 @@
 package com.example.johnnyma.testbench;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +30,10 @@ import java.util.concurrent.ExecutionException;
  */
 public class CourseAdapter extends BaseAdapter {
 
-    Context c;
-    LayoutInflater mInflater;
-    Map<String, List<String>> Courses;
-    FragmentManager fm;
+    private Context c;
+    private LayoutInflater mInflater;
+    private Map<String, List<String>> Courses;
+    private FragmentManager fm;
 
     private ProgressDialog progressDialog;
 
@@ -50,14 +41,11 @@ public class CourseAdapter extends BaseAdapter {
     private String json_ranking_http;
     private boolean is_prof_of;
 
-    private CourseSelectLock courseSelectLock;
-
     public CourseAdapter(Context c, Map<String, List<String>> courses, FragmentManager fm) {
         this.c = c;
         Courses = courses;
         mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.fm = fm;
-        this.courseSelectLock = courseSelectLock;
     }
 
     @Override
@@ -95,6 +83,7 @@ public class CourseAdapter extends BaseAdapter {
         // retrieve the list of course codes pertaining to the course header
         List<String> course_codes = Courses.get(s_course_header);
 
+        // course grid is unaligned for case where only two buttons are present
         if(course_codes.size() == 2) {
             Button btn1 = new Button(c);
             btn1.setText(course_codes.get(0));
@@ -190,7 +179,6 @@ public class CourseAdapter extends BaseAdapter {
             btn.setText(course_codes.get(index));
             btn.setTextSize(btn.getTextSize() * 0.225f);
             btn.setTypeface(null, Typeface.BOLD);
-            //btn.setPadding(0, 10, 0, 10);
 
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.setMargins(0, 30, 0, 40);
@@ -198,7 +186,6 @@ public class CourseAdapter extends BaseAdapter {
             params.width = dm.widthPixels / 5;
 
             if(index % 3 == 0)
-//                params.setGravity(Gravity.START);
                 params.setGravity(Gravity.CENTER);
             else if(index % 3 == 1)
                 params.setGravity(Gravity.CENTER);
@@ -241,34 +228,9 @@ public class CourseAdapter extends BaseAdapter {
      */
     public void openDialog(final String s_course){
         final SelectedCourseDialog selectedCourseDialog = new SelectedCourseDialog();
-        Toast.makeText(c, "make dialog", Toast.LENGTH_SHORT).show();
         progressDialog = new ProgressDialog(c);
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
-
-//        Thread thread = new Thread(){
-//            @Override
-//            public void run() {
-//                boolean success = makeHttpRequests(s_course);
-//
-//                if(success) {
-//                    Bundle args = new Bundle();
-//                    args.putString("course", s_course);
-//                    args.putString("json_stat_http", json_stat_http);
-//                    args.putString("json_ranking_http", json_ranking_http);
-//                    args.putBoolean("is_prof_of", is_prof_of);
-//                    selectedCourseDialog.setArguments(args);
-//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//                    progressDialog.dismiss();
-//                    selectedCourseDialog.show(fm, "selected course dialog");
-//                }
-//                else {
-//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//                    progressDialog.dismiss();
-//                }
-//            }
-//        };
-//        thread.start();
 
         boolean success = makeHttpRequests(s_course);
 
@@ -280,44 +242,21 @@ public class CourseAdapter extends BaseAdapter {
             args.putBoolean("is_prof_of", is_prof_of);
             selectedCourseDialog.setArguments(args);
             progressDialog.dismiss();
-            Toast.makeText(c, "dialog dismiss", Toast.LENGTH_SHORT).show();
             selectedCourseDialog.show(fm, "selected course dialog");
         }
         else {
             progressDialog.dismiss();
             Toast.makeText(c, "Unable to connect to server. Try again later", Toast.LENGTH_SHORT).show();
         }
-
-//        final Handler handler = new Handler();
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                boolean success = makeHttpRequests(s_course);
-//
-//                if(success) {
-//                    Bundle args = new Bundle();
-//                    args.putString("course", s_course);
-//                    args.putString("json_stat_http", json_stat_http);
-//                    args.putString("json_ranking_http", json_ranking_http);
-//                    args.putBoolean("is_prof_of", is_prof_of);
-//                    selectedCourseDialog.setArguments(args);
-//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//                    progressDialog.dismiss();
-//                    Toast.makeText(c, "dialog dismiss", Toast.LENGTH_SHORT).show();
-//                    selectedCourseDialog.show(fm, "selected course dialog");
-//                }
-//                else {
-//                    ((Activity) c).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//                    progressDialog.dismiss();
-//                    Toast.makeText(c, "Unable to connect to server. Try again later", Toast.LENGTH_SHORT).show();
-//                }
-//
-//            }
-//        });
-
         
     }
 
+    /**
+     * Method that makes the http requests whose information is passed to the SelectedCourseDialog.
+     * Lets the user know if the server communication succeeded
+     * @param s_course - course whose dialog is wanted to be open
+     * @return true if requests were succesful, false otherwise
+     */
     public boolean makeHttpRequests(String s_course) {
         json_stat_http = null;
         json_ranking_http = null;

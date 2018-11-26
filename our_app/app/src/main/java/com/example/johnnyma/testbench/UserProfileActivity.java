@@ -152,7 +152,7 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 edit_mode = false;
-                closeEdit();
+                closeEdit(false);
             }
         });
 
@@ -178,7 +178,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(android.R.id.content), "Changes Successful", Snackbar.LENGTH_LONG)
                         .show();
                         edit_mode = false;
-                        closeEdit();
+                        closeEdit(true);
                     }
                 }
 
@@ -209,16 +209,17 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     };
-    private void closeEdit() {
+    private void closeEdit(boolean save) {
         edit_button_username.setVisibility(View.INVISIBLE);
         edit_button_alias.setVisibility(View.INVISIBLE);
         edit_button_usertype.setVisibility(View.INVISIBLE);
-
-        alias_text.setText(alias_edittext.getText());
+        if(save) {
+            alias_text.setText(alias_edittext.getText());
+            username_text.setText(username_edittext.getText());
+        }
         alias_text.setVisibility(View.VISIBLE);
         alias_edittext.setVisibility(View.INVISIBLE);
-        if(err_text.getVisibility() == View.GONE)
-            username_text.setText(username_edittext.getText());
+
         username_text.setVisibility(View.VISIBLE);
         username_edittext.setVisibility(View.INVISIBLE);
         close_settings_btn.setVisibility(View.GONE);
@@ -254,7 +255,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (edit_mode) {
-            closeEdit();
+            closeEdit(false);
             edit_mode =false;
         } else {
             super.onBackPressed();

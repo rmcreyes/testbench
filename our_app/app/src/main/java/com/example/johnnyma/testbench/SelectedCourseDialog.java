@@ -137,7 +137,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         battle_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String question_count;
                 int q_num = 0;
                 try {
@@ -161,8 +160,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
                     Toast.makeText(getContext(), "This course has " + q_num + " question. It must have 7 to be playable!",
                             Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
 
@@ -182,11 +179,9 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
             public void onClick(View view) {
                 if(leaderboard_layout.getVisibility() == View.GONE) {
                     if(leaderboard_json == null) {
-                        Log.d("BELHTDFG","yeet 1");
                         try {
                             leaderboard_http = new OkHttpTask().execute(OkHttpTask.GET_LEADERBOARD, s_course.substring(0, 4), s_course.substring(4, 7)).get();
                             leaderboard_json = new JSONArray(leaderboard_http);
-                            Log.d("BELHTDFG","yeet 2");
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -196,10 +191,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
                             e.printStackTrace();
                         }
                     }
-
-                    Log.d("BELHTDFG","yeet 4");
-                    Log.d("BELHTDFG",leaderboard_http);
-
 
                     String json_username;
                     ArrayList<TextView> leaderboard_views = new ArrayList<TextView>
@@ -211,12 +202,10 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
                         try {
                             json_username = leaderboard_json.getJSONObject(i).getString("username");
                             leaderboard_views.get(i).setText(json_username);
-                            Log.d("BELHTDFG",json_username);
                         } catch (JSONException e){
                             leaderboard_layouts.get(i).setVisibility(View.GONE);
                             hidden_entries++;
                         }
-                        Log.d("BELHTDFG","yeet 3");
                     }
 
                     if(hidden_entries>2)

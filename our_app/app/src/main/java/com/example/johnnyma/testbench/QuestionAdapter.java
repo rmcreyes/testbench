@@ -16,12 +16,14 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Adapter used to set up the list view in ProfessorActivity.
+ */
 public class QuestionAdapter extends BaseAdapter {
 
-    Context c;
-    LayoutInflater mInflater;
-    List<Question> Questions;
+    private Context c;
+    private LayoutInflater mInflater;
+    private List<Question> Questions;
 
     public QuestionAdapter(Context c, List<Question> Questions) {
         this.c = c;
@@ -46,6 +48,7 @@ public class QuestionAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+        // set up all the ui contents in each part of the list view
         View v = mInflater.inflate(R.layout.detail_question, null);
 
         TextView question_text = (TextView) v.findViewById(R.id.question);
@@ -61,6 +64,7 @@ public class QuestionAdapter extends BaseAdapter {
         ImageView verified_question = (ImageView) v.findViewById(R.id.verified_question);
         ImageView reported_question = (ImageView) v.findViewById(R.id.reported_question);
 
+        // take a question to display on this part of the list view
         Question question = Questions.get(i);
 
         question_text.setText(question.getBody());

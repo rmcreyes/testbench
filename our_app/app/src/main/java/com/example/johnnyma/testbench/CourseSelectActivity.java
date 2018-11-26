@@ -17,26 +17,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 /**
  * Activity from where the user picks a course to battle with,
@@ -50,7 +43,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private ImageButton profile_btn;
     private TextView name;
     private ImageView profile_pic;
-    private String user_json;
     private String fb_name;
     private String profile_pic_url;
     private String email;
@@ -100,8 +92,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             email = intent.getStringExtra("email");
         }
 
+        // collect user info and load course feed
         refreshProfile();
-
         onCourseAdded();
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +101,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             public void onClick(View view) {
                 CourseAddDialog bottomSheet = new CourseAddDialog();
                 bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
-                //Toast.makeText(CourseSelectActivity.this, "add course", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -130,8 +121,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 startActivity(userprofile);
             }
         });
-
-        Toast.makeText(this, alias, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -197,7 +186,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     public void chooseCourseView(int action, String course, int rank) {
         switch (action) {
             case CourseActionDefs.BATTLE:
-                //Toast.makeText(this, "BATTLE " + course, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MatchmakingActivity.class);
                 intent.putExtra("rank",rank);
                 intent.putExtra(TAG, course);
@@ -223,10 +211,12 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         }
 
     }
+
+
     @Override
     public void onBackPressed() {
         if (exit) {
-            finish(); // finish activity
+            finish();
         } else {
             Toast.makeText(this, "Press Back again to Exit",
                     Toast.LENGTH_SHORT).show();
@@ -253,18 +243,19 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         CourseListView.setAdapter(courseAdapter);
     }
 
+    /**
+     * Makes the user pick a username if they are new to the game
+     */
     private void promptUsername()
     {
         AlertDialog.Builder alert = new AlertDialog.Builder(CourseSelectActivity.this);
 
         LayoutInflater inflater=CourseSelectActivity.this.getLayoutInflater();
-        //this is what I did to added the layout to the alert dialog
         View layout=inflater.inflate(R.layout.dialog_assign_username,null);
         alert.setView(layout);
         final EditText usernameInput=(EditText)layout.findViewById(R.id.username_text);
         final TextView error_text = (TextView) layout.findViewById(R.id.error_text);
         alert.setCancelable(false).setPositiveButton(android.R.string.ok, null);
-
         final AlertDialog dialog = alert.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
@@ -276,27 +267,21 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
                     @Override
                     public void onClick(View view) {
-
-                        // TODO Do something
                         String un_resp;
                         try {
                             un_resp = new OkHttpTask().execute(OkHttpTask.SET_USERNAME, usernameInput.getText().toString()).get();
                         } catch (InterruptedException e) {
                             un_resp = null;
-                            Log.d("BELHTDFG","InterruptedException");
                         } catch (ExecutionException e) {
                             un_resp = null;
-                            Log.d("BELHTDFG","ExecutionException");
                         }
                         if(un_resp != null) {
                             if(un_resp.equals("409"))
                             {
-                                //Toast.makeText(CourseSelectActivity.this, "username already taken. Please choose another", Toast.LENGTH_SHORT).show();
                                 error_text.setVisibility(View.VISIBLE);
                                 ColorStateList colorStateList = ColorStateList.valueOf(Color.RED);
                                 ViewCompat.setBackgroundTintList(usernameInput, colorStateList);
                             } else {
-                                //validUsername = usernameInput.getText().toString();
                                 username = usernameInput.getText().toString();
                                 Toast.makeText(CourseSelectActivity.this, "username added!", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
@@ -308,10 +293,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             }
         });
         dialog.show();
-
-
-        Toast.makeText(CourseSelectActivity.this, username, Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
@@ -328,11 +309,13 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     }
 
 
+    /**
+     * Recollects user's information and stores them in the class's attributes.
+     */
     private void refreshProfile() {
         String user_json;
         try {
             user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
-            Log.d("user_json", user_json);
         } catch (InterruptedException e) {
             user_json = null;
         } catch (ExecutionException e) {
@@ -343,7 +326,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
 
                 GlobalTokens.USER_ID = u_json.getString("_id");
-                Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
                 alias = u_json.getString("alias");
             } catch (JSONException e) {
                 e.printStackTrace();
