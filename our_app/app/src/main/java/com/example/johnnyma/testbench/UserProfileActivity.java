@@ -2,31 +2,25 @@ package com.example.johnnyma.testbench;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.concurrent.ExecutionException;
 
+/*
+ Activity to control user profile.
+ */
 public class UserProfileActivity extends AppCompatActivity {
     private Button settings_btn;
     private Button logout_btn;
@@ -53,8 +47,8 @@ public class UserProfileActivity extends AppCompatActivity {
     private boolean edit_mode;
     private Intent intent;
     private Bundle extras;
-    private JSONObject u_json;
     private String user_json;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,29 +76,10 @@ public class UserProfileActivity extends AppCompatActivity {
         extras = intent.getExtras();
 
 
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-
-
-
-//        try {
-//            user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
-//            Toast.makeText(UserProfileActivity.this, user_json, Toast.LENGTH_SHORT).show();
-//            u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
-//            username = u_json.getString("username");
-//        } catch (InterruptedException ed) {
-//            user_json = null;
-//            Log.d("BELHTDFG","InterruptedException");
-//        } catch (ExecutionException ed) {
-//            user_json = null;
-//            Log.d("BELHTDFG","ExecutionException");
-//        } catch (JSONException e1) {
-//            e1.printStackTrace();
-//        }
-
         if(extras.containsKey("email")) {
             email = intent.getStringExtra("email");
         }
+
         if(extras.containsKey("isProf")) {
             isProf = intent.getBooleanExtra("isProf",true);
         }
@@ -113,24 +88,36 @@ public class UserProfileActivity extends AppCompatActivity {
             username = intent.getStringExtra("username");
         }
 
-
-
         if(extras.containsKey("alias")) {
             alias = intent.getStringExtra("alias");
         }
 
+        if(extras.containsKey("name")) {
+            name = intent.getStringExtra("name");
+        }
+
+        if(extras.containsKey("profile_pic_url")) {
+            profile_pic_url = intent.getStringExtra("profile_pic_url");
+            Picasso.with(this).load(profile_pic_url)
+                    .transform(new ProfilePicTransformation(200, 0,Color.WHITE))
+                    .into(profile_pic);
+        }
         username_text.setText(username);
         email_text.setText(email);
         alias_text.setText(alias);
         user_type_text.setText(isProf ? "Professor" : "Student");
 
+        /*
+        enter profile edit mode
+         */
         settings_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 edit_button_username.setVisibility(View.VISIBLE);
                 edit_button_alias.setVisibility(View.VISIBLE);
-                edit_button_usertype.setVisibility(View.VISIBLE);
+                if(!isProf)
+                    edit_button_usertype.setVisibility(View.VISIBLE);
 
                 alias_edittext.setText(alias_text.getText());
                 alias_text.setVisibility(View.INVISIBLE);
@@ -159,37 +146,29 @@ public class UserProfileActivity extends AppCompatActivity {
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    user_json = new OkHttpTask().execute(OkHttpTask.EDIT_PROFILE, alias_edittext.getText().toString(), username_edittext.getText().toString()).get();
-                } catch (InterruptedException ed) {
-                    user_json = null;
-                    Log.d("BELHTDFG","InterruptedException");
-                } catch (ExecutionException ed) {
-                    user_json = null;
-                    Log.d("BELHTDFG","ExecutionException");
-                }
+            try {
+                user_json = new OkHttpTask().execute(OkHttpTask.EDIT_PROFILE, alias_edittext.getText().toString(), username_edittext.getText().toString()).get();
+            } catch (InterruptedException ed) {
+                user_json = null;
+            } catch (ExecutionException ed) {
+                user_json = null;
+            }
 
-                if(user_json!=null) {
-                    if(user_json.equals("409"))
-                    {
-                        err_text.setVisibility(View.VISIBLE);
-                    } else {
-                        err_text.setVisibility(View.GONE);
-                        Snackbar.make(findViewById(android.R.id.content), "Changes Successful", Snackbar.LENGTH_LONG)
-                        .show();
-                        edit_mode = false;
-                        closeEdit();
-                    }
+            if(user_json!=null) {
+                if(user_json.equals("409"))
+                {
+                    err_text.setVisibility(View.VISIBLE);
+                } else {
+                    err_text.setVisibility(View.GONE);
+                    Snackbar.make(findViewById(android.R.id.content), "Changes Successful", Snackbar.LENGTH_LONG)
+                    .show();
+                    edit_mode = false;
+                    closeEdit();
                 }
-
+            }
             }
         });
-        if(extras.containsKey("profile_pic_url")) {
-            profile_pic_url = intent.getStringExtra("profile_pic_url");
-            Picasso.with(this).load(profile_pic_url)
-                    .transform(new ProfilePicTransformation(200, 0,Color.BLACK))
-                    .into(profile_pic);
-        }
+
         logout_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -209,6 +188,11 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     };
+
+
+    /*
+    exit profile edit mode
+     */
     private void closeEdit() {
         edit_button_username.setVisibility(View.INVISIBLE);
         edit_button_alias.setVisibility(View.INVISIBLE);
@@ -228,6 +212,10 @@ public class UserProfileActivity extends AppCompatActivity {
         logout_btn.setVisibility(View.VISIBLE);
         err_text.setVisibility(View.GONE);
     }
+
+    /*
+    Alert the user about User Type options before sending them to a professor verification page.
+     */
     private void promptUserTypeChange()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(UserProfileActivity.this);
@@ -236,31 +224,28 @@ public class UserProfileActivity extends AppCompatActivity {
                 .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                        Intent intent_prof = new Intent(UserProfileActivity.this, EmailActivity.class);
+                        intent_prof.putExtra("email",email);
+                        intent_prof.putExtra("name",name);
                         startActivity(intent_prof);
                     }
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
                         dialog.dismiss();
                     }
                 });
         AlertDialog alert = builder.create();
         alert.show();
-
-
     }
 
     @Override
     public void onBackPressed() {
+        //on back pressed, exit edit mode if applicable
         if (edit_mode) {
             closeEdit();
             edit_mode =false;
         } else {
             super.onBackPressed();
         }
-
     }
-
-
 }

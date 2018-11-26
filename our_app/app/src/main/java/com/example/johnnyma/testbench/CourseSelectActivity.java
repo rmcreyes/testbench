@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,15 +27,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Pattern;
 
 /**
  * Activity from where the user picks a course to battle with,
@@ -50,7 +46,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     private ImageButton profile_btn;
     private TextView name;
     private ImageView profile_pic;
-    private String user_json;
     private String fb_name;
     private String profile_pic_url;
     private String email;
@@ -109,13 +104,13 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             public void onClick(View view) {
                 CourseAddDialog bottomSheet = new CourseAddDialog();
                 bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
-                //Toast.makeText(CourseSelectActivity.this, "add course", Toast.LENGTH_SHORT).show();
             }
         });
 
         profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //go to user profile
                 try {
                     isProf = u_json.getBoolean("is_professor");
                 } catch (JSONException e) {
@@ -126,6 +121,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 userprofile.putExtra("username", username);
                 userprofile.putExtra("isProf", isProf);
                 userprofile.putExtra("email", email);
+                userprofile.putExtra("name", fb_name);
                 userprofile.putExtra("profile_pic_url", profile_pic_url);
                 startActivity(userprofile);
             }
@@ -197,7 +193,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     public void chooseCourseView(int action, String course, int rank) {
         switch (action) {
             case CourseActionDefs.BATTLE:
-                //Toast.makeText(this, "BATTLE " + course, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MatchmakingActivity.class);
                 intent.putExtra("rank",rank);
                 intent.putExtra(TAG, course);
@@ -253,12 +248,15 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         CourseListView.setAdapter(courseAdapter);
     }
 
+    /*
+        When the user uses the app for the first time, they will not have a username.
+        This alert will prompt them to enter a unique username.
+     */
     private void promptUsername()
     {
         AlertDialog.Builder alert = new AlertDialog.Builder(CourseSelectActivity.this);
 
         LayoutInflater inflater=CourseSelectActivity.this.getLayoutInflater();
-        //this is what I did to added the layout to the alert dialog
         View layout=inflater.inflate(R.layout.dialog_assign_username,null);
         alert.setView(layout);
         final EditText usernameInput=(EditText)layout.findViewById(R.id.username_text);
@@ -283,20 +281,16 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                             un_resp = new OkHttpTask().execute(OkHttpTask.SET_USERNAME, usernameInput.getText().toString()).get();
                         } catch (InterruptedException e) {
                             un_resp = null;
-                            Log.d("BELHTDFG","InterruptedException");
                         } catch (ExecutionException e) {
                             un_resp = null;
-                            Log.d("BELHTDFG","ExecutionException");
                         }
                         if(un_resp != null) {
                             if(un_resp.equals("409"))
                             {
-                                //Toast.makeText(CourseSelectActivity.this, "username already taken. Please choose another", Toast.LENGTH_SHORT).show();
                                 error_text.setVisibility(View.VISIBLE);
                                 ColorStateList colorStateList = ColorStateList.valueOf(Color.RED);
                                 ViewCompat.setBackgroundTintList(usernameInput, colorStateList);
                             } else {
-                                //validUsername = usernameInput.getText().toString();
                                 username = usernameInput.getText().toString();
                                 Toast.makeText(CourseSelectActivity.this, "username added!", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
@@ -308,7 +302,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             }
         });
         dialog.show();
-
 
         Toast.makeText(CourseSelectActivity.this, username, Toast.LENGTH_SHORT).show();
 
@@ -328,6 +321,9 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     }
 
 
+    /*
+     refresh the course selection page every time you come back to it
+      */
     private void refreshProfile() {
         String user_json;
         try {
@@ -343,7 +339,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
 
                 GlobalTokens.USER_ID = u_json.getString("_id");
-                Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
                 alias = u_json.getString("alias");
             } catch (JSONException e) {
                 e.printStackTrace();

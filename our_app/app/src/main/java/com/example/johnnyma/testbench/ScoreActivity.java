@@ -31,12 +31,15 @@ import java.util.concurrent.ExecutionException;
 
 import static android.view.View.GONE;
 
+/*
+ An activity used to show final score of game and game stats,
+ and allow users to rate and report questions
+ */
 public class ScoreActivity extends AppCompatActivity {
 
     private TextView win_or_lose;
     private TextView avg_reponse_time_txt;
     private TextView correctness_rate_txt;
-
 
     private TextView winnerScore;
     private TextView loserScore;
@@ -58,16 +61,22 @@ public class ScoreActivity extends AppCompatActivity {
     private int opponent_avatar;
     private String player_username;
     private String opponent_username;
+
+    //raw game stats
     private double total_response_time;
     private int total_num_correct;
-    private Bundle extras;
+    //processed game stats
     private float new_response_time;
     private float new_num_correct;
-    private int TOTAL_QUESTIONS = 7;
-    private boolean won_game;
     private int level_progress =0;
 
+    private Bundle extras;
+
+    private final int TOTAL_QUESTIONS = 7;
+    private boolean won_game;
+
     private Button done_btn;
+
     //rating buttons
     private Button rating_1_0;
     private Button rating_1_1;
@@ -175,8 +184,8 @@ public class ScoreActivity extends AppCompatActivity {
         correctness_rate_txt = findViewById(R.id.correctness_rate);
 
         submit_btn = findViewById(R.id.submit_btn);
-        //question textviews
 
+        //question textviews
         question_text_1 = findViewById(R.id.question_text_1);
         question_text_2 = findViewById(R.id.question_text_2);
         question_text_3 = findViewById(R.id.question_text_3);
@@ -187,9 +196,8 @@ public class ScoreActivity extends AppCompatActivity {
         ArrayList<TextView> question_txts = new ArrayList<TextView>
                 (Arrays.asList(question_text_1,question_text_2,question_text_3,question_text_4,
                         question_text_5,question_text_6,question_text_7));
+
         //report buttons
-
-
         report_q1 = findViewById(R.id.report_q1);
         report_q2 = findViewById(R.id.report_q2);
         report_q3 = findViewById(R.id.report_q3);
@@ -199,8 +207,7 @@ public class ScoreActivity extends AppCompatActivity {
         report_q7 = findViewById(R.id.report_q7);
 
 
-
-        //match buttons
+        //rating buttons
         rating_1_0 = findViewById(R.id.rating_1_0);
         rating_1_1 = findViewById(R.id.rating_1_1);
         rating_1_2 = findViewById(R.id.rating_1_2);
@@ -268,11 +275,17 @@ public class ScoreActivity extends AppCompatActivity {
                 (Arrays.asList(question_button_1,question_button_2,question_button_3,question_button_4,
                         question_button_5,question_button_6,question_button_7));
 
-
+        //matches rating button to the question they pertain to
         all_buttons = new HashMap<Button,Integer>();
-        report_buttons = new HashMap<Button,Integer>();
+        for(ques_arr = 0 ; ques_arr < question_button_arrays.size(); ques_arr++) {
+            for(button_elem = 0; button_elem < question_button_arrays.get(ques_arr).size(); button_elem++) {
+                curr_btn =  question_button_arrays.get(ques_arr).get(button_elem);
+                all_buttons.put(curr_btn,ques_arr);
+            }
+        }
 
-        //make hashmap to show which question the button pertains to
+        //matches report button to the question they pertain to
+        report_buttons = new HashMap<Button,Integer>();
         report_buttons.put(report_q1,0);
         report_buttons.put(report_q2,1);
         report_buttons.put(report_q3,2);
@@ -281,17 +294,8 @@ public class ScoreActivity extends AppCompatActivity {
         report_buttons.put(report_q6,5);
         report_buttons.put(report_q7,6);
 
+        //stores the rating button selected for corresponding question
         selected_button = new HashMap<Integer,Button>();
-
-//        for(int i = 0; i < 5; i++) {
-//            selected_button.put(i,null);
-//        }
-        for(ques_arr = 0 ; ques_arr < question_button_arrays.size(); ques_arr++) {
-            for(button_elem = 0; button_elem < question_button_arrays.get(ques_arr).size(); button_elem++) {
-               curr_btn =  question_button_arrays.get(ques_arr).get(button_elem);
-                all_buttons.put(curr_btn,ques_arr);
-            }
-        }
 
 
         for (Map.Entry<Button, Integer> entry : all_buttons.entrySet())
@@ -299,15 +303,13 @@ public class ScoreActivity extends AppCompatActivity {
             entry.getKey().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //int rating_num = Integer.parseInt(((Button) view).getText().toString());
                     int question_num = all_buttons.get(((Button) view));
                     Button prev_selection = selected_button.get(question_num);
                     if(prev_selection != null) {
-                        Log.d("BELHTDFG","entered selection");
+                        //reset previously pressed button to initial colour
                         prev_selection.setBackgroundTintList(ScoreActivity.this.getResources().getColorStateList(getOriginalColor(prev_selection), null));
                     }
-
-                    Log.d("BELHTDFG","button_elem: "+ button_elem);
+                    //set selected button to yellow and add it to selected ratings
                     ((Button) view).setBackgroundTintList(ScoreActivity.this.getResources().getColorStateList(R.color.colorAccent, null));
                     selected_button.put(question_num,((Button) view));
 
@@ -323,6 +325,7 @@ public class ScoreActivity extends AppCompatActivity {
 
             }
         });
+
         Intent starting_intent = getIntent();
         extras = starting_intent.getExtras();
 
@@ -334,6 +337,7 @@ public class ScoreActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            //set question textviews to in-game questions
             for(int i =0 ; i < question_txts.size(); i++)
             {
                 try {
@@ -348,6 +352,7 @@ public class ScoreActivity extends AppCompatActivity {
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //return all ratings in hashmap
                 for (Map.Entry<Integer, Button> entry : selected_button.entrySet()) {
                     String q_id = null;
                     System.out.println(entry.getKey() + "/" + entry.getValue());
@@ -360,11 +365,8 @@ public class ScoreActivity extends AppCompatActivity {
 
                         try {
                             new OkHttpTask().execute(OkHttpTask.UPDATE_QUESTION_RATING, q_id, entry.getValue().getText().toString()).get();
-                            Log.d("BELHTDFG", "Sent Rating " + entry.getValue().getText().toString());
                         } catch (InterruptedException e) {
-                            Log.d("BELHTDFG", "InterruptedException");
                         } catch (ExecutionException e) {
-                            Log.d("BELHTDFG", "ExecutionException");
                         }
                     }
 
@@ -375,15 +377,15 @@ public class ScoreActivity extends AppCompatActivity {
                         .show();
             }
         });
+
         for (Map.Entry<Button, Integer> entry : report_buttons.entrySet())
         {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
-
             int entry_val =entry.getValue();
             entry.getKey().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
+                        //prompt the user with an alert dialog directed towards specific question before sending report
                         promptReport((Button) view,questions.getJSONObject(report_buttons.get(((Button) view))).getString("question_text"));
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -394,11 +396,9 @@ public class ScoreActivity extends AppCompatActivity {
 
         if(extras.containsKey("player_score")){
             player_score = starting_intent.getIntExtra("player_score",999);
-            //playerScore.setText("Score: " + player_score);
         }
         if(extras.containsKey("opponent_score")){
             opponent_score =  starting_intent.getIntExtra("opponent_score",999);
-            //opponentScore.setText("Score: " + opponent_score);
         }
         //won or tied game
         won_game = player_score >= opponent_score;
@@ -407,11 +407,9 @@ public class ScoreActivity extends AppCompatActivity {
 
         if(extras.containsKey("leaderboard_name")){
             player_username = starting_intent.getStringExtra("leaderboard_name");
-            //playerScore.setText("Score: " + player_score);
         }
         if(extras.containsKey("opponent_leaderboard_name")){
             opponent_username =  starting_intent.getStringExtra("opponent_leaderboard_name");
-            //opponentScore.setText("Score: " + opponent_score);
         }
         won_game = player_score >= opponent_score;
         winnerUsername.setText(won_game ? player_username:opponent_username);
@@ -420,25 +418,20 @@ public class ScoreActivity extends AppCompatActivity {
 
         if(extras.containsKey("player_name")){
             player_name = starting_intent.getStringExtra("player_name");
-            //playerName.setText(player_name);
         }
         if(extras.containsKey("opponent_name")){
             opponent_name = starting_intent.getStringExtra("opponent_name");
-            //opponentName.setText(opponent_name);
         }
-
 
         winnerName.setText(won_game ? player_name:opponent_name);
         loserName.setText(!won_game ? player_name:opponent_name);
 
         if(extras.containsKey("player_rank")){
             player_avatar = starting_intent.getIntExtra("player_rank",999);
-            //setPlayerAvatar();
         }
 
         if(extras.containsKey("opponent_rank")){
             opponent_avatar = starting_intent.getIntExtra("opponent_rank",999);
-            //setOpponentAvatar();
         }
 
         if(won_game) {
@@ -462,36 +455,30 @@ public class ScoreActivity extends AppCompatActivity {
             total_num_correct =  starting_intent.getIntExtra("num_correct",999);
         }
 
-        //evaulate new percentages:
+        //evaulate per-question response times and per-game correctness rates
         new_response_time = (float) total_response_time /TOTAL_QUESTIONS;
         new_num_correct = (float) total_num_correct / TOTAL_QUESTIONS;
-
-
-//        new_response_time = (float)0.67;
-//        new_num_correct = (float)0.67;
-
-        //evaulation of win or lose
-        if(player_score > opponent_score){
-            win_or_lose.setText("WON!");
-            level_progress = 3;
-        }
-        else if (player_score < opponent_score){
-            win_or_lose.setText("LOST!");
-            level_progress = 0;
-        }
-        else{
-            win_or_lose.setText("TIED!");
-            level_progress = 2;
-
-        }
-
 
         avg_reponse_time_txt.setText(String.format("%.2f", new_response_time) + "s");
         correctness_rate_txt.setText(String.format("%.1f", new_num_correct * 100) + "%");
 
-        //if the stat does not exist, make a new one
+        //evaulation of win or lose and progress gained
+        if(player_score == opponent_score) {
+            win_or_lose.setText("TIED!");
+            level_progress = 2;
+        }
+        else if(won_game){
+            win_or_lose.setText("WON!");
+            level_progress = 3;
+        }
+        else {
+            win_or_lose.setText("LOST!");
+            level_progress = 0;
+        }
 
         try {
+            //update the stat
+            //if the stat does not exist, make a new one
             if(updateStat(new_num_correct,new_response_time,level_progress,
             course_subject,course_number) != 0) {
                 //add the stat first, then try to update it
@@ -503,6 +490,9 @@ public class ScoreActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    get in-game avatar
+     */
     protected void setAvatar(ImageView avatar,int avatar_val){
         Log.i("avatar o", Integer.toString(opponent_avatar));
         switch(avatar_val % 6) {
@@ -527,10 +517,11 @@ public class ScoreActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    get the original colour of a rating button
+     */
     protected int getOriginalColor(Button button){
         int contents = Integer.parseInt(button.getText().toString());
-
-        Log.d("BELHTDFG","button num: "+ contents);
         switch(contents %6) {
             case 0:
                 return R.color.blueshade0;
@@ -547,15 +538,15 @@ public class ScoreActivity extends AppCompatActivity {
         }
         return 0;
     }
-    public void done(){
-        finish();
-    }
 
     @Override
     public void onBackPressed() {
         SocketHandler.setDisconnected(false);
         finish();
     }
+    /*
+    update the user stat
+     */
     protected int updateStat(float correctness_rate,float response_time,int level_progress,
                                String course_subject,int course_number) throws JSONException {
         String json_stat_http = null;
@@ -567,10 +558,6 @@ public class ScoreActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        Log.d("BELHTDFG","string 1: "+ json_stat_http);
-        Log.d("BELHTDFG","course_subject: "+ course_subject);
-        Log.d("BELHTDFG","course_number: "+ course_number);
-
         if(json_stat_http == null)
         {
             return 400;
@@ -581,29 +568,34 @@ public class ScoreActivity extends AppCompatActivity {
         }
 
         JSONObject ques = new JSONObject(json_stat_http);
+        //if the user ranked up, display it on the screen
         if(ques.getBoolean("ranked_up")) {
             ranked_up_txt.setVisibility(View.VISIBLE);
         }
         return 0;
     }
 
+    /*
+    Make a stat first, then update it with the information. By default, the stat adding
+    API also updates the stat with the initial information
+     */
     protected void addStatFirst(float correctness_rate,float response_time,int level_progress,
                                 String course_subject,int course_number) {
-        String json_stat_http = null;
+
         try {
-            json_stat_http = new OkHttpTask().execute(OkHttpTask.ADD_STAT_TO_USER, course_subject, Integer.toString(course_number),Float.toString(correctness_rate),Float.toString(response_time),Integer.toString(level_progress)).get();
+            new OkHttpTask().execute(OkHttpTask.ADD_STAT_TO_USER, course_subject, Integer.toString(course_number),Float.toString(correctness_rate),Float.toString(response_time),Integer.toString(level_progress)).get();
         } catch (InterruptedException e) {
-            json_stat_http = null;
             e.printStackTrace();
         } catch (ExecutionException e) {
-            json_stat_http = null;
             e.printStackTrace();
         }
 
-        Log.d("BELHTDFG","string 2: "+ json_stat_http);
-
     }
 
+    /*
+    Ask the user whether they want to report a question and proceed to set it
+    as reported on confirmation.
+     */
     private void promptReport(final Button report_btn, String question_txt)
     {
         final int question_num = report_buttons.get(report_btn);
@@ -619,20 +611,21 @@ public class ScoreActivity extends AppCompatActivity {
                             json_rate_http = new OkHttpTask().execute(OkHttpTask.SET_QUESTION_REPORTED_STATUS, questions.getJSONObject(question_num).getString("_id"), "true").get();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
+                            json_rate_http = null;
                         } catch (ExecutionException e) {
                             e.printStackTrace();
+                            json_rate_http = null;
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            json_rate_http = null;
                         }
+                        if(json_rate_http != null) {
+                            Snackbar.make(findViewById(android.R.id.content), "Question Reported", Snackbar.LENGTH_LONG)
+                                    .setActionTextColor(Color.YELLOW)
+                                    .show();
 
-                        Log.d("BELHTDFG","resp: "+ json_rate_http);
-
-
-                        Snackbar.make(findViewById(android.R.id.content), "Question Reported", Snackbar.LENGTH_LONG)
-                                .setActionTextColor(Color.YELLOW)
-                                .show();
-
-                        report_btn.setVisibility(GONE);
+                            report_btn.setVisibility(GONE);
+                        }
                     }
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {

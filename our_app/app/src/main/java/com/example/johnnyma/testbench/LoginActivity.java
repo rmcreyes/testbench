@@ -56,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
         // declare the permission we want from the user
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
 
+        //user facebook graph API to generate a Facebook Auth token
+        //this is used to produce a JWT token from our server
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -64,8 +66,6 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.show();
                 AccessToken loginAccessToken = loginResult.getAccessToken();
                 GlobalTokens.FACEBOOK_KEY = loginAccessToken.getToken();
-                Log.d("BELHTDFG","WE GOT FB KEY AS: " + GlobalTokens.FACEBOOK_KEY);
-                //Toast.makeText(LoginActivity.this, loginAccessToken.getToken(), Toast.LENGTH_LONG).show();
 
                 GraphRequest request = GraphRequest.newMeRequest(loginAccessToken, new GraphRequest.GraphJSONObjectCallback() {
                     @Override
@@ -89,40 +89,19 @@ public class LoginActivity extends AppCompatActivity {
                             if(JWT_Json != null) {
                                 JSONObject jwt_raw = new JSONObject(JWT_Json);
                                 GlobalTokens.JWT_KEY = jwt_raw.getString("token");
-                                //Toast.makeText(LoginActivity.this, "JWT KEY: " + GlobalTokens.JWT_KEY, Toast.LENGTH_SHORT).show();
-                                Log.d("BELHTDFG","JWT KEY: " + GlobalTokens.JWT_KEY);
                             }
-
-                            Log.d("BELHTDFG","HEREE");
-                            String email = object.getString("email");
-                            // testing use of HTTP requests with OkHttpTask
-                            String toToast;
-                            try {
-                                toToast = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
-                            } catch (InterruptedException e) {
-                                toToast = null;
-                                Log.d("BELHTDFG","InterruptedException");
-                            } catch (ExecutionException e) {
-                                toToast = null;
-                                Log.d("BELHTDFG","ExecutionException");
-                            }
-
-                            if(toToast != null) {
-                                Toast.makeText(LoginActivity.this, "yeet " + toToast, Toast.LENGTH_SHORT).show();
-
-                            }
-                            //Log.d("BELHTDFG",toToast);
 
                             //keep for home page
                             String profile_pic_url = profile_pic.toString();
                             String name = object.getString("first_name");
+                            String email = object.getString("email");
 
 
                             Intent intent = new Intent(LoginActivity.this, CourseSelectActivity.class);
                             intent.putExtra("profile_pic_url", profile_pic_url);
                             intent.putExtra("email", email);
                             intent.putExtra("name", name);
-                            intent.putExtra("user_json", toToast);
+                            //flags to ensure that the user cannot press back on the next activity
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
