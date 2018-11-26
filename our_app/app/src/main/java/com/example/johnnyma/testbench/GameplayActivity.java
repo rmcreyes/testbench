@@ -197,33 +197,35 @@ public class GameplayActivity extends AppCompatActivity  {
     private void playQuestion() {
         endTransition();
         enableButtons();
-        if (currentQuestion > 7) endGame();
-        body.setText(questions.get(currentQuestion - 1).getBody());
-        // randomly assign questions to question buttons
-        randomizeAnswers(questions.get(currentQuestion - 1));
+        if (currentQuestion > 7) {
+            endGame();
+        } else {
+            body.setText(questions.get(currentQuestion - 1).getBody());
+            // randomly assign questions to question buttons
+            randomizeAnswers(questions.get(currentQuestion - 1));
 
-        // start timer
-        cur_q_time = System.currentTimeMillis();
+            // start timer
+            cur_q_time = System.currentTimeMillis();
 
-        final int timedQuestion = currentQuestion;
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (buttonsEnabled() && timedQuestion == currentQuestion) {
-                    answer_time += 10000;
-                    yellowHighlightCorrect();
-                    disableButtons();
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            socket.emit("on_answer", "ANSWER_WRONG", 0);
-                        }
-                    },1500);
+            final int timedQuestion = currentQuestion;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (buttonsEnabled() && timedQuestion == currentQuestion) {
+                        answer_time += 10000;
+                        yellowHighlightCorrect();
+                        disableButtons();
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                socket.emit("on_answer", "ANSWER_WRONG", 0);
+                            }
+                        }, 1500);
 
+                    }
                 }
-            }
-        }, 10000);
-
+            }, 10000);
+        }
     }
     private void setSocketListeners(){
         socket = SocketHandler.getSocket();
@@ -443,6 +445,7 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
     private void endGame(){
+        currentQuestion = 1;
         socket.disconnect();
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
