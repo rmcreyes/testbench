@@ -80,28 +80,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         if(cTimer!=null)
             cTimer.cancel();
     }
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            if(match_found){
-//                textview.setVisibility(View.INVISIBLE);
-//                loading_gif.setVisibility(View.INVISIBLE);
-//                cancel_btn.setVisibility(View.INVISIBLE);
-//                showStartDialog();
-//
-//            }
-//            else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
-//                Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
-//                socket.emit("stop_waiting");
-//                socket.disconnect();
-//                finish();
-//            }
-//            else {
-//                timeout++;
-//                handler.postDelayed(this, 100);
-//            }
-//        }
-//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +104,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         socket.on("broadcast_leave", opponentLeft);
 
         startTimer();
-//        handler.postDelayed(runnable, 500);
     }
 
     public void cancelButton(View view){
@@ -173,7 +150,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
     }
 
-
+    /*
+     * sends user info to socket to matchmake with another player
+     */
     public void queueForGame() {
         JSONObject info = new JSONObject();
         try {
@@ -187,7 +166,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
         socket.emit("queue_for_game", info.toString());
     }
-
+    /*
+     * sends user info to socket after matchmaking, to give opponent relevant info
+     */
     public void sendJSONOpponent() {
         JSONObject info = new JSONObject();
         try {
@@ -200,7 +181,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
         socket.emit("send_json_opponent", info.toString());
     }
-
+    /*
+     * receive questions from socket after match made
+     */
     public Emitter.Listener onGameMade = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
@@ -219,8 +202,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
     };
 
-
-
+    /*
+     * receives opponent info in json format after match made
+     */
     public Emitter.Listener getJSONOpponent = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
@@ -236,7 +220,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-//                    match_found = true;
                     cancelTimer();
                     textview.setVisibility(View.INVISIBLE);
                     loading_gif.setVisibility(View.INVISIBLE);
@@ -247,13 +230,18 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
     };
 
+    /*
+     * if player chooses to exit, must properly cancel match
+     */
     @Override
     public void onBackPressed() {
         cancelTimer();
         socket.disconnect();
         finish();
     }
-
+    /*
+     * if opponent left, must exit activity (no longer matched)
+     */
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){

@@ -17,6 +17,7 @@ import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -99,7 +100,6 @@ public class GameplayActivity extends AppCompatActivity  {
     private int correct_loc;
     private int correctlyAnswered;
     private long cur_q_time;
-    private long time_event;
     private boolean emoji_displayed;
 
 
@@ -109,7 +109,6 @@ public class GameplayActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_gameplay);
 
         // set initial conditions for the game
-        time_event = 0;
         currentQuestion = 1;
         answer_time = 0;
         num_false = 0;
@@ -172,29 +171,90 @@ public class GameplayActivity extends AppCompatActivity  {
 
         //set emoji views and onclick listners for emojis
         setEmojiListeners();
-        socket = SocketHandler.getSocket();
-        socket.on("broadcast_emoji", popupEmoji);
-        socket.on("turn_over", turnOver);
-        socket.on("start_question", readyQuestion);
-        socket.on("broadcast_leave", opponentLeft);
+        setSocketListeners();
         setButtonListeners();
         setInitialLoadView();
         waitForQuestion();
     }
 
-    private Runnable eventCheck = new Runnable() {
-        @Override
-        public void run() {
-            if(System.currentTimeMillis() - time_event > 20000){
-                SocketHandler.setDisconnected(true);
-                socket.disconnect();
-                finish();
-            } else {
-                handler.postDelayed(this, 5000);
-            }
+    /*
+     * this method is called when starting a new question
+     * the question header is set, loading screen pops up, and socket emits
+     * event indicating it is ready for next question
+     */
+    private void waitForQuestion() {
+        // highight in yellow the answer to the previous question
+        yellowHighlightCorrect();
+        // reset buttons, and number of wrong answers for new question
+        num_false = 0;
+        resetButtonColors();
+        startTransition();
+        // if current question is less than 7, get ready to play next question, else end the game
+        if(currentQuestion <= 7) {
+            questionHeader.setText("Question " + currentQuestion + " of 7");
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    socket.emit("ready_next");
+                }
+            }, 500);
+        } else {
+            endGame();
         }
-    };
+    }
+    /*
+     * method that allows user to view question and choose answers
+     */
+    private void playQuestion() {
+        // remove loading card, allow button pressing
+        endTransition();
+        enableButtons();
+        // game should end at this point
+        if (currentQuestion > 7) {
+            endGame();
+        } else {
+            // set questions and answers for user to see
+            body.setText(questions.get(currentQuestion - 1).getBody());
+            // randomly assign questions to question buttons
+            randomizeAnswers(questions.get(currentQuestion - 1));
 
+            // start timer
+            cur_q_time = System.currentTimeMillis();
+            // question should time out after 10 seconds, so emit an answer wrong event
+            // if question not answered in 10 seconds
+            final int timedQuestion = currentQuestion;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (buttonsEnabled() && timedQuestion == currentQuestion) {
+                        answer_time += 10000;
+                        yellowHighlightCorrect();
+                        disableButtons();
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                socket.emit("on_answer", "ANSWER_WRONG", 0);
+                            }
+                        }, 1500);
+
+                    }
+                }
+            }, 10000);
+        }
+    }
+    /*
+     * Sets listeners for all socket events, used in onCreate
+     */
+    private void setSocketListeners(){
+        socket = SocketHandler.getSocket();
+        socket.on("broadcast_emoji", popupEmoji);
+        socket.on("turn_over", turnOver);
+        socket.on("start_question", readyQuestion);
+        socket.on("broadcast_leave", opponentLeft);
+    }
+    /*
+     * Sets loading card to show before question 1
+     */
     private void setInitialLoadView() {
         roundWinnerText.setVisibility(View.INVISIBLE);
         winText.setVisibility(View.INVISIBLE);
@@ -202,6 +262,9 @@ public class GameplayActivity extends AppCompatActivity  {
         loadingText.setText("Get Ready for Question " + currentQuestion + "!");
     }
 
+    /*
+     * Sets loading card to indicate no one won
+     */
     private void setInGameLoadView(){
         roundWinnerText.setVisibility(View.VISIBLE);
         winText.setVisibility(View.VISIBLE);
@@ -211,6 +274,9 @@ public class GameplayActivity extends AppCompatActivity  {
         loadingText.setText("Get Ready for Question " + currentQuestion + "!");
     }
 
+    /*
+     * set loading card to indicate who won last round
+     */
     private void setInGameLoadView(String winner, int avatar) {
         roundWinnerText.setVisibility(View.VISIBLE);
         winText.setVisibility(View.VISIBLE);
@@ -236,8 +302,11 @@ public class GameplayActivity extends AppCompatActivity  {
                 winnerAvatar.setImageResource(R.drawable.cupcake_avatar);
                 break;
         }
-        loadingText.setText("Get Ready for \n  Question " + currentQuestion + "!");
+        loadingText.setText("Get Ready for \n  Question " + (currentQuestion + 1) + "!");
     }
+    /*
+     * synchronized functions for enableing/disabling and reading button enable boolean
+     */
     private void enableButtons(){
         synchronized(lock) {
             buttonsEnabled = true;
@@ -253,10 +322,14 @@ public class GameplayActivity extends AppCompatActivity  {
             return buttonsEnabled;
         }
     }
+    /*
+     * sets all onclick listeners for buttons
+     */
     private void setButtonListeners() {
         answer1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // if buttons enabled, execute button-pressing functionality
                 if (buttonsEnabled()) {
                     disableButtons();
                     answer_time += System.currentTimeMillis() - cur_q_time;
@@ -299,7 +372,10 @@ public class GameplayActivity extends AppCompatActivity  {
         });
     }
 
-    private void setAvatar(ImageView avatar,int rank) {
+    /*
+     * Method for setting avatars on the bottom banner
+     */
+    private void setAvatar(ImageView avatar, int rank) {
         switch(rank % 6) {
             case 0:
                 avatar.setImageResource(R.drawable.penguin_avatar);
@@ -322,6 +398,9 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
 
+    /*
+     * randomly chooses position for correct answers, and sets button text
+     */
     private void randomizeAnswers(Question q){
         Random random = new Random();
         int rand = random.nextInt(4) + 1;
@@ -360,33 +439,28 @@ public class GameplayActivity extends AppCompatActivity  {
             }
         }
     }
-
+    /*
+     * show loading screen with animation
+     */
     private void startTransition() {
-        loading_card.setVisibility(View.VISIBLE);
-        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
-        loading_card.startAnimation(slideUp);
+        if (currentQuestion < 8) {
+            loading_card.setVisibility(View.VISIBLE);
+            Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+            loading_card.startAnimation(slideUp);
+        }
     }
-
+    /*
+     * remove loading screen with animation
+     */
     private void endTransition() {
         Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
         loading_card.startAnimation(slideDown);
         loading_card.setVisibility(View.INVISIBLE);
     }
 
-
-    private void waitForQuestion() {
-        yellowHighlightCorrect();
-        num_false = 0;
-
-        resetButtonColors();
-        startTransition();
-        if(currentQuestion <= questions.size()) {
-            questionHeader.setText("Question " + currentQuestion + " of " + questions.size());
-            socket.emit("ready_next");
-        } else {
-            endGame();
-        }
-    }
+    /*
+     * set button colors to original unanswered colors
+     */
     private void resetButtonColors(){
         answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
         answer1.setTextColor(Color.parseColor("#ffffff"));
@@ -398,37 +472,10 @@ public class GameplayActivity extends AppCompatActivity  {
         answer4.setTextColor(Color.parseColor("#ffffff"));
     }
 
-    private void playQuestion() {
-        endTransition();
-        enableButtons();
-        if (currentQuestion > questions.size()) currentQuestion = 1;
-        body.setText(questions.get(currentQuestion - 1).getBody());
-        // randomly assign questions to question buttons
-        randomizeAnswers(questions.get(currentQuestion - 1));
-
-        // start timer
-        cur_q_time = System.currentTimeMillis();
-
-        final int timedQuestion = currentQuestion;
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (buttonsEnabled() && timedQuestion == currentQuestion) {
-                    answer_time += 10000;
-                    yellowHighlightCorrect();
-                    disableButtons();
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            socket.emit("on_answer", "ANSWER_WRONG", 0);
-                        }
-                    },1500);
-
-                }
-            }
-        }, 10000);
-
-    }
+    /*
+     * highlights correct answer in yellow
+     * should only be called when player did not answer correctly
+     */
     private void yellowHighlightCorrect() {
         switch(correct_loc) {
             case 1: answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
@@ -437,6 +484,9 @@ public class GameplayActivity extends AppCompatActivity  {
             case 4: answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
         }
     }
+    /*
+     * sets colors of buttons and emits socket events based on whether player answered question correctly or incorrectly
+     */
     private void answerChosen(Button answer, int num, long time) {
         if (num == correct_loc) {
             socket.emit("on_answer", "ANSWER_RIGHT", calculateScore((int)time));
@@ -449,7 +499,13 @@ public class GameplayActivity extends AppCompatActivity  {
             answer.setTextColor(Color.parseColor("#491212"));
         }
     }
+
+    /*
+     * Called when 7 questions are up and game is over
+     * socket is disconnected, and we move to scoreactivity
+     */
     private void endGame(){
+        currentQuestion = 1;
         socket.disconnect();
         Intent scoreIntent = new Intent(this, ScoreActivity.class);
         scoreIntent.putExtra("player_score",player_score);
@@ -465,12 +521,14 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("questions", getIntent().getStringExtra("questions"));
         scoreIntent.putExtra("leaderboard_name", leaderboard_name);
         scoreIntent.putExtra("opponent_leaderboard_name", opponent_leaderboard_name);
-
         scoreIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         finish();
         startActivity(scoreIntent);
     }
 
+    /*
+     * parses question string as JSON array and stores them in a list of question objects
+     */
     private void parseQuestions(String questionsString) {
         questions = new ArrayList<>();
         for (int i = 0; i < 7 ; i++) {
@@ -483,6 +541,10 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     }
 
+    /*
+     * Listener for receiving turn_over event.
+     * should set views and play next question according to data received in event
+     */
     public Emitter.Listener turnOver = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
@@ -490,7 +552,6 @@ public class GameplayActivity extends AppCompatActivity  {
             handler.post(new Runnable(){
                 @Override
                 public void run() {
-                    time_event = System.currentTimeMillis();
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
                         if (scores.getBoolean("correct")) {
@@ -525,12 +586,13 @@ public class GameplayActivity extends AppCompatActivity  {
             });
         }
     };
-
+    /*
+     * Listener that lets plays next question when start_question event received
+     */
     public Emitter.Listener readyQuestion = new Emitter.Listener(){
 
         @Override
         public void call(final Object... args){
-            time_event = System.currentTimeMillis();
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -545,20 +607,23 @@ public class GameplayActivity extends AppCompatActivity  {
             }, 1000);
         }
     };
+    /*
+     * special listener for when opponent disconnects, must disconnect as well
+     */
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            time_event = System.currentTimeMillis();
             SocketHandler.setDisconnected(true);
             socket.disconnect();
             finish();
         }
     };
-
+    /*
+     * listener that causes emoji sent by opponent to pop up on user's screen over their avatar
+     */
     public Emitter.Listener popupEmoji = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            time_event = System.currentTimeMillis();
             if(emoji_displayed){
                 return;
             }
@@ -569,9 +634,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 public void run() {
                     layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                     View container = layoutInflater.inflate(R.layout.layout_emoji, null);
-                    ImageView emojiImage = (ImageView) container.findViewById(R.id.emoji);
-                    //ImageView avatar = (ImageView) container.findViewById(R.id.avatar);
-                    //avatar.setImageDrawable(opponentAvatar.getDrawable());
+                    ImageView emojiImage = container.findViewById(R.id.emoji);
                     switch((int) args[0]){
                         case EMOJI_OK:
                             emojiImage.setImageResource(R.drawable.ok_emoji);
@@ -607,8 +670,11 @@ public class GameplayActivity extends AppCompatActivity  {
                         e.printStackTrace();
                     }
                     opponentAvatar.getLocationOnScreen(location_opp);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, location_opp[0], location_opp[1]); //TODO change location
+                    try {
+                        emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, location_opp[0], location_opp[1]);
+                    } catch (WindowManager.BadTokenException e) {
 
+                    }
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -621,7 +687,9 @@ public class GameplayActivity extends AppCompatActivity  {
         }
     };
 
-
+    /*
+     * calculates score for question based on time it took player to answer
+     */
     private int calculateScore(int answerTime){
         return (int)((10000.0 - answerTime) / 10000.0 * 50.0 + 50) + (questions.get(currentQuestion - 1).isVerified() ? 50 : 0);
     }
@@ -687,6 +755,9 @@ public class GameplayActivity extends AppCompatActivity  {
         });
     }
 
+    /*
+     * show player dialog when they try to leave, confirming their choice
+     */
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
