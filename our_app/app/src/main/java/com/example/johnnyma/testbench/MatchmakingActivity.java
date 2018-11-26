@@ -150,7 +150,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
     }
 
-
+    /*
+     * sends user info to socket to matchmake with another player
+     */
     public void queueForGame() {
         JSONObject info = new JSONObject();
         try {
@@ -164,7 +166,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
         socket.emit("queue_for_game", info.toString());
     }
-
+    /*
+     * sends user info to socket after matchmaking, to give opponent relevant info
+     */
     public void sendJSONOpponent() {
         JSONObject info = new JSONObject();
         try {
@@ -177,7 +181,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
         socket.emit("send_json_opponent", info.toString());
     }
-
+    /*
+     * receive questions from socket after match made
+     */
     public Emitter.Listener onGameMade = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
@@ -196,8 +202,9 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
     };
 
-
-
+    /*
+     * receives opponent info in json format after match made
+     */
     public Emitter.Listener getJSONOpponent = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
@@ -213,7 +220,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-//                    match_found = true;
                     cancelTimer();
                     textview.setVisibility(View.INVISIBLE);
                     loading_gif.setVisibility(View.INVISIBLE);
@@ -224,13 +230,18 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         }
     };
 
+    /*
+     * if player chooses to exit, must properly cancel match
+     */
     @Override
     public void onBackPressed() {
         cancelTimer();
         socket.disconnect();
         finish();
     }
-
+    /*
+     * if opponent left, must exit activity (no longer matched)
+     */
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
