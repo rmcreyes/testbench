@@ -1,18 +1,11 @@
 package com.example.johnnyma.testbench;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -20,8 +13,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * AsyncTask used for sending HTTP request parallel to main UI thread
@@ -67,13 +58,10 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
         Request request = createRequest(strings);
         try {
             Response response = client.newCall(request).execute();
-            if(response.code() !=200) {
-                Log.d("BELHTDFG","error: "+ Integer.toString(response.code()));
-                Log.d("BELHTDFG","error message: "+ response.body().string());
+            //if not ok response
+            if(response.code() !=200)
                 return Integer.toString(response.code());
-            }
             else
-                //Log.d("BELHTDFG","resp: "+ response.body().string());
                 return response.body().string();
         } catch (IOException e) {
             return null;
@@ -110,40 +98,33 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                         .addHeader("Authorization", GlobalTokens.JWT_KEY);
                 break;
             case SET_USERNAME:
-                //JSONObject courseAddBody = new JSONObject();
                 try {
                     reqBody.put("username", strings[1]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
                 builder.url(IP + "/api/user/username/"+ GlobalTokens.USER_ID)
                         .addHeader("Authorization", GlobalTokens.JWT_KEY)
                         .put(body);
-                //builder.url(IP + "/api/getcourses/" + GlobalTokens.USER_ID)
                 break;
             case ADD_TO_USER_COURSES:
-                //JSONObject courseAddBody = new JSONObject();
                 try {
                     reqBody.put("course_subject", strings[1].toUpperCase());
                     reqBody.put("course_number", strings[2]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
                 builder.url(IP + "/api/addcourse/"+ GlobalTokens.USER_ID)
                         .addHeader("Authorization", GlobalTokens.JWT_KEY)
                         .put(body);
-                //builder.url(IP + "/api/getcourses/" + GlobalTokens.USER_ID)
                 break;
             case EDIT_PROFILE:
                 try {
                     reqBody.put("alias", strings[1]);
                     reqBody.put("username", strings[2]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -152,14 +133,11 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                         .put(body);
                 break;
             case POST_USER_JWT:
-                //JSONObject fbAuthBody = new JSONObject();
                 try {
                     reqBody.put("access_token", strings[1]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                Log.d("BELHTDFG",reqBody.toString());
                 body = RequestBody.create(JSON, reqBody.toString());
                 builder.url(IP + "/users/oauth/facebook")
                         .post(body);
@@ -213,7 +191,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                     reqBody.put("add_response_time", Double.parseDouble(strings[4]));
                     reqBody.put("level_progress", strings[5]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -230,7 +207,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                     reqBody.put("add_response_time", Double.parseDouble(strings[4]));
                     reqBody.put("level_progress", strings[5]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -243,7 +219,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                     reqBody.put("course_subject", strings[1]);
                     reqBody.put("course_number", strings[2]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -256,7 +231,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 try {
                     reqBody.put("new_rating", Integer.parseInt(strings[2]));
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -270,7 +244,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                     reqBody.put("course_subject", strings[1]);
                     reqBody.put("course_number", strings[2]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -283,7 +256,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                     reqBody.put("course_subject", strings[1]);
                     reqBody.put("course_number", strings[2]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -295,7 +267,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 try {
                     reqBody.put("is_professor", strings[1]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -307,7 +278,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 try {
                     reqBody.put("reported", strings[1]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -319,7 +289,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 try {
                     reqBody.put("reported", strings[2]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());
@@ -331,7 +300,6 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
                 try {
                     reqBody.put("verified", strings[2]);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 body = RequestBody.create(JSON, reqBody.toString());

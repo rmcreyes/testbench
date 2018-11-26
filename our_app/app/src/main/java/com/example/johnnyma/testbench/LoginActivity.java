@@ -73,7 +73,6 @@ public class LoginActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         try {
 
-                            Log.d("BELHTDFG","start!");
                             // retrieve relevant Facebook account information for use in the main activity,
                             // and send it in the intent
                             URL profile_pic = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
@@ -108,10 +107,8 @@ public class LoginActivity extends AppCompatActivity {
 
                             startActivity(intent);
                         } catch(MalformedURLException e) {
-                            Log.d("BELHTDFG","Malformed URL");
                             e.printStackTrace();
                         } catch(JSONException e) {
-                            Log.d("BELHTDFG","JSONException");
                             e.printStackTrace();
                         }
 
