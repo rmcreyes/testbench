@@ -30,6 +30,7 @@
             android:ems="4"
             android:hint="Subject"
             android:textColorHint="@android:color/darker_gray"
+            android:textColor="@android:color/white"
             android:backgroundTint="@android:color/white"
             android:inputType="textPersonName"
             android:textAlignment="center" />
@@ -42,6 +43,7 @@
             android:layout_margin="10dp"
             android:ems="3"
             android:backgroundTint="@android:color/white"
+            android:textColor="@android:color/white"
             android:textColorHint="@android:color/darker_gray"
             android:hint="Number"
             android:inputType="number"

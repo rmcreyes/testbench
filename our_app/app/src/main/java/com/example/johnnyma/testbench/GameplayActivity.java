@@ -99,7 +99,6 @@ public class GameplayActivity extends AppCompatActivity  {
     private int correct_loc;
     private int correctlyAnswered;
     private long cur_q_time;
-    private long time_event;
     private boolean emoji_displayed;
 
 
@@ -109,7 +108,6 @@ public class GameplayActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_gameplay);
 
         // set initial conditions for the game
-        time_event = 0;
         currentQuestion = 1;
         answer_time = 0;
         num_false = 0;
@@ -172,28 +170,68 @@ public class GameplayActivity extends AppCompatActivity  {
 
         //set emoji views and onclick listners for emojis
         setEmojiListeners();
-        socket = SocketHandler.getSocket();
-        socket.on("broadcast_emoji", popupEmoji);
-        socket.on("turn_over", turnOver);
-        socket.on("start_question", readyQuestion);
-        socket.on("broadcast_leave", opponentLeft);
+        setSocketListeners();
         setButtonListeners();
         setInitialLoadView();
         waitForQuestion();
     }
 
-    private Runnable eventCheck = new Runnable() {
-        @Override
-        public void run() {
-            if(System.currentTimeMillis() - time_event > 20000){
-                SocketHandler.setDisconnected(true);
-                socket.disconnect();
-                finish();
-            } else {
-                handler.postDelayed(this, 5000);
-            }
+    private void waitForQuestion() {
+        yellowHighlightCorrect();
+        num_false = 0;
+        resetButtonColors();
+        startTransition();
+        if(currentQuestion <= 7) {
+            questionHeader.setText("Question " + currentQuestion + " of 7");
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    socket.emit("ready_next");
+                }
+            }, 500);
+        } else {
+            endGame();
         }
-    };
+    }
+
+    private void playQuestion() {
+        endTransition();
+        enableButtons();
+        if (currentQuestion > 7) endGame();
+        body.setText(questions.get(currentQuestion - 1).getBody());
+        // randomly assign questions to question buttons
+        randomizeAnswers(questions.get(currentQuestion - 1));
+
+        // start timer
+        cur_q_time = System.currentTimeMillis();
+
+        final int timedQuestion = currentQuestion;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (buttonsEnabled() && timedQuestion == currentQuestion) {
+                    answer_time += 10000;
+                    yellowHighlightCorrect();
+                    disableButtons();
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            socket.emit("on_answer", "ANSWER_WRONG", 0);
+                        }
+                    },1500);
+
+                }
+            }
+        }, 10000);
+
+    }
+    private void setSocketListeners(){
+        socket = SocketHandler.getSocket();
+        socket.on("broadcast_emoji", popupEmoji);
+        socket.on("turn_over", turnOver);
+        socket.on("start_question", readyQuestion);
+        socket.on("broadcast_leave", opponentLeft);
+    }
 
     private void setInitialLoadView() {
         roundWinnerText.setVisibility(View.INVISIBLE);
@@ -236,7 +274,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 winnerAvatar.setImageResource(R.drawable.cupcake_avatar);
                 break;
         }
-        loadingText.setText("Get Ready for \n  Question " + currentQuestion + "!");
+        loadingText.setText("Get Ready for \n  Question " + (currentQuestion + 1) + "!");
     }
     private void enableButtons(){
         synchronized(lock) {
@@ -373,20 +411,6 @@ public class GameplayActivity extends AppCompatActivity  {
         loading_card.setVisibility(View.INVISIBLE);
     }
 
-
-    private void waitForQuestion() {
-        yellowHighlightCorrect();
-        num_false = 0;
-
-        resetButtonColors();
-        startTransition();
-        if(currentQuestion <= questions.size()) {
-            questionHeader.setText("Question " + currentQuestion + " of " + questions.size());
-            socket.emit("ready_next");
-        } else {
-            endGame();
-        }
-    }
     private void resetButtonColors(){
         answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorPrimary, null));
         answer1.setTextColor(Color.parseColor("#ffffff"));
@@ -398,37 +422,6 @@ public class GameplayActivity extends AppCompatActivity  {
         answer4.setTextColor(Color.parseColor("#ffffff"));
     }
 
-    private void playQuestion() {
-        endTransition();
-        enableButtons();
-        if (currentQuestion > questions.size()) currentQuestion = 1;
-        body.setText(questions.get(currentQuestion - 1).getBody());
-        // randomly assign questions to question buttons
-        randomizeAnswers(questions.get(currentQuestion - 1));
-
-        // start timer
-        cur_q_time = System.currentTimeMillis();
-
-        final int timedQuestion = currentQuestion;
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (buttonsEnabled() && timedQuestion == currentQuestion) {
-                    answer_time += 10000;
-                    yellowHighlightCorrect();
-                    disableButtons();
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            socket.emit("on_answer", "ANSWER_WRONG", 0);
-                        }
-                    },1500);
-
-                }
-            }
-        }, 10000);
-
-    }
     private void yellowHighlightCorrect() {
         switch(correct_loc) {
             case 1: answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
@@ -490,7 +483,6 @@ public class GameplayActivity extends AppCompatActivity  {
             handler.post(new Runnable(){
                 @Override
                 public void run() {
-                    time_event = System.currentTimeMillis();
                     try {
                         JSONObject scores = new JSONObject((String) args[0]);
                         if (scores.getBoolean("correct")) {
@@ -530,7 +522,6 @@ public class GameplayActivity extends AppCompatActivity  {
 
         @Override
         public void call(final Object... args){
-            time_event = System.currentTimeMillis();
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -548,7 +539,6 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
-            time_event = System.currentTimeMillis();
             SocketHandler.setDisconnected(true);
             socket.disconnect();
             finish();
@@ -558,7 +548,6 @@ public class GameplayActivity extends AppCompatActivity  {
     public Emitter.Listener popupEmoji = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            time_event = System.currentTimeMillis();
             if(emoji_displayed){
                 return;
             }
