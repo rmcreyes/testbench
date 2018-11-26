@@ -34,14 +34,6 @@ import static android.view.View.GONE;
 public class ScoreActivity extends AppCompatActivity {
 
     private TextView win_or_lose;
-    private TextView playerScore;
-    private TextView opponentScore;
-    private TextView playerName;
-    private TextView opponentName;
-    private ImageView playerAvatar;
-    private ImageView opponentAvatar;
-    private TextView playerRank;
-    private TextView opponentRank;
     private TextView avg_reponse_time_txt;
     private TextView correctness_rate_txt;
 

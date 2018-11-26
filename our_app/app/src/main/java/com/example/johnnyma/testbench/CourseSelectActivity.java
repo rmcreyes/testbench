@@ -332,6 +332,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         String user_json;
         try {
             user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
+            Log.d("user_json", user_json);
         } catch (InterruptedException e) {
             user_json = null;
         } catch (ExecutionException e) {
@@ -340,6 +341,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         if (user_json != null) {
             try {
                 u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
+
                 GlobalTokens.USER_ID = u_json.getString("_id");
                 Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
                 alias = u_json.getString("alias");

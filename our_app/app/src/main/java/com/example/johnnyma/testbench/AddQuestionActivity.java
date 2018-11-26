@@ -1,6 +1,8 @@
 package com.example.johnnyma.testbench;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.Key;
+import java.util.concurrent.ExecutionException;
 
 public class AddQuestionActivity extends AppCompatActivity {
 
@@ -63,17 +66,38 @@ public class AddQuestionActivity extends AppCompatActivity {
 
     }
 
-    public void submitQuestionButton(View view){
-            new OkHttpTask().execute("ADD_QUESTION",
-                    question.getText().toString(),
-                    correctAnswer.getText().toString(),
-                    wrongAnswer1.getText().toString(),
-                    wrongAnswer2.getText().toString(),
-                    wrongAnswer3.getText().toString(),
-                    GlobalTokens.USER_ID,
-                    "false",
-                    this.course.substring(0,4).toUpperCase(),
-                    this.course.substring(4,7));
-        finish();
+    public void submitQuestionButton(View view) throws ExecutionException, InterruptedException {
+        if(correctAnswer.getText().toString().equals("") ||
+                wrongAnswer1.getText().toString().equals("") ||
+                wrongAnswer2.getText().toString().equals("") ||
+                wrongAnswer3.getText().toString().equals("") )
+        {
+            Snackbar.make(findViewById(android.R.id.content), "At least one of your fields is empty. Please fix this before proceeding.", Snackbar.LENGTH_LONG)
+                    .setActionTextColor(Color.RED)
+                    .show();
+            return;
+        }
+        String ques_reponse = new OkHttpTask().execute("ADD_QUESTION",
+                question.getText().toString(),
+                correctAnswer.getText().toString(),
+                wrongAnswer1.getText().toString(),
+                wrongAnswer2.getText().toString(),
+                wrongAnswer3.getText().toString(),
+                GlobalTokens.USER_ID,
+                "false",
+                this.course.substring(0,4).toUpperCase(),
+                this.course.substring(4,7)).get();
+
+        if(ques_reponse.equals("400"))
+        {
+            Snackbar.make(findViewById(android.R.id.content), "Some of your answers are identical. Please fix this before proceeding.", Snackbar.LENGTH_LONG)
+                    .setActionTextColor(Color.RED)
+                    .show();
+        } else {
+            Toast.makeText(AddQuestionActivity.this,
+                    "Question Created!",Toast.LENGTH_LONG).show();
+
+            finish();
+        }
     }
 }
