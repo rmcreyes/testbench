@@ -80,28 +80,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         if(cTimer!=null)
             cTimer.cancel();
     }
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            if(match_found){
-//                textview.setVisibility(View.INVISIBLE);
-//                loading_gif.setVisibility(View.INVISIBLE);
-//                cancel_btn.setVisibility(View.INVISIBLE);
-//                showStartDialog();
-//
-//            }
-//            else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
-//                Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
-//                socket.emit("stop_waiting");
-//                socket.disconnect();
-//                finish();
-//            }
-//            else {
-//                timeout++;
-//                handler.postDelayed(this, 100);
-//            }
-//        }
-//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +104,6 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         socket.on("broadcast_leave", opponentLeft);
 
         startTimer();
-//        handler.postDelayed(runnable, 500);
     }
 
     public void cancelButton(View view){

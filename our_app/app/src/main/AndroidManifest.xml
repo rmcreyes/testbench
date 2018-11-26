@@ -16,6 +16,7 @@
             android:value="@string/facebook_app_id" />
 
         <activity android:name=".CourseSelectActivity">
+            android:screenOrientation="portrait"
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -25,9 +26,11 @@
             <!-- </intent-filter> -->
         </activity>
         <activity android:name=".AddCourseActivity" />
+            android:screenOrientation="portrait"
         <activity
             android:name=".LoginActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:screenOrientation="portrait"
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -39,6 +42,7 @@
         <activity android:name=".CourseActivity" />
         <activity android:name=".MatchmakingActivity" />
         <activity android:name=".SplashActivity">
+            android:screenOrientation="portrait"
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,6 +58,7 @@
         <activity android:name=".AddQuestionActivity" />
 
         <activity android:name=".ProfessorActivity">
+            android:screenOrientation="portrait"
              <!--<intent-filter>-->
              <!--<action android:name="android.intent.action.MAIN" />-->
 

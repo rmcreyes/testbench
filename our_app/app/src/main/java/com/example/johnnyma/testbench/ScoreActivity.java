@@ -501,12 +501,7 @@ public class ScoreActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-
-
     }
-
 
     protected void setAvatar(ImageView avatar,int avatar_val){
         Log.i("avatar o", Integer.toString(opponent_avatar));
