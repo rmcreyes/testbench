@@ -237,7 +237,7 @@ public class GameplayActivity extends AppCompatActivity  {
                 winnerAvatar.setImageResource(R.drawable.cupcake_avatar);
                 break;
         }
-        loadingText.setText("Get Ready for \n  Question " + currentQuestion + "!");
+        loadingText.setText("Get Ready for \n  Question " + (currentQuestion+1) + "!");
     }
     private void enableButtons(){
         synchronized(lock) {
@@ -385,7 +385,12 @@ public class GameplayActivity extends AppCompatActivity  {
         if(currentQuestion <= questions.size()) {
             questionHeader.setText("Question " + currentQuestion + " of " + questions.size());
             Log.d("wait for question", "emitting ready next");
-            socket.emit("ready_next");
+       new Timer().schedule(new TimerTask() {
+             @Override
+             public void run() {
+                 socket.emit("ready_next");
+             }
+         }, 500);
 //            timed_out = true;
 //            new Timer().schedule(new TimerTask() {
 //                @Override
@@ -453,7 +458,7 @@ public class GameplayActivity extends AppCompatActivity  {
             case 1: answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
             case 2: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
             case 3: answer3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
-            case 4: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
+            case 4: answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
         }
     }
     private void answerChosen(Button answer, int num, long time) {
@@ -532,7 +537,7 @@ public class GameplayActivity extends AppCompatActivity  {
                                 //Log.d("endgame","ending game 2");
                                 //endGame();
                             //} else {
-                                waitForQuestion();
+                            waitForQuestion();
                             //}
                         } else {
                             num_false++;
