@@ -139,7 +139,7 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 edit_mode = false;
-                closeEdit();
+                closeEdit(false);
             }
         });
 
@@ -154,19 +154,21 @@ public class UserProfileActivity extends AppCompatActivity {
                 user_json = null;
             }
 
-            if(user_json!=null) {
-                if(user_json.equals("409"))
-                {
-                    err_text.setVisibility(View.VISIBLE);
-                } else {
-                    err_text.setVisibility(View.GONE);
-                    Snackbar.make(findViewById(android.R.id.content), "Changes Successful", Snackbar.LENGTH_LONG)
-                    .show();
-                    edit_mode = false;
-                    closeEdit();
+                if(user_json!=null) {
+                    if(user_json.equals("409"))
+                    {
+                        err_text.setVisibility(View.VISIBLE);
+                    } else {
+                        err_text.setVisibility(View.GONE);
+                        Snackbar.make(findViewById(android.R.id.content), "Changes Successful", Snackbar.LENGTH_LONG)
+                        .show();
+                        edit_mode = false;
+                        closeEdit(true);
+                    }
+
                 }
             }
-            }
+
         });
 
         logout_btn.setOnClickListener(new View.OnClickListener() {
@@ -188,21 +190,18 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     };
+    private void closeEdit(boolean save) {
 
-
-    /*
-    exit profile edit mode
-     */
-    private void closeEdit() {
         edit_button_username.setVisibility(View.INVISIBLE);
         edit_button_alias.setVisibility(View.INVISIBLE);
         edit_button_usertype.setVisibility(View.INVISIBLE);
-
-        alias_text.setText(alias_edittext.getText());
+        if(save) {
+            alias_text.setText(alias_edittext.getText());
+            username_text.setText(username_edittext.getText());
+        }
         alias_text.setVisibility(View.VISIBLE);
         alias_edittext.setVisibility(View.INVISIBLE);
-        if(err_text.getVisibility() == View.GONE)
-            username_text.setText(username_edittext.getText());
+
         username_text.setVisibility(View.VISIBLE);
         username_edittext.setVisibility(View.INVISIBLE);
         close_settings_btn.setVisibility(View.GONE);
@@ -242,7 +241,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         //on back pressed, exit edit mode if applicable
         if (edit_mode) {
-            closeEdit();
+            closeEdit(false);
             edit_mode =false;
         } else {
             super.onBackPressed();

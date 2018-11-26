@@ -1,16 +1,11 @@
 package com.example.johnnyma.testbench;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,20 +13,15 @@ import android.widget.Toast;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.net.URISyntaxException;
-
 import pl.droidsonroids.gif.GifImageView;
 
 public class MatchmakingActivity extends AppCompatActivity implements StartDialog.StartDialogListener {
     public static final String TAG = "MatchmakingActivity"; //tag for sending info through intents
     private String courseID;
-    private boolean match_found = false;
-    private int timeout = 0; //timeout counter used in Runnable runnable
     private Handler handler = new Handler();
 
     private String alias;
@@ -61,11 +51,11 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
     //start timer function
     void startTimer() {
-        cTimer = new CountDownTimer(15000, 1000) {
+        cTimer = new CountDownTimer(30000, 1000) {
             public void onTick(long millisUntilFinished) {
             }
             public void onFinish() {
-                Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 30 seconds", Toast.LENGTH_SHORT).show();
                 socket.emit("stop_waiting");
                 socket.disconnect();
                 finish();
@@ -80,6 +70,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         if(cTimer!=null)
             cTimer.cancel();
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,10 +116,8 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
     @Override
     public void startOrCancel(boolean start) {
-        Toast.makeText(getApplicationContext(), "start or cancel pressed", Toast.LENGTH_SHORT).show();
         if (start) {
             // start game
-            Toast.makeText(this, "start pressed", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MatchmakingActivity.this, GameplayActivity.class);
             intent.putExtra("course", courseID);
             intent.putExtra("alias", alias);

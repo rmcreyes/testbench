@@ -6,7 +6,9 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Comparator;
+/**
+ * Model to represent a question.
+ */
 
 public class Question {
     private String id;
@@ -24,27 +26,16 @@ public class Question {
         Log.d("question constructor", questionJSON.toString());
         try {
             id = questionJSON.getString("_id");
-            Log.i("id", id);
             body = questionJSON.getString("question_text");
-            Log.i("question_text", body);
             correctAnswer = questionJSON.getString("correct_answer");
-            Log.i("correct_answer", correctAnswer);
             incorrectAnswer1 = questionJSON.getString("incorrect_answer_1");
-            Log.i("incorrect_answer_1", incorrectAnswer1);
             incorrectAnswer2 = questionJSON.getString("incorrect_answer_2");
-            Log.i("incorrect_answer_2", incorrectAnswer2);
             incorrectAnswer3 = questionJSON.getString("incorrect_answer_3");
-            Log.i("incorrect_answer_3", incorrectAnswer3);
             verified = questionJSON.getBoolean("verified");
-            Log.i("verified", Boolean.toString(verified));
             reported = questionJSON.getBoolean("reported");
-            Log.i("reported", Boolean.toString(reported));
             json_string = questionJSON.toString();
-            Log.i("json", json_string);
             rating = (int) questionJSON.getDouble("rating");
-            Log.i("rating", Integer.toString(rating));
         } catch (JSONException e) {
-            Log.i("catch_json", ":(");
             rating = -1;
             return;
         }

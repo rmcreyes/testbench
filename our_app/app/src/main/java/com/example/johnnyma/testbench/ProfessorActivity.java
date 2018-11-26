@@ -2,7 +2,6 @@ package com.example.johnnyma.testbench;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,19 +13,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Activity that allows professors to audit questions for a certain course.
+ */
 public class ProfessorActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, ProfReviewDialog.ProfReviewDialogListener {
 
     private Toolbar toolbar;
@@ -78,6 +75,11 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Uses the options button to sort the questions by rank, in increasing or decreasing order.
+     * @param item - option picked
+     * @return super.onOptionsItemSelected(item);
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -86,12 +88,10 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
                 case R.id.best_rated:
                 Collections.sort(shownQuestions, new QuestionComparator());
                 Collections.reverse(shownQuestions);
-                Toast.makeText(this, "Best rated", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.worst_rated:
                 Collections.sort(shownQuestions, new QuestionComparator());
-                Toast.makeText(this, "Worst rated", Toast.LENGTH_SHORT).show();
                 break;
 
             default:
@@ -102,6 +102,9 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Resets the listview to show the shownQuestions.
+     */
     public void resetQuestionList() {
         QuestionAdapter questionAdapter = new QuestionAdapter(this, shownQuestions);
         QuestionListView.setAdapter(questionAdapter);
@@ -113,12 +116,18 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
                 args.putString("question", shownQuestions.get(i).getJSONString());
                 profReviewDialog.setArguments(args);
                 profReviewDialog.show(getSupportFragmentManager(), "prof review");
-                Toast.makeText(ProfessorActivity.this, shownQuestions.get(i).getCorrectAnswer(), Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
+    /**
+     * Uses the spinner to filter the questions
+     * @param adapterView
+     * @param view
+     * @param i
+     * @param l
+     */
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String filter = (String) adapterView.getItemAtPosition(i);
@@ -127,30 +136,25 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
             case "All" :
                 setShownQuestions(ALL);
                 current_filter = ALL;
-                Toast.makeText(this, "ALL", Toast.LENGTH_SHORT).show();
                 break;
 
             case "Verified" :
                 setShownQuestions(VERIFIED);
                 current_filter = VERIFIED;
-                Toast.makeText(this, "VERIFIED", Toast.LENGTH_SHORT).show();
                 break;
 
             case "Reported" :
                 setShownQuestions(REPORTED);
                 current_filter = REPORTED;
-                Toast.makeText(this, "REPORTED", Toast.LENGTH_SHORT).show();
                 break;
 
             case "Unchecked" :
                 setShownQuestions(UNCHECKED);
                 current_filter = UNCHECKED;
-                Toast.makeText(this, "UNCHECKED", Toast.LENGTH_SHORT).show();
                 break;
 
             default :
                 setShownQuestions(ALL);
-                Toast.makeText(this, "DEFAULT", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -161,8 +165,10 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
     }
 
 
-
-
+    /**
+     * Depending on the filter, decides which items to show and then resets the list view.
+     * @param filter - decides which questions get shown
+     */
     private void setShownQuestions(int filter) {
 
         if(filter == ALL)
@@ -198,6 +204,9 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
         resetQuestionList();
     }
 
+    /**
+     * Makes an HTTP request to get the questions of this course
+     */
     private void getQuestions() {
         allQuestions = new ArrayList<Question>();
 
@@ -229,6 +238,10 @@ public class ProfessorActivity extends AppCompatActivity implements AdapterView.
         }
     }
 
+    /**
+     * Listens to the review question dialog for their response
+     * @param submittedOrDeleted
+     */
     @Override
     public void responseCollected(boolean submittedOrDeleted) {
         progressDialog = new ProgressDialog(this);

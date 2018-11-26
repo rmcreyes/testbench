@@ -46,6 +46,9 @@ public class SplashActivity extends AppCompatActivity {
                         if(JWT_Json != null) {
                             JSONObject jwt_raw = new JSONObject(JWT_Json);
                             GlobalTokens.JWT_KEY = jwt_raw.getString("token");
+                            // retrieve relevant Facebook account information for use in the main activity,
+                            // and send it in the intent
+
                             URL profile_pic = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
                             String profile_pic_url = profile_pic.toString();
                             String email = object.getString("email");

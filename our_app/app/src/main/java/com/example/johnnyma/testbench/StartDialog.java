@@ -77,7 +77,6 @@ public class StartDialog extends DialogFragment {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "start pressed", Toast.LENGTH_SHORT).show();
                 listener.startOrCancel(true);
                 dismiss();
             }
@@ -85,7 +84,6 @@ public class StartDialog extends DialogFragment {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "cancel pressed", Toast.LENGTH_SHORT).show();
                 listener.startOrCancel(false);
                 dismiss();
             }
@@ -100,7 +98,6 @@ public class StartDialog extends DialogFragment {
             ft.add(this, tag);
             ft.commit();
         } catch (IllegalStateException e) {
-            Log.d("ABSDIALOGFRAG", "Exception", e);
         }
     }
 

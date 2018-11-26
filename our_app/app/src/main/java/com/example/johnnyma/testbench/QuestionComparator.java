@@ -2,6 +2,9 @@ package com.example.johnnyma.testbench;
 
 import java.util.Comparator;
 
+/**
+ * Allows questions to be sorted by rating
+ */
 public class QuestionComparator implements Comparator<Question> {
 
     @Override

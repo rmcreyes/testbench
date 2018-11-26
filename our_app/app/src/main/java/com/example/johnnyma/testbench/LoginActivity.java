@@ -47,8 +47,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        printKeyHash();
-
 
         callbackManager = CallbackManager.Factory.create();
 
@@ -90,16 +88,17 @@ public class LoginActivity extends AppCompatActivity {
                                 GlobalTokens.JWT_KEY = jwt_raw.getString("token");
                             }
 
+
                             //keep for home page
                             String profile_pic_url = profile_pic.toString();
                             String name = object.getString("first_name");
                             String email = object.getString("email");
 
-
                             Intent intent = new Intent(LoginActivity.this, CourseSelectActivity.class);
                             intent.putExtra("profile_pic_url", profile_pic_url);
                             intent.putExtra("email", email);
                             intent.putExtra("name", name);
+
                             //flags to ensure that the user cannot press back on the next activity
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -125,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-
+                Toast.makeText(LoginActivity.this, "login cancelled", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -136,24 +135,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Used to find the machine specific KeyHash necessary for allowing that machine to develop
-     * and test this app while allowing Facebook login
-     */
-    private void printKeyHash() {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo("com.example.johnnyma.testbench", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (PackageManager.NameNotFoundException e){
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e){
-            e.printStackTrace();
-        }
-    }
     @Override
     public void onBackPressed() {
         if (exit) {

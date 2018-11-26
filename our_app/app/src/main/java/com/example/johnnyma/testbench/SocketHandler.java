@@ -1,6 +1,9 @@
 package com.example.johnnyma.testbench;
 import com.github.nkzawa.socketio.client.Socket;
 
+/**
+ * Allows the use of sharing a socket from any activity.
+ */
 public class SocketHandler {
     private static Socket socket;
     private static boolean disconnected = false;

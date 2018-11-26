@@ -10,15 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Dialog from where a prof reviews a question.
+ */
 public class ProfReviewDialog extends AppCompatDialogFragment {
 
     private Question question;
@@ -59,7 +59,6 @@ public class ProfReviewDialog extends AppCompatDialogFragment {
 
         String s_question = getArguments().getString("question");
         try {
-            Log.e("question", s_question);
             question = new Question(new JSONObject(s_question));
 
             question_body = v.findViewById(R.id.question_body);
@@ -86,6 +85,7 @@ public class ProfReviewDialog extends AppCompatDialogFragment {
             submit_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // only send requests as necessary, when checkboxes have changed
                     boolean verify = verified_checkbox.isChecked();
                     boolean report = reported_checkbox.isChecked();
 

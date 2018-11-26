@@ -138,6 +138,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         battle_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //before going to battle, ensure that course has at least 7 questions
                 String question_count;
                 int q_num = 0;
@@ -162,8 +163,6 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
                     Toast.makeText(getContext(), "This course has " + q_num + " question. It must have 7 to be playable!",
                             Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
 
@@ -181,6 +180,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         stats_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
             if(leaderboard_layout.getVisibility() == View.GONE) {
                 //if this is the first time accessing the leaderboard, retrieve the
                 //leaderboard json. Otherwise, it should already be held in the variable.
@@ -196,6 +196,7 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
                         e.printStackTrace();
                     }
                 }
+
 
                 String json_username;
                 ArrayList<TextView> leaderboard_views = new ArrayList<TextView>

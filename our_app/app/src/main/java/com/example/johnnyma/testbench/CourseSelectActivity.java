@@ -20,13 +20,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -95,8 +92,8 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             email = intent.getStringExtra("email");
         }
 
+        // collect user info and load course feed
         refreshProfile();
-
         onCourseAdded();
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -126,8 +123,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 startActivity(userprofile);
             }
         });
-
-        Toast.makeText(this, alias, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -218,10 +213,12 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         }
 
     }
+
+
     @Override
     public void onBackPressed() {
         if (exit) {
-            finish(); // finish activity
+            finish();
         } else {
             Toast.makeText(this, "Press Back again to Exit",
                     Toast.LENGTH_SHORT).show();
@@ -248,6 +245,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         CourseListView.setAdapter(courseAdapter);
     }
 
+
     /*
         When the user uses the app for the first time, they will not have a username.
         This alert will prompt them to enter a unique username.
@@ -262,7 +260,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         final EditText usernameInput=(EditText)layout.findViewById(R.id.username_text);
         final TextView error_text = (TextView) layout.findViewById(R.id.error_text);
         alert.setCancelable(false).setPositiveButton(android.R.string.ok, null);
-
         final AlertDialog dialog = alert.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
@@ -274,8 +271,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
 
                     @Override
                     public void onClick(View view) {
-
-                        // TODO Do something
                         String un_resp;
                         try {
                             un_resp = new OkHttpTask().execute(OkHttpTask.SET_USERNAME, usernameInput.getText().toString()).get();
@@ -303,8 +298,6 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         });
         dialog.show();
 
-        Toast.makeText(CourseSelectActivity.this, username, Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
@@ -321,14 +314,14 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     }
 
 
-    /*
-     refresh the course selection page every time you come back to it
-      */
+    /**
+     * Recollects user's information and stores them in the class's attributes.
+     */
+
     private void refreshProfile() {
         String user_json;
         try {
             user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
-            Log.d("user_json", user_json);
         } catch (InterruptedException e) {
             user_json = null;
         } catch (ExecutionException e) {
