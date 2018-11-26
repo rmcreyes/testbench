@@ -17,6 +17,7 @@ import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -402,9 +403,11 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     private void startTransition() {
-        loading_card.setVisibility(View.VISIBLE);
-        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
-        loading_card.startAnimation(slideUp);
+        if (currentQuestion < 8) {
+            loading_card.setVisibility(View.VISIBLE);
+            Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+            loading_card.startAnimation(slideUp);
+        }
     }
 
     private void endTransition() {
@@ -599,8 +602,11 @@ public class GameplayActivity extends AppCompatActivity  {
                         e.printStackTrace();
                     }
                     opponentAvatar.getLocationOnScreen(location_opp);
-                    emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, location_opp[0], location_opp[1]); //TODO change location
+                    try {
+                        emojiPopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, location_opp[0], location_opp[1]);
+                    } catch (WindowManager.BadTokenException e) {
 
+                    }
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
