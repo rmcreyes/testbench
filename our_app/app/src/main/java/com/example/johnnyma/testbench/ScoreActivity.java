@@ -34,14 +34,6 @@ import static android.view.View.GONE;
 public class ScoreActivity extends AppCompatActivity {
 
     private TextView win_or_lose;
-    private TextView playerScore;
-    private TextView opponentScore;
-    private TextView playerName;
-    private TextView opponentName;
-    private ImageView playerAvatar;
-    private ImageView opponentAvatar;
-    private TextView playerRank;
-    private TextView opponentRank;
     private TextView avg_reponse_time_txt;
     private TextView correctness_rate_txt;
 
@@ -52,6 +44,8 @@ public class ScoreActivity extends AppCompatActivity {
     private TextView loserName;
     private ImageView winnerAvatar;
     private ImageView loserAvatar;
+    private TextView winnerUsername;
+    private TextView loserUsername;
 
     private String course_subject;
     private int course_number;
@@ -62,8 +56,8 @@ public class ScoreActivity extends AppCompatActivity {
     private String opponent_name;
     private int player_avatar;
     private int opponent_avatar;
-    private int player_rank;
-    private int opponent_rank;
+    private String player_username;
+    private String opponent_username;
     private double total_response_time;
     private int total_num_correct;
     private Bundle extras;
@@ -73,6 +67,7 @@ public class ScoreActivity extends AppCompatActivity {
     private boolean won_game;
     private int level_progress =0;
 
+    private Button done_btn;
     //rating buttons
     private Button rating_1_0;
     private Button rating_1_1;
@@ -161,10 +156,15 @@ public class ScoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
 
+        done_btn = findViewById(R.id.done_btn);
         ranked_up_txt = findViewById(R.id.ranked_up_txt);
         rate_layout = findViewById(R.id.rate_layout);
         rate_title_txt = findViewById(R.id.rate_title_txt);
         win_or_lose = findViewById(R.id.win_or_lose);
+
+        winnerUsername = findViewById(R.id.winnerUsername);
+        loserUsername = findViewById(R.id.loserUsername);
+
         winnerAvatar = findViewById(R.id.winnerAvatar);
         loserAvatar = findViewById(R.id.loserAvatar);
         winnerName = findViewById(R.id.winnerName);
@@ -315,7 +315,14 @@ public class ScoreActivity extends AppCompatActivity {
             });
         }
 
+        done_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SocketHandler.setDisconnected(false);
+                finish();
 
+            }
+        });
         Intent starting_intent = getIntent();
         extras = starting_intent.getExtras();
 
@@ -384,6 +391,7 @@ public class ScoreActivity extends AppCompatActivity {
                 }
             });
         }
+
         if(extras.containsKey("player_score")){
             player_score = starting_intent.getIntExtra("player_score",999);
             //playerScore.setText("Score: " + player_score);
@@ -396,14 +404,19 @@ public class ScoreActivity extends AppCompatActivity {
         won_game = player_score >= opponent_score;
         winnerScore.setText((won_game ? player_score:opponent_score) + " pts");
         loserScore.setText((!won_game ? player_score:opponent_score) + " pts");
-//        if(extras.containsKey("player_rank")){
-//            player_rank =  starting_intent.getIntExtra("player_rank",999);
-//            //playerRank.setText("Rank: " + player_rank);
-//        }
-//        if(extras.containsKey("opponent_rank")){
-//            opponent_rank = starting_intent.getIntExtra("opponent_rank",999);
-//            //opponentRank.setText("Rank: " + opponent_rank);
-//        }
+
+        if(extras.containsKey("leaderboard_name")){
+            player_username = starting_intent.getStringExtra("leaderboard_name");
+            //playerScore.setText("Score: " + player_score);
+        }
+        if(extras.containsKey("opponent_leaderboard_name")){
+            opponent_username =  starting_intent.getStringExtra("opponent_leaderboard_name");
+            //opponentScore.setText("Score: " + opponent_score);
+        }
+        won_game = player_score >= opponent_score;
+        winnerUsername.setText(won_game ? player_username:opponent_username);
+        loserUsername.setText(!won_game ? player_username:opponent_username);
+
 
         if(extras.containsKey("player_name")){
             player_name = starting_intent.getStringExtra("player_name");
@@ -539,12 +552,13 @@ public class ScoreActivity extends AppCompatActivity {
         }
         return 0;
     }
-    public void done(View view){
+    public void done(){
         finish();
     }
 
     @Override
     public void onBackPressed() {
+        SocketHandler.setDisconnected(false);
         finish();
     }
     protected int updateStat(float correctness_rate,float response_time,int level_progress,
@@ -561,6 +575,11 @@ public class ScoreActivity extends AppCompatActivity {
         Log.d("BELHTDFG","string 1: "+ json_stat_http);
         Log.d("BELHTDFG","course_subject: "+ course_subject);
         Log.d("BELHTDFG","course_number: "+ course_number);
+
+        if(json_stat_http == null)
+        {
+            return 400;
+        }
         if(json_stat_http.equals("400") || json_stat_http.equals("409"))
         {
             return Integer.parseInt(json_stat_http);

@@ -2,7 +2,6 @@ package com.example.johnnyma.testbench;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,19 +13,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,119 +31,107 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/*
- * TODO: add loading question dialog
- */
-
-
 
 public class GameplayActivity extends AppCompatActivity  {
 
-    //emoji encondings
-    public static final int EMOJI_OK = 0;
-    public static final int EMOJI_BIGTHINK = 1;
-    public static final int EMOJI_FIRE = 2;
-    public static final int EMOJI_POOP = 3;
-    public static final int EMOJI_HUNNIT = 4;
-    public static final int EMOJI_HEART = 5;
-    public static final int EMOJI_CRYLAUGH = 6;
+    // emoji encondings
+    private static final int EMOJI_OK = 0;
+    private static final int EMOJI_BIGTHINK = 1;
+    private static final int EMOJI_FIRE = 2;
+    private static final int EMOJI_POOP = 3;
+    private static final int EMOJI_HUNNIT = 4;
+    private static final int EMOJI_HEART = 5;
+    private static final int EMOJI_CRYLAUGH = 6;
 
-    Socket socket; // socket handle
+    // socket handle
+    private Socket socket;
+
     // handles for all layout elements
-    Button answer1;
-    Button answer2;
-    Button answer3;
-    Button answer4;
-    TextView body;
-    TextView playerName;
-    TextView opponentName;
-    TextView playerScore;
-    TextView opponentScore;
-    TextView courseHeader;
-    TextView questionHeader;
-    ImageView playerAvatar;
-    ImageView opponentAvatar;
-    // all questions
-    ArrayList<Question> questions;
-
-    String course;
-    int player_score;
-    int opponent_score;
-    String player_name;
-    String opponent_name;
-    String leaderboard_name;
-
-    int currentQuestion = 1;
-    int answer_time = 0;
-
-    boolean buttonsEnabled = false;
-    private Object lock = new Object();
-    int player_rank;
-    int opponent_rank;
-    int num_false = 0;
-    int correct_loc;
-    int correctlyAnswered = 0;
-    long cur_q_time = 0;
-
-    long time_event = 0;
-
-
-    TextView loadingText;
-    TextView roundWinnerText;
-    TextView winText;
-    ImageView winnerAvatar;
-    private boolean timed_out;
-
-    //emoji stuff
-    ImageView emoji_bigthink;
-    ImageView emoji_crylaugh;
-    ImageView emoji_heart;
-    ImageView emoji_poop;
-    ImageView emoji_hunnit;
-    ImageView emoji_fire;
-    ImageView emoji_ok;
+    private Button answer1;
+    private Button answer2;
+    private Button answer3;
+    private Button answer4;
+    private TextView body;
+    private TextView playerName;
+    private TextView opponentName;
+    private TextView playerScore;
+    private TextView opponentScore;
+    private TextView courseHeader;
+    private TextView questionHeader;
+    private ImageView playerAvatar;
+    private ImageView opponentAvatar;
+    private TextView loadingText;
+    private TextView roundWinnerText;
+    private TextView winText;
+    private ImageView winnerAvatar;
+    private ImageView emoji_bigthink;
+    private ImageView emoji_crylaugh;
+    private ImageView emoji_heart;
+    private ImageView emoji_poop;
+    private ImageView emoji_hunnit;
+    private ImageView emoji_fire;
+    private ImageView emoji_ok;
     private PopupWindow emojiPopup;
     private LayoutInflater layoutInflater;
-    private boolean emoji_displayed = false;
+    private CardView loading_card;
+    private Handler handler;
 
-    private FrameLayout fragment_container;
-    private Handler handler = new Handler();
+    // holds all questions for the match
+    private ArrayList<Question> questions;
+
+    // values related to the current game and players
+    private String course;
+    private int player_score;
+    private int opponent_score;
+    private String player_name;
+    private String opponent_name;
+    private String opponent_leaderboard_name;
+    private String leaderboard_name;
+    private int player_rank;
+    private int opponent_rank;
+
+    // values related to the state of the game
+    private int currentQuestion;
+    private int answer_time;
+    private boolean buttonsEnabled;
+    private Object lock;
+    private int num_false;
+    private int correct_loc;
+    private int correctlyAnswered;
+    private long cur_q_time;
+    private long time_event;
+    private boolean emoji_displayed;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_gameplay);
+
+        // set initial conditions for the game
         time_event = 0;
         currentQuestion = 1;
         answer_time = 0;
         num_false = 0;
         correctlyAnswered = 0;
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gameplay);
-        Intent starting_intent = getIntent();
-        course = starting_intent.getStringExtra("course");
-        fragment_container = findViewById(R.id.loading_card);
-        fragment_container.setVisibility(View.INVISIBLE);
-        courseHeader = findViewById(R.id.course_header);
-        courseHeader.setText(course.substring(0,4)+ " " + course.substring(4, 7));
-        player_name = starting_intent.getStringExtra("alias");
-        leaderboard_name = starting_intent.getStringExtra("leaderboard_name");
-
-        playerName = findViewById(R.id.player_name);
-        playerName.setText(player_name);
-        player_rank = starting_intent.getIntExtra("player_rank", 1);
-        playerAvatar = findViewById(R.id.player_avatar);
-        setAvatar(playerAvatar);
-        opponent_name = starting_intent.getStringExtra("opponent_name");
-        opponentName = findViewById(R.id.opponent_name);
-        opponentName.setText(opponent_name);
-        opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
-        opponentAvatar = findViewById(R.id.opponent_avatar);
-        setAvatar(opponentAvatar);
+        buttonsEnabled = false;
+        lock = new Object();
+        cur_q_time = 0;
+        emoji_displayed = false;
+        handler = new Handler();
         player_score = 0;
-        playerScore = findViewById(R.id.player_score);
-        playerScore.setText("Score: " + player_score);
         opponent_score = 0;
+
+        // find all ui elements
+        loading_card = findViewById(R.id.loading_card);
+        loading_card.setVisibility(View.INVISIBLE);
+        courseHeader = findViewById(R.id.course_header);
+        playerName = findViewById(R.id.player_name);
+        playerAvatar = findViewById(R.id.player_avatar);
+        opponentName = findViewById(R.id.opponent_name);
+        opponentAvatar = findViewById(R.id.opponent_avatar);
+        playerScore = findViewById(R.id.player_score);
         opponentScore = findViewById(R.id.opponent_score);
-        opponentScore.setText("Score: " + opponent_score);
         body = findViewById(R.id.question_body);
         questionHeader = findViewById(R.id.question_num);
         loadingText = findViewById(R.id.loading_text);
@@ -158,8 +142,6 @@ public class GameplayActivity extends AppCompatActivity  {
         answer2 = findViewById(R.id.answer_2);
         answer3 = findViewById(R.id.answer_3);
         answer4 = findViewById(R.id.answer_4);
-        parseQuestions(starting_intent.getStringExtra("questions"));
-        //set emoji views and onclick listners for emojis
         emoji_ok = findViewById(R.id.ok_emoji2);
         emoji_poop = findViewById(R.id.ok_emoji);
         emoji_bigthink = findViewById(R.id.bigthink_emoji);
@@ -167,6 +149,28 @@ public class GameplayActivity extends AppCompatActivity  {
         emoji_hunnit = findViewById(R.id.hunnit_emoji2);
         emoji_crylaugh = findViewById(R.id.crylaugh_emoji);
         emoji_heart = findViewById(R.id.heart_emoji);
+
+        // get all info from intent
+        Intent starting_intent = getIntent();
+        course = starting_intent.getStringExtra("course");
+        player_name = starting_intent.getStringExtra("alias");
+        leaderboard_name = starting_intent.getStringExtra("leaderboard_name");
+        opponent_leaderboard_name = starting_intent.getStringExtra("opponent_leaderboard_name");
+        player_rank = starting_intent.getIntExtra("player_rank", 1);
+        opponent_name = starting_intent.getStringExtra("opponent_alias");
+        opponent_rank = starting_intent.getIntExtra("opponent_rank", 1);
+
+        // configure display based on intent info
+        courseHeader.setText(course.substring(0,4)+ " " + course.substring(4, 7));
+        playerName.setText(player_name);
+        setAvatar(playerAvatar,player_rank);
+        opponentName.setText(opponent_name);
+        setAvatar(opponentAvatar,opponent_rank);
+        playerScore.setText("Score: " + player_score);
+        opponentScore.setText("Score: " + opponent_score);
+        parseQuestions(starting_intent.getStringExtra("questions"));
+
+        //set emoji views and onclick listners for emojis
         setEmojiListeners();
         socket = SocketHandler.getSocket();
         socket.on("broadcast_emoji", popupEmoji);
@@ -175,7 +179,6 @@ public class GameplayActivity extends AppCompatActivity  {
         socket.on("broadcast_leave", opponentLeft);
         setButtonListeners();
         setInitialLoadView();
-        handler.postDelayed(eventCheck, 5000);
         waitForQuestion();
     }
 
@@ -296,8 +299,8 @@ public class GameplayActivity extends AppCompatActivity  {
         });
     }
 
-    private void setAvatar(ImageView avatar) {
-        switch(player_rank % 6) {
+    private void setAvatar(ImageView avatar,int rank) {
+        switch(rank % 6) {
             case 0:
                 avatar.setImageResource(R.drawable.penguin_avatar);
                 break;
@@ -359,15 +362,15 @@ public class GameplayActivity extends AppCompatActivity  {
     }
 
     private void startTransition() {
-        fragment_container.setVisibility(View.VISIBLE);
+        loading_card.setVisibility(View.VISIBLE);
         Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
-        fragment_container.startAnimation(slideUp);
+        loading_card.startAnimation(slideUp);
     }
 
     private void endTransition() {
         Animation slideDown = AnimationUtils.loadAnimation(this, R.anim.slide_down);
-        fragment_container.startAnimation(slideDown);
-        fragment_container.setVisibility(View.INVISIBLE);
+        loading_card.startAnimation(slideDown);
+        loading_card.setVisibility(View.INVISIBLE);
     }
 
 
@@ -377,22 +380,9 @@ public class GameplayActivity extends AppCompatActivity  {
 
         resetButtonColors();
         startTransition();
-
         if(currentQuestion <= questions.size()) {
             questionHeader.setText("Question " + currentQuestion + " of " + questions.size());
-            Log.d("wait for question", "emitting ready next");
             socket.emit("ready_next");
-            timed_out = true;
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    // this code will be executed after 2 seconds
-                    if(timed_out) {
-                        socket.disconnect();
-                        finish();
-                    }
-                }
-            }, 15000);
         } else {
             endGame();
         }
@@ -411,7 +401,6 @@ public class GameplayActivity extends AppCompatActivity  {
     private void playQuestion() {
         endTransition();
         enableButtons();
-        Log.d("playQuestion", "in playQuestion");
         if (currentQuestion > questions.size()) currentQuestion = 1;
         body.setText(questions.get(currentQuestion - 1).getBody());
         // randomly assign questions to question buttons
@@ -445,7 +434,7 @@ public class GameplayActivity extends AppCompatActivity  {
             case 1: answer1.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
             case 2: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
             case 3: answer3.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
-            case 4: answer2.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
+            case 4: answer4.setBackgroundTintList(GameplayActivity.this.getResources().getColorStateList(R.color.colorAccent, null)); break;
         }
     }
     private void answerChosen(Button answer, int num, long time) {
@@ -475,13 +464,15 @@ public class GameplayActivity extends AppCompatActivity  {
         scoreIntent.putExtra("num_correct", correctlyAnswered);
         scoreIntent.putExtra("questions", getIntent().getStringExtra("questions"));
         scoreIntent.putExtra("leaderboard_name", leaderboard_name);
+        scoreIntent.putExtra("opponent_leaderboard_name", opponent_leaderboard_name);
+
+        scoreIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         finish();
         startActivity(scoreIntent);
     }
 
     private void parseQuestions(String questionsString) {
         questions = new ArrayList<>();
-        Log.d("Questions", questionsString);
         for (int i = 0; i < 7 ; i++) {
             try {
                 JSONArray questionsJSON = new JSONArray(questionsString);
@@ -516,27 +507,18 @@ public class GameplayActivity extends AppCompatActivity  {
                             playerScore.setText("Score: " + player_score);
                             opponentScore.setText("Score: " + opponent_score);
                             currentQuestion++;
-                            if (currentQuestion > questions.size()) {
-                                endGame();
-                            } else {
-                                waitForQuestion();
-                            }
+                            waitForQuestion();
                         } else {
                             num_false++;
                             if (num_false > 1) {
                                 yellowHighlightCorrect();
                                 disableButtons();
                                 currentQuestion++;
-                                if (currentQuestion > questions.size()) {
-                                    endGame();
-                                } else {
-                                    setInGameLoadView();
-                                    waitForQuestion();
-                                }
+                                setInGameLoadView();
+                                waitForQuestion();
                             }
                         }
                     } catch (JSONException e) {
-                        Log.d("fuck","json exception in turnover");
                         return;
                     }
                 }
@@ -549,8 +531,6 @@ public class GameplayActivity extends AppCompatActivity  {
         @Override
         public void call(final Object... args){
             time_event = System.currentTimeMillis();
-            Log.d("readyQuestion", "in readyQuestion");
-            timed_out = false;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -569,7 +549,6 @@ public class GameplayActivity extends AppCompatActivity  {
         @Override
         public void call(final Object... args){
             time_event = System.currentTimeMillis();
-            Log.i("disconnect", "fuck");
             SocketHandler.setDisconnected(true);
             socket.disconnect();
             finish();
@@ -708,8 +687,6 @@ public class GameplayActivity extends AppCompatActivity  {
         });
     }
 
-
-
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(GameplayActivity.this);
@@ -718,8 +695,8 @@ public class GameplayActivity extends AppCompatActivity  {
                 .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         socket.emit("leave_early");
-                        Intent intent = new Intent(GameplayActivity.this, CourseSelectActivity.class);
-                        startActivity(intent);
+                        socket.disconnect();
+                        finish();
                     }
                 })
                 .setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -732,11 +709,4 @@ public class GameplayActivity extends AppCompatActivity  {
         alert.show();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        socket.emit("leave_early");
-        socket.disconnect();
-        finish();
-    }
 }

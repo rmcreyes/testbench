@@ -332,26 +332,41 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         String user_json;
         try {
             user_json = new OkHttpTask().execute(OkHttpTask.GET_USER_DETAILS, email).get();
+            Log.d("user_json", user_json);
         } catch (InterruptedException e) {
             user_json = null;
         } catch (ExecutionException e) {
             user_json = null;
         }
+        if (user_json != null) {
+            try {
+                u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
 
-        try {
-            u_json = new JSONObject(user_json.substring(1, user_json.length()-1));
-            GlobalTokens.USER_ID = u_json.getString("_id");
-            Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
-            alias = u_json.getString("alias");
-        } catch (JSONException e) {
-            e.printStackTrace();
+                GlobalTokens.USER_ID = u_json.getString("_id");
+                Log.d("BELHTDFG","u_json: " +u_json.getString("_id"));
+                alias = u_json.getString("alias");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                username = u_json.getString("username");
+            } catch (JSONException e) {
+                promptUsername();
+            }
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(CourseSelectActivity.this);
+            builder.setMessage("No server connection. Press OK to exit.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
 
-        try {
-            username = u_json.getString("username");
-        } catch (JSONException e) {
-            promptUsername();
-        }
 
 
     }

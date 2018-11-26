@@ -132,14 +132,37 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
             rank = 1;
         }
 
-
         // have each button signal a different action in CourseSelectActivity
         battle_btn = v.findViewById(R.id.battle_btn);
         battle_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.chooseCourseView(CourseActionDefs.BATTLE, s_course, rank);
-                dismiss();
+
+                String question_count;
+                int q_num = 0;
+                try {
+                    question_count = new OkHttpTask().execute(OkHttpTask.GET_QUESTION_COUNT, s_course.substring(0,4), s_course.substring(4,7)).get();
+                } catch (InterruptedException e) {
+                    question_count = null;
+                } catch (ExecutionException e) {
+                    question_count = null;
+                }
+                try {
+                    JSONArray json_question = new JSONArray(question_count);
+                    q_num = json_question.getJSONObject(0).getInt("current_count");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(q_num>6)
+                {
+                    listener.chooseCourseView(CourseActionDefs.BATTLE, s_course, rank);
+                    dismiss();
+                } else {
+                    Toast.makeText(getContext(), "This course has " + q_num + " question. It must have 7 to be playable!",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         });
 

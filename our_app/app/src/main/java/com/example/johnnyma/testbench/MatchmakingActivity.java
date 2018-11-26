@@ -1,12 +1,16 @@
 package com.example.johnnyma.testbench;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,6 +47,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     // these must be stored/obtained somewhere,
     private int playerRank;
     private Socket socket;
+    private String opponentAlias;
     private String opponentUsername;
     private int opponentRank;
     {
@@ -51,28 +56,52 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             SocketHandler.setSocket(socket);
         } catch (URISyntaxException e){}
     }
+    //Declare timer
+    CountDownTimer cTimer = null;
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if(match_found){
-                textview.setVisibility(View.INVISIBLE);
-                loading_gif.setVisibility(View.INVISIBLE);
-                cancel_btn.setVisibility(View.INVISIBLE);
-                showStartDialog();
-
+    //start timer function
+    void startTimer() {
+        cTimer = new CountDownTimer(15000, 1000) {
+            public void onTick(long millisUntilFinished) {
             }
-            else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
+            public void onFinish() {
                 Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
+                socket.emit("stop_waiting");
                 socket.disconnect();
                 finish();
             }
-            else {
-                timeout++;
-                handler.postDelayed(this, 100);
-            }
-        }
-    };
+        };
+        cTimer.start();
+    }
+
+
+    //cancel timer
+    void cancelTimer() {
+        if(cTimer!=null)
+            cTimer.cancel();
+    }
+//    private Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            if(match_found){
+//                textview.setVisibility(View.INVISIBLE);
+//                loading_gif.setVisibility(View.INVISIBLE);
+//                cancel_btn.setVisibility(View.INVISIBLE);
+//                showStartDialog();
+//
+//            }
+//            else if(timeout >= 150){ //if timeout > 150 then that means 15 seconds has passed
+//                Toast.makeText(getApplicationContext(), "Matchmaking has timed out after 15 seconds", Toast.LENGTH_SHORT).show();
+//                socket.emit("stop_waiting");
+//                socket.disconnect();
+//                finish();
+//            }
+//            else {
+//                timeout++;
+//                handler.postDelayed(this, 100);
+//            }
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +125,14 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         socket.on("get_json_opponent", getJSONOpponent);
         socket.on("broadcast_leave", opponentLeft);
 
-        handler.postDelayed(runnable, 500);
+        startTimer();
+//        handler.postDelayed(runnable, 500);
     }
 
     public void cancelButton(View view){
+        cancelTimer();
+        socket.emit("stop_waiting");
         socket.disconnect();
-
         finish();
     }
 
@@ -109,10 +140,10 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     public void showStartDialog() {
         StartDialog startDialog = new StartDialog();
         Bundle args = new Bundle();
-        args.putString("opponent_username", opponentUsername);
+        args.putString("opponent_alias", opponentAlias);
         args.putString("opponent_rank", Integer.toString(opponentRank));
         startDialog.setArguments(args);
-        startDialog.show(getSupportFragmentManager(), "start game dialog");
+        startDialog.show(getFragmentManager(), "start game dialog");
     }
 
     @Override
@@ -120,13 +151,14 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
         Toast.makeText(getApplicationContext(), "start or cancel pressed", Toast.LENGTH_SHORT).show();
         if (start) {
             // start game
-            Toast.makeText(getApplicationContext(), "start pressed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "start pressed", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(MatchmakingActivity.this, GameplayActivity.class);
             intent.putExtra("course", courseID);
             intent.putExtra("alias", alias);
             intent.putExtra("leaderboard_name", username);
             intent.putExtra("player_rank", playerRank);
-            intent.putExtra("opponent_name", opponentUsername);
+            intent.putExtra("opponent_alias", opponentAlias);
+            intent.putExtra("opponent_leaderboard_name", opponentUsername);
             intent.putExtra("opponent_rank", opponentRank);
             intent.putExtra("questions", questions.toString());
             // add intent extras necessary for game
@@ -134,6 +166,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
             startActivity(intent);
         } else {
             //cancel
+            cancelTimer();
             socket.emit("leave_early", "leave_early");
             socket.disconnect();
             finish();
@@ -144,7 +177,8 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     public void queueForGame() {
         JSONObject info = new JSONObject();
         try {
-            info.put("username", alias);
+            info.put("alias", alias);
+            info.put("username", username);
             info.put("course_subject",  courseID.substring(0, 4));
             info.put("course_number", Integer.valueOf(courseID.substring(4)));
             info.put("rank", playerRank);
@@ -196,12 +230,18 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
                 public void run(){
                     try {
                         JSONObject data = new JSONObject((String) args[0]);
+                        opponentAlias = data.getString("alias");
                         opponentUsername = data.getString("username");
                         opponentRank = Integer.parseInt(data.getString("rank"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    match_found = true;
+//                    match_found = true;
+                    cancelTimer();
+                    textview.setVisibility(View.INVISIBLE);
+                    loading_gif.setVisibility(View.INVISIBLE);
+                    cancel_btn.setVisibility(View.INVISIBLE);
+                    showStartDialog();
                 }
             });
         }
@@ -209,6 +249,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
 
     @Override
     public void onBackPressed() {
+        cancelTimer();
         socket.disconnect();
         finish();
     }
@@ -216,6 +257,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     public Emitter.Listener opponentLeft = new Emitter.Listener(){
         @Override
         public void call(final Object... args){
+            cancelTimer();
             SocketHandler.setDisconnected(true);
             socket.disconnect();
             finish();
