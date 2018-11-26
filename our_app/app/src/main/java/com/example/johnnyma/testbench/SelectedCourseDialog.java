@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -112,6 +111,8 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
             average_response_time = stats_obj.getDouble("avg_response_time");
             correctness_rate = stats_obj.getDouble("correctness_rate");
             level_progress = level_amt + "/" + String.format("%.1f", level_max);
+            //ranking API returns only the number of people above you in stats, so we must return
+            //the value + 1 if there contains a value or 1 if they return an empty string
             if(json_ranking_http.equals("[]"))
             {
                 course_ranking = 1;
@@ -137,6 +138,8 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         battle_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //before going to battle, ensure that course has at least 7 questions
                 String question_count;
                 int q_num = 0;
                 try {
@@ -177,54 +180,59 @@ public class SelectedCourseDialog extends AppCompatDialogFragment {
         stats_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(leaderboard_layout.getVisibility() == View.GONE) {
-                    if(leaderboard_json == null) {
-                        try {
-                            leaderboard_http = new OkHttpTask().execute(OkHttpTask.GET_LEADERBOARD, s_course.substring(0, 4), s_course.substring(4, 7)).get();
-                            leaderboard_json = new JSONArray(leaderboard_http);
 
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+            if(leaderboard_layout.getVisibility() == View.GONE) {
+                //if this is the first time accessing the leaderboard, retrieve the
+                //leaderboard json. Otherwise, it should already be held in the variable.
+                if(leaderboard_json == null) {
+                    try {
+                        leaderboard_http = new OkHttpTask().execute(OkHttpTask.GET_LEADERBOARD, s_course.substring(0, 4), s_course.substring(4, 7)).get();
+                        leaderboard_json = new JSONArray(leaderboard_http);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-
-                    String json_username;
-                    ArrayList<TextView> leaderboard_views = new ArrayList<TextView>
-                            (Arrays.asList(first_place,second_place,third_place));
-                    ArrayList<LinearLayout> leaderboard_layouts = new ArrayList<LinearLayout>
-                            (Arrays.asList(first_place_layout,second_place_layout,third_place_layout));
-                    int hidden_entries = 0;
-                    for(int i = 0; i< 3;i++){
-                        try {
-                            json_username = leaderboard_json.getJSONObject(i).getString("username");
-                            leaderboard_views.get(i).setText(json_username);
-                        } catch (JSONException e){
-                            leaderboard_layouts.get(i).setVisibility(View.GONE);
-                            hidden_entries++;
-                        }
-                    }
-
-                    if(hidden_entries>2)
-                    {
-                        Toast.makeText(getContext(), "No users on leaderboard",
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        leaderboard_layout.setVisibility(View.VISIBLE);
-                        stats_btn.setText("HIDE LEADERBOARD");
-                    }
-
-
-
                 }
-                else if(leaderboard_layout.getVisibility() == View.VISIBLE)
+
+
+                String json_username;
+                ArrayList<TextView> leaderboard_views = new ArrayList<TextView>
+                        (Arrays.asList(first_place,second_place,third_place));
+                ArrayList<LinearLayout> leaderboard_layouts = new ArrayList<LinearLayout>
+                        (Arrays.asList(first_place_layout,second_place_layout,third_place_layout));
+                int hidden_entries = 0;
+                for(int i = 0; i< 3;i++){
+                    try {
+                        //populate leaderboard
+                        json_username = leaderboard_json.getJSONObject(i).getString("username");
+                        leaderboard_views.get(i).setText(json_username);
+                    } catch (JSONException e){
+                        //make the placings disappear if there is no ranking there
+                        leaderboard_layouts.get(i).setVisibility(View.GONE);
+                        hidden_entries++;
+                    }
+                }
+
+                if(hidden_entries>2)
                 {
-                    leaderboard_layout.setVisibility(View.GONE);
-                    stats_btn.setText("VIEW LEADERBOARD");
+                    Toast.makeText(getContext(), "No users on leaderboard",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    leaderboard_layout.setVisibility(View.VISIBLE);
+                    stats_btn.setText("HIDE LEADERBOARD");
                 }
+
+
+
+            }
+            else if(leaderboard_layout.getVisibility() == View.VISIBLE)
+            {
+                leaderboard_layout.setVisibility(View.GONE);
+                stats_btn.setText("VIEW LEADERBOARD");
+            }
 
             }
         });

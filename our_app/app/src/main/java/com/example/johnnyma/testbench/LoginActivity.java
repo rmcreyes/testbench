@@ -54,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
         // declare the permission we want from the user
         loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
 
+        //user facebook graph API to generate a Facebook Auth token
+        //this is used to produce a JWT token from our server
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -68,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         progressDialog.dismiss();
                         try {
+
                             // retrieve relevant Facebook account information for use in the main activity,
                             // and send it in the intent
                             URL profile_pic = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
@@ -85,17 +88,18 @@ public class LoginActivity extends AppCompatActivity {
                                 GlobalTokens.JWT_KEY = jwt_raw.getString("token");
                             }
 
-                            String email = object.getString("email");
-                            // testing use of HTTP requests with OkHttpTask
 
                             //keep for home page
                             String profile_pic_url = profile_pic.toString();
                             String name = object.getString("first_name");
+                            String email = object.getString("email");
 
                             Intent intent = new Intent(LoginActivity.this, CourseSelectActivity.class);
                             intent.putExtra("profile_pic_url", profile_pic_url);
                             intent.putExtra("email", email);
                             intent.putExtra("name", name);
+
+                            //flags to ensure that the user cannot press back on the next activity
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

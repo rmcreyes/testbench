@@ -2,12 +2,9 @@ package com.example.johnnyma.testbench;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -51,10 +48,12 @@ public class SplashActivity extends AppCompatActivity {
                             GlobalTokens.JWT_KEY = jwt_raw.getString("token");
                             // retrieve relevant Facebook account information for use in the main activity,
                             // and send it in the intent
+
                             URL profile_pic = new URL("https://graph.facebook.com/"+object.getString("id")+"/picture?width=250&height=250");
                             String profile_pic_url = profile_pic.toString();
                             String email = object.getString("email");
                             String name = object.getString("first_name");
+
 
                             Intent intent = new Intent(SplashActivity.this, CourseSelectActivity.class);
                             intent.putExtra("profile_pic_url", profile_pic_url);
@@ -77,7 +76,6 @@ public class SplashActivity extends AppCompatActivity {
                                     });
                             AlertDialog alert = builder.create();
                             alert.show();
-
                         }
 
                     } catch(MalformedURLException e) {
@@ -99,6 +97,7 @@ public class SplashActivity extends AppCompatActivity {
 
         // send user to login activity if they are not logged in
         else {
+            //ensure that loginActivity can't go back
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

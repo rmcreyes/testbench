@@ -107,6 +107,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //go to user profile
                 try {
                     isProf = u_json.getBoolean("is_professor");
                 } catch (JSONException e) {
@@ -117,6 +118,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
                 userprofile.putExtra("username", username);
                 userprofile.putExtra("isProf", isProf);
                 userprofile.putExtra("email", email);
+                userprofile.putExtra("name", fb_name);
                 userprofile.putExtra("profile_pic_url", profile_pic_url);
                 startActivity(userprofile);
             }
@@ -243,8 +245,10 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
         CourseListView.setAdapter(courseAdapter);
     }
 
-    /**
-     * Makes the user pick a username if they are new to the game
+
+    /*
+        When the user uses the app for the first time, they will not have a username.
+        This alert will prompt them to enter a unique username.
      */
     private void promptUsername()
     {
@@ -293,6 +297,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
             }
         });
         dialog.show();
+
     }
 
     @Override
@@ -312,6 +317,7 @@ public class CourseSelectActivity extends AppCompatActivity implements SelectedC
     /**
      * Recollects user's information and stores them in the class's attributes.
      */
+
     private void refreshProfile() {
         String user_json;
         try {
