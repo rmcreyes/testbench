@@ -19,11 +19,27 @@ app.use(bodyParser.json());
 
 var db = mongoose.connection;
 
-//for auth
+//for auth using facebook to get JWT key
 app.use('/users', require('./routes/users'));
 
+app.get('/question', passportJWT, function(req, res) {
+	Question.find({}, function(err, result) {
+	  if ( err ) {
+      	res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+	      } else 
+	  res.json(result);
+	});
+});
 
-
+app.get('/user',passportJWT, function(req, res) {
+    User.find({}, function(err, result) {
+      if ( err ) {
+	      	res.status(err.code).send({ success: false, message: err.message });
+	      } else {
+      res.json(result);
+  	}
+    });
+  });
 
 //set username for user given userid 
 app.put('/api/user/username/:_id', passportJWT, function(req, res) {
@@ -33,13 +49,13 @@ app.put('/api/user/username/:_id', passportJWT, function(req, res) {
       		res.status(err.code == 11000 ? 409 : (err.code >= 100 && err.code < 600 ? err.code : 500)).send({ success: false, message: err.message });
       	} 
 		res.json(doc);
-		
 	});
 });
 
 
 //create new question
 app.post('/api/question', passportJWT, getCourseByName,function(req, res) {
+	//check for identical answers
 	var ans = [req.body.correct_answer,req.body.incorrect_answer_1,req.body.incorrect_answer_2,req.body.incorrect_answer_3];
 	var i;
 	var j;
@@ -122,21 +138,21 @@ app.get('/api/rank/', passportJWT, getCourseByNameQuery,retrieveUserStat,functio
 	});  
 }); 
 
+//helper function to translate course name and number to courseID
+//and catch whether it doesn't exist
+//(this is the version for GET methods)
 function getCourseByNameQuery(req, res, next) {
 	if(req.query.courseID == null) {
 		Course.getCourse(req.query, function(err, courses) {
 			if(err){
 		  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 			} 
-			//res.json(doc);
 			if(courses[0] == null)
 			{
 				res.status(400).send({ success: false, message: "course does not exist" });
 			} else {
 			var course_entry = courses[0].toObject();
-			//console.log(course_entry);
 	      	req.query.courseID = course_entry._id;
-			//console.log(req.body.courseID);
 			next();
 			}
 		});
@@ -146,6 +162,7 @@ function getCourseByNameQuery(req, res, next) {
 
 }
 
+//helper function to ensure that a user has a stat for a certain course
 function retrieveUserStat(req, res, next) {
 	User.getUserStatByCourse(req.query, function(err, user) {
 		if(err) {
@@ -205,8 +222,6 @@ app.get('/api/user/', passportJWT, function(req, res) {
 
 
 //get user courses with subject and number
-
-
 app.get('/api/getcourses/', passportJWT,findCourseEntries, function(req, res) {
     var id = req.query.id;
 	Course.getUserCoursesById(req.body.courses, function(err, user) {
@@ -217,6 +232,8 @@ app.get('/api/getcourses/', passportJWT,findCourseEntries, function(req, res) {
 	});
 });
 
+//helper function that stores a user's course list and professor list in the body of the request
+//(to use to query courses)
 function findCourseEntries(req, res, next) {
 	
     var id = req.query.id;
@@ -232,8 +249,7 @@ function findCourseEntries(req, res, next) {
 	});
 }
 
-//get the courses that a prof user teaches
-
+//get the courses that a prof user reviews
 app.get('/api/getprofcourses/', passportJWT,findCourseEntries, function(req, res) {
     var id = req.query.id;
 	Course.getUserCoursesById(req.body.prof_courses, function(err, user) {
@@ -335,6 +351,9 @@ app.put('/api/addcourse/:_id', passportJWT,getCourseByName,checkUserCourse, func
 	});
 });
 
+//helper function that uses course subject and number to translate into courseID. 
+//also ensures that it exists
+//(this is the version for POST and PUT requests)
 function getCourseByName(req, res, next) {
 	
 	Course.getCourse(req.body, function(err, courses) {
@@ -353,6 +372,7 @@ function getCourseByName(req, res, next) {
 
 }
 
+//helper function that ensures that a user does not have a course in their course list
 function checkUserCourse(req, res, next) {
 
 	User.getUserCourse(req.params._id,req.body, function(err, doc) {
@@ -381,6 +401,7 @@ app.put('/api/addprofessorcourse/:_id', passportJWT,getCourseByName,checkProfess
 	});
 });
 
+//checks whether a professor already has a course
 function checkProfessorCourse(req, res, next) {
 
 	User.getProfessorCourse(req.params._id,req.body, function(err, doc) {
@@ -394,11 +415,11 @@ function checkProfessorCourse(req, res, next) {
 		next();
 		}
 	});
-
 }
 
 
-//helper to show if course already exists
+//helper to show if stat already exists before making it
+//(for POST and PUT methods)
 function ensureStatNotPresent(req, res, next) {
 	req.body.id = req.params.id;
 	User.getUserStatByCourse(req.body, function(err, user) {
@@ -430,7 +451,7 @@ app.put('/api/addnewstat/:id/', passportJWT, getCourseByName,ensureStatNotPresen
 
 
 
-//helper function to check if user stat exists
+//helper function to ensure that a stat exists before attempting to return it
 function retrieveUserStatBody(req, res, next) {
 	req.body.id = req.params.id;
 	User.getUserStatByCourse(req.body, function(err, user) {
@@ -460,7 +481,6 @@ app.put('/api/deletestat/:id', passportJWT,getCourseByName, retrieveUserStatBody
 
 
 //delete a course from professor
-
 app.put('/api/deleteprofcourse/:_id', passportJWT,getCourseByName,checkProfCourseNotPresent, function(req, res) {
 	var id = req.params._id;
 
@@ -473,7 +493,6 @@ app.put('/api/deleteprofcourse/:_id', passportJWT,getCourseByName,checkProfCours
 });
 
 function checkProfCourseNotPresent(req, res, next) {
-
 	User.getProfessorCourse(req.params._id,req.body, function(err, doc) {
 		if(err){
 	  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
@@ -488,8 +507,6 @@ function checkProfCourseNotPresent(req, res, next) {
 }
 
 //delete a course from a user
-
-
 app.put('/api/deletecourse/:_id', passportJWT,getCourseByName,checkCourseNotPresent, function(req, res) {
 	var id = req.params._id;
 
@@ -501,8 +518,8 @@ app.put('/api/deletecourse/:_id', passportJWT,getCourseByName,checkCourseNotPres
 	});     
 });
 
+//ensure that a user has a course before deleting it.
 function checkCourseNotPresent(req, res, next) {
-
 	User.getUserCourse(req.params._id,req.body, function(err, doc) {
 		if(err){
 	  		res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
@@ -557,7 +574,7 @@ function retrieveOldQuestion(req, res, next) {
 
 }
 
- 
+ //update the question rating of a question given question id
 app.put('/api/updaterating/:id', passportJWT, retrieveOldQuestion, function(req, res) {
 
 	Question.updateRating(req.params.id, req, function(err, question) {
@@ -570,7 +587,7 @@ app.put('/api/updaterating/:id', passportJWT, retrieveOldQuestion, function(req,
 
 
 
-//put together the middleware
+//update the user's stat and advance/develop them as needed
 app.put('/api/updatestat/:id', passportJWT, getCourseByName, retrieveOldResults, newResultCalc,setVals,checkRank, function(req, res) {
 
 	User.UpdateRankData(req.body, function(err, user) {
@@ -586,9 +603,9 @@ app.put('/api/updatestat/:id', passportJWT, getCourseByName, retrieveOldResults,
 	});
 });
 
+//helper function to get old stat of user
 function retrieveOldResults(req, res, next) {
-	console.log('update stat');
-	//update rank if applicable
+	
 	req.body.id = req.params.id;
 	User.getUserStatByCourse(req.body, function(err, user) {
 		if(err) {
@@ -599,7 +616,6 @@ function retrieveOldResults(req, res, next) {
 		} else {
 			var old_user = user[0].toObject().stats_list[0];
 			req.body.old_correctness_rate = old_user.correctness_rate;
-			console.log("Here 1");
 			req.body.old_response_time = old_user.avg_response_time;
 			req.body.num_stat_contributions = old_user.num_stat_contributions;
 			return next();
@@ -608,17 +624,15 @@ function retrieveOldResults(req, res, next) {
 
 }
 
+//calculate new values for response time and correctness rate
 function newResultCalc(req, res, next) {
 	var old_correctness_rate = req.body.old_correctness_rate;
     var old_response_time = req.body.old_response_time;
-
 
 	var add_correctness_rate = req.body.add_correctness_rate;
     var add_response_time = req.body.add_response_time;
 
     var num_stat_contributions = req.body.num_stat_contributions;
-
-	//calculate new values for average response time and correctness rate
 
 	var resp_total = ((old_response_time * num_stat_contributions) + add_response_time) / (num_stat_contributions + 1);
 	var corr_total = ((old_correctness_rate * num_stat_contributions) + add_correctness_rate) / (num_stat_contributions + 1);
@@ -629,6 +643,7 @@ function newResultCalc(req, res, next) {
 	return next();
 }
 
+//update database values with new calculated values
 function setVals(req, res, next) {
 
 	User.UpdateStatData(req.body, function(err, user) {
@@ -640,7 +655,7 @@ function setVals(req, res, next) {
 
 }
 
-
+//check if a user should rank up
 function checkRank(req, res, next) {
  	User.getUserStatByCourse(req.body, function(err, user) {
 		if(err) {
@@ -663,8 +678,6 @@ function checkRank(req, res, next) {
 
 
 //socket connections
-
-
 io.on('connection', function(socket) {
 	 console.log("socket " + socket.id + " has connected");
 	 socket.ready = false;
@@ -672,25 +685,17 @@ io.on('connection', function(socket) {
 	// event `queue_for_game` occurs when player has selected the course they want
 	// to be quizzed on, emitted with the corresponding `course_code`
 	socket.on('queue_for_game', function(queue_info_json) {
-		console.log('queueueue')
 		var queue_info = JSON.parse(queue_info_json);
 		socket.username = queue_info.username; 
 		socket.alias = queue_info.alias; 
-		console.log(queue_info.course_subject);
-		console.log(queue_info.course_number);
-		console.log(queue_info_json);
-		// if(queue_info.course != null)
-		// {
-		// 	socket.course = queue_info.course;
-		// } else {
-			queue_info.course = queue_info.course_subject + queue_info.course_number;
-	//	}
+		queue_info.course = queue_info.course_subject + queue_info.course_number;
+	
 		socket.player_json = queue_info_json;
 		
 		// all players who want to play in the same course are put in the same room
 		var course_room_name = 'RM' + queue_info.course;
 		socket.join(course_room_name);
-		 console.log(queue_info.username + ' has joined ' + course_room_name);
+		//  console.log(queue_info.username + ' has joined ' + course_room_name);
 
 		// a match can happen if the number of people in the room is even and not 0
 		var room_population;
@@ -700,7 +705,7 @@ io.on('connection', function(socket) {
 		} else {
 			room_population = 0;
 		}
-		console.log("the room population is " +room_population );
+		// console.log("the room population is " +room_population );
 		if((room_population % 2 === 0) && (room_population !== 0)) {
 			 console.log('found a match in ' + course_room_name);
 			socket.isSecond = true;
@@ -715,7 +720,7 @@ io.on('connection', function(socket) {
 			p2_socket.join(priv_room_name);
 			io.sockets.adapter.rooms[priv_room_name].questionComplete = false;
 
-			// console.log('game made by ' + p1_socket.username + ' and ' + p2_socket.username);
+			console.log('game made by ' + p1_socket.username + ' and ' + p2_socket.username);
 
 			io.nsps['/'].connected[p1].leave(course_room_name);
 			io.nsps['/'].connected[p2].leave(course_room_name);
@@ -734,17 +739,11 @@ io.on('connection', function(socket) {
 				} else {
 					var course_entry = courses[0].toObject();
 					courseID = course_entry._id;
-					console.log(courseID);
 
 					Question.getGameQuestions(courseID, function(err, doc) {
 						if(err){
 							throw err;
 						} else {
-							
-							// json_soc = JSON.parse(socket.player_json);
-		
-							// json_soc.questions = doc;
-							//socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_json_opponent',JSON.stringify(json_soc));
 							console.log("game made is called in " + priv_room_name + " with " + p1_socket.username + " and " + p2_socket.username);
 		    				io.in(priv_room_name).emit('game_made', JSON.stringify(doc));
 						}
@@ -762,12 +761,11 @@ io.on('connection', function(socket) {
 		});
 
 		socket.on('send_json_opponent',function(course_subject,course_number) {
-			console.log("send-json_oponnent called");
+			// console.log("send-json_oponnent called");
 			
 			var in_rooms = Object.keys(socket.rooms);
 			//find the last room it has been in 
-					//console.log(JSON.stringify(json_soc));
-					console.log("json opponent called to " + in_rooms[in_rooms.length-1]);	
+			console.log("json opponent called to " + in_rooms[in_rooms.length-1]);	
 			socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('get_json_opponent',socket.player_json);
 
 		});
@@ -784,34 +782,15 @@ io.on('connection', function(socket) {
 			}
 			var p1 = Object.keys(latest_room.sockets)[0];
 			var p2 = Object.keys(latest_room.sockets)[1];
-			// console.log(p1);
-			// console.log(p2);
-			// i = 0;
-			// while(p2 === undefined || p1 === undefined) {
-			// 	console.log("Trying again");
-			// 	//return;
-			// 	if(i > 100)
-			// 	{
-			// 		console.log("failed");
-			// 		socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('start_question',"OPPONENT LEFT");
-			// 		return;
-			// 	}
-			// 	i++;
-			// 	p1 = Object.keys(latest_room.sockets)[0];
-			// 	p2 = Object.keys(latest_room.sockets)[1];
-			// }
+
 
 			while(p2 === undefined || p1 === undefined) {
 				io.in(in_rooms[in_rooms.length-1]).emit('start_question',"READY");
 				return;
 			}
 
-			//console.log(in_rooms[in_rooms.length-1]);
-
-			//  console.log(io.sockets.connected[p1].username + " ready?: " + io.sockets.connected[p1].ready);
-			//  console.log(io.sockets.connected[p2].username + " ready?: " + io.sockets.connected[p2].ready);
 			if(io.sockets.connected[p1].ready && io.sockets.connected[p2].ready) {
-				console.log("YA REACHED!!!");
+				console.log("Both users are ready!");
 				io.in(in_rooms[in_rooms.length-1]).emit('start_question',"READY");
 				io.sockets.connected[p1].ready = false;
 				io.sockets.connected[p2].ready = false;
@@ -821,6 +800,7 @@ io.on('connection', function(socket) {
 			}
 		 });
 
+		 //called when a question is answered by either player
 		 socket.on('on_answer',function(answer, pts_incr) {
 			 console.log("answer: " + answer);
 			 console.log("pts: " + pts_incr);
@@ -846,12 +826,14 @@ io.on('connection', function(socket) {
 			}
 		 });
 
-
+		 //send an emoji enumeration to your opponent
 		 socket.on('send_emoji',function(emoji_int) {
 			var in_rooms = Object.keys(socket.rooms);
 			console.log('entered');
 			socket.broadcast.to(in_rooms[in_rooms.length-1]).emit('broadcast_emoji',emoji_int);
 		 });
+
+		 //signal other player that you have left early
 		 socket.on('leave_early',function() {
 			var in_rooms = Object.keys(socket.rooms);
 			console.log('entered');
@@ -862,9 +844,6 @@ io.on('connection', function(socket) {
 		console.log(socket.username + " has left.");
 	});
 });
-
-
-
 
 http.listen(3300, function() {
 	console.log('listening on *:3300');
