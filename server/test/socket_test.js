@@ -11,25 +11,29 @@ var options = {
 
 var player1 = {
     'username': 'Caelin',
-    'course': "CPEN321"
+    'course_subject': 'CPEN',
+    'course_number': 321
 }
 var player1_s = JSON.stringify(player1);
 
 var player2 = {
     'username': 'Johnny',
-    'course': "CPEN321"
+    'course_subject': 'CPEN',
+    'course_number': 321
 }
 var player2_s = JSON.stringify(player2);
 
 var player3 = {
     'username': 'Richard',
-    'course': "CIVL250"
+    'course_subject': 'CIVL',
+    'course_number': 250
 }
 var player3_s = JSON.stringify(player3);
 
 var player4 = {
     'username': 'Yaash',
-    'course': "CPEN321"
+    'course_subject': 'CPEN',
+    'course_number': 321
 }
 var player4_s = JSON.stringify(player4);
 
@@ -40,7 +44,7 @@ describe('Matchmaking', function() {
             client1.emit('queue_for_game', player1_s);
         });
         client1.on('game_made', function (msg) {
-            msg.should.be.oneOf(player1.username + ' ' + player2.username, player2.username + ' ' + player1.username);
+            JSON.parse(msg)[0].reported.should.be.oneOf(true, false);
             client1.disconnect();
         });
 
@@ -49,7 +53,7 @@ describe('Matchmaking', function() {
             client2.emit('queue_for_game', player2_s);
         });
         client2.on('game_made', function(msg) {
-            msg.should.be.oneOf(player1.username + ' ' + player2.username, player2.username + ' ' + player1.username);
+            JSON.parse(msg)[0].reported.should.be.oneOf(true, false);
             client2.disconnect();
             done();
         });
@@ -77,7 +81,7 @@ describe('Matchmaking', function() {
             client3.on('game_made', function(msg) {
                 matched = 1;
             });
-            setTimeout(completeTest, 100);
+            setTimeout(completeTest, 10);
         });
     });
 
@@ -103,7 +107,7 @@ describe('Matchmaking', function() {
             client2.on('connect', function (data) {
                 client2.emit('queue_for_game', player2_s);
             });
-            setTimeout(completeTest, 100);
+            setTimeout(completeTest, 10);
         });
     });
 
@@ -188,4 +192,187 @@ describe('Matchmaking', function() {
             setTimeout(completeTest, 100);
         });
     });
+
+    it('should be able to inform the clients almost exactly when the round starts', function(done) {
+        var readies = 0;
+        var starts = 0;
+        var completeTest = function() {
+            if(readies <= 1) {
+                starts.should.equal(0);
+            }
+            else {
+                starts.should.equal(2);
+                client1.disconnect();
+                client2.disconnect();
+                done();
+            }
+        }
+
+        var client1 = io.connect(socketURL, options);
+        client1.on('connect', function (data) {
+            client1.emit('queue_for_game', player1_s);
+        });
+        client1.on('game_made', function (msg) {
+            readies++;
+            client1.emit('ready_next');
+            client1.on('start_question', function(msg) {
+                starts++;
+            })
+
+        });
+
+        var client2 = io.connect(socketURL, options);
+        client2.on('connect', function (data) {
+            client2.emit('queue_for_game', player2_s);
+        });
+        client2.on('game_made', function (msg) {
+            readies++;
+            client2.emit('ready_next');
+            client2.on('start_question', function (msg) {
+                starts++;
+            })
+            setTimeout(completeTest, 100);
+        });
+    });
+
+    it('should be able to inform the player if their opponent answered correctly', function(done) {
+        var turned_over = false;
+
+        var completeTest = function () {
+            turned_over.should.equal(true);
+            client1.disconnect();
+            client2.disconnect();
+            done();
+        }
+
+        var client1 = io.connect(socketURL, options);
+        client1.on('connect', function (data) {
+            client1.emit('queue_for_game', player1_s);
+
+            client1.on('game_made', function (msg) {
+                client1.emit('on_answer', 'ANSWER_RIGHT', 15);
+                setTimeout(completeTest, 10);
+            });
+        });
+
+
+        var client2 = io.connect(socketURL, options);
+        client2.on('connect', function (data) {
+            client2.emit('queue_for_game', player2_s);
+
+            client2.on('game_made', function (msg) {
+                client2.on('turn_over', function (msg) {
+                    turned_over = true;
+                })
+            });
+        });
+    });
+
+    it('should be able to inform the players if they both answered wrong', function(done) {
+        var turned_over = false;
+
+        var completeTest = function () {
+            turned_over.should.equal(true);
+            client1.disconnect();
+            client2.disconnect();
+            done();
+        }
+
+        var client1 = io.connect(socketURL, options);
+        client1.on('connect', function (data) {
+            client1.emit('queue_for_game', player1_s);
+
+            client1.on('game_made', function (msg) {
+                client1.emit('on_answer', 'ANSWER_WRONG', 0);
+                client1.on('turn_over', function (msg) {
+                    turned_over = true;
+                });
+            });
+        });
+
+
+        var client2 = io.connect(socketURL, options);
+        client2.on('connect', function (data) {
+            client2.emit('queue_for_game', player2_s);
+
+            client2.on('game_made', function (msg) {
+                client2.emit('on_answer', 'ANSWER_WRONG', 0);
+                client2.on('turn_over', function(msg) {
+                    turned_over = true;
+                });
+                setTimeout(completeTest, 10);
+
+            });
+        });
+    })
+
+    it('should inform one player if the other sent an emoji', function(done) {
+        var emojis = 0;
+
+        var completeTest = function() {
+            emojis.should.equal(1);
+            client1.disconnect();
+            client2.disconnect();
+            done();
+        }
+
+        var client1 = io.connect(socketURL, options);
+        client1.on('connect', function (data) {
+            client1.emit('queue_for_game', player1_s);
+
+            client1.on('game_made', function (msg) {
+                client1.emit('send_emoji', 'emoji');
+                setTimeout(completeTest, 10);
+            });
+        });
+        
+
+        var client2 = io.connect(socketURL, options);
+        client2.on('connect', function (data) {
+            client2.emit('queue_for_game', player2_s);
+
+            client2.on('game_made', function (msg) {
+                client2.on('broadcast_emoji', function (msg) {
+                    emojis = 1;
+                    msg.should.equal('emoji');
+                })
+            });
+        });
+        
+    });
+
+    it('should inform players if their opponent has left', function(done) {
+        var opponentleft = false;
+        var completeTest = function () {
+            opponentleft.should.equal(true);
+            client1.disconnect();
+            client2.disconnect();
+            done();
+        }
+
+        var client1 = io.connect(socketURL, options);
+        client1.on('connect', function (data) {
+            client1.emit('queue_for_game', player1_s);
+
+            client1.on('game_made', function (msg) {
+                client1.emit('leave_early', '');
+                setTimeout(completeTest, 10);
+            });
+        });
+
+
+        var client2 = io.connect(socketURL, options);
+        client2.on('connect', function (data) {
+            client2.emit('queue_for_game', player2_s);
+
+            client2.on('game_made', function (msg) {
+                client2.on('broadcast_leave', function (msg) {
+                    opponentleft = true;
+                    msg.should.equal('OPPONENT LEFT');
+                })
+            });
+        });
+    });
+
+
 });

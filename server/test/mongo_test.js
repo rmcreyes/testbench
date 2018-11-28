@@ -128,7 +128,10 @@ describe('User', function() {
     it('should be able to add a statistic to a user', test(function() {
         var id = 'some id';
         var user = {
-            "courseID" : 'some id'
+            "courseID" : 'some id',
+            "add_response_time" : 2.2,
+            "add_correctness_rate" : 0.58,
+            "level_progress" : 2
         };
         var query = {_id: 'some id'};
         var update = {
@@ -136,10 +139,10 @@ describe('User', function() {
                 stats_list: {
                     course_code: 'some id',
                     rank: 1,
-                    avg_response_time: 5,
-                    correctness_rate: 5,
-                    num_stat_contributions: 0,
-                    level_progress: 0,
+                    avg_response_time: 2.2,
+                    correctness_rate: 0.58,
+                    num_stat_contributions: 1,
+                    level_progress: 2,
                     level_max: 8
                 }
             }
@@ -406,12 +409,6 @@ describe('Course', function() {
         sinon.assert.calledWith(Course.find, { '_id': { $in: idArr.map(ObjectId) } });
     }));
 
-    it('should be able to remove a course from the db', test(function() {
-        var id = "5be8a1d9bd936daae4188c4c";
-        var query = { _id: "5be8a1d9bd936daae4188c4c"};
-        Course.removeCourse(id, function(){});
-        sinon.assert.calledWith(Course.remove, query);
-    }));
 });
 
 describe('Question', function() {
@@ -490,8 +487,16 @@ describe('Question', function() {
         var courseID = "5bd2b67601db5d121920c48d";
         Question.getGameQuestions(courseID, function(){});
         sinon.assert.calledWith(Question.aggregate, [
-            { $match: {'courseID': ObjectId(courseID)} },
-            { $sample: { size: 7 } },
+            {
+                $match:
+                {
+                    $and: [
+                        { 'courseID': ObjectId("5bd2b67601db5d121920c48d") },
+                        { 'reported': false }
+                    ]
+                }
+            },
+            { $sample: { size: 7 } }
         ]);
     }));
 
