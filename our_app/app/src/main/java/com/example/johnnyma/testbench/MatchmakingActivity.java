@@ -52,7 +52,7 @@ public class MatchmakingActivity extends AppCompatActivity implements StartDialo
     private int opponentRank;
     {
         try {
-            socket = IO.socket("http://40.78.64.46:3300/");
+            socket = IO.socket("http://165.22.167.112:3300/");
             SocketHandler.setSocket(socket);
         } catch (URISyntaxException e){}
     }

@@ -48,7 +48,7 @@ public class OkHttpTask extends AsyncTask<String, Void, String> {
     public static final String GET_PROF_COURSES = "GET_PROF_COURSES";
 
     public static final String GET_COURSE_QUESTIONS = "GET_COURSE_QUESTIONS";
-    public static final String IP = "http://40.78.64.46:3300";
+    public static final String IP = "http://165.22.167.112:3300";
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
